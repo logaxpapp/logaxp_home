@@ -1,0 +1,81 @@
+/* src/assets/styles/globals.css */
+
+/* Import Custom Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap');
+
+/* Import Tailwind CSS Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Variables for Theming */
+:root {
+  --color-primary: #1d4ed8; /* Blue-700 */
+  --color-secondary: #9333ea; /* Purple-600 */
+  --color-accent: #10b981; /* Green-500 */
+  --color-background: #f3f4f6; /* Gray-100 */
+  --color-text: #374151; /* Gray-700 */
+  --font-family-base: 'Inter', sans-serif;
+  --font-family-heading: 'Roboto Slab', serif;
+}
+
+/* Global Styles */
+body {
+  font-family: var(--font-family-base);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* Anchor Tags */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--color-secondary);
+  text-decoration: underline;
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Form Elements */
+input, textarea, select {
+  @apply border border-gray-300 rounded px-3 py-2;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+}
+
+/* Dark Mode Styles */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #ffffff; /* Gray-800 */
+    color: #f3f4f6; /* Gray-100 */
+  }
+
+  a {
+    color: #60a5fa; /* Blue-400 */
+  }
+
+  a:hover {
+    color: #818cf8; /* Blue-500 */
+  }
+
+  /* Additional dark mode styles */
+  button {
+    background-color: var(--color-accent);
+    color: #ffffff;
+  }
+}
