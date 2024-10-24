@@ -37,7 +37,7 @@ module.exports = {
         },
         // Adding lemonGreen and deepBlue colors
         lemonGreen: {
-          light: '#9ef01a',  // Light Lemon Green
+          light: '#89E101',  // Light Lemon Green
           DEFAULT: '#A3D900', // Default Lemon Green
           dark: '#8ABB00',    // Darker Lemon Green
         },
@@ -45,6 +45,9 @@ module.exports = {
           light: '#4A73C9',   // Light Deep Blue
           DEFAULT: '#1D4ED8', // Default Deep Blue
           dark: '#1d3557',    // Darker Deep Blue
+        },
+        fontFamily: {
+          'jakarta': ['Plus Jakarta Sans', 'sans-serif'],
         },
       },
 

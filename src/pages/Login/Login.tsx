@@ -4,9 +4,9 @@ import { useAppDispatch } from '../../app/hooks';
 import { setUserInfo } from '../../store/slices/userSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Eye icons for password visibility toggle
-import loginImage from '../../assets/images/banner.jpeg';
 import Logo from '../../assets/images/logo.png';
 import DarkModeToggle from '../../components/DarkModeToggle'; // Ensure your DarkModeToggle component is imported
+import IllustrationImage from '../../assets/images/Frame.png';
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +21,7 @@ const Login: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value, 
     }));
     setFormErrors((prev) => ({
       ...prev,
@@ -50,11 +50,18 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex dark:bg-gray-800 transition-colors duration-300">
-      {/* Left Column (Image / Marketing Section) */}
-      <div className="hidden lg:flex w-1/2 bg-cover bg-center" style={{ backgroundImage: `url(${loginImage})` }}>
-        <div className="flex flex-col items-center justify-center p-10 bg-opacity-40 bg-gray-900 text-white w-full">
-          <h2 className="text-4xl font-bold mb-4">Welcome Back!</h2>
-          <p className="text-lg mb-8">Log in to your account to continue where you left off.</p>
+      {/* Left Column (Illustration and Marketing Text) */}
+      <div className="hidden lg:flex w-1/2 bg-lemonGreen-light items-center justify-center p-10 text-white">
+        <div className="flex flex-col items-center text-center">
+          <img src={IllustrationImage} alt="Illustration" className="mb-6 w-3/4" />
+          <h2 
+          className="text-[28px] font-bold leading-[52px] tracking-tight text-center text-black" 
+          style={{ fontFamily: 'Plus Jakarta Sans' }}
+        >
+          Connect with every LogaXP application
+        </h2>
+
+          <p className="text-gray-800">Everything you need in an easily accessible dashboard.</p>
         </div>
       </div>
 
@@ -69,24 +76,25 @@ const Login: React.FC = () => {
         </div>
 
         {/* Dark Mode Toggle at the Top-Right */}
-        <div className="absolute top-6 right-6">
+        <div className="absolute top-6 right-6" >
           <DarkModeToggle />
         </div>
 
         <div className="mx-auto w-full max-w-md mt-16">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-6">Login to Your Account</h2>
+          <h2 className="text-[48px] text-gray-800 font-semibold dark:text-white " style={{ fontFamily: 'Plus Jakarta Sans' }}> Login</h2>
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-8" style={{ fontFamily: 'Plus Jakarta Sans' }}>Login to you account with your email and password</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Input */}
             <div className="relative">
-              <label htmlFor="email" className="block text-gray-600 dark:text-gray-300 mb-1">Email Address</label>
+              <label htmlFor="email" className="block text-black text-sm dark:text-gray-300 mb-1">Email Address</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={credentials.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lemonGreen"
+                className="w-full px-4 py-2 border border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-lemonGreen"
                 placeholder="logaxp@example.com"
               />
               {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
@@ -94,20 +102,20 @@ const Login: React.FC = () => {
 
             {/* Password Input with Eye Icon */}
             <div className="relative">
-              <label htmlFor="password" className="block text-gray-600 dark:text-gray-300 mb-1">Password</label>
+              <label htmlFor="password" className="block text-sm   text-black dark:text-gray-300 mb-1">Password</label>
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 name="password"
                 value={credentials.password}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lemonGreen"
+                className="w-full px-4 py-2 border border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 rounded focus:outline-none focus:ring bg-gray-50 focus:ring-lemonGreen"
                 placeholder="••••••••"
               />
               {/* Toggle Password Visibility */}
               <span
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-12 h-2 right-3 flex items-center text-gray-600 dark:text-gray-400 cursor-pointer"
+                className="absolute inset-y-0 right-3 flex items-center text-gray-600 dark:text-gray-400 cursor-pointer"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
@@ -134,7 +142,7 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-lemonGreen hover:bg-green-600 text-white py-2 rounded-lg transition-colors"
+              className="w-full bg-lemonGreen-light hover:bg-green-600 text-gray-900 font-semibold py-3 rounded transition-colors"
             >
               {isLoading ? 'Logging in...' : 'Login'}
             </button>
@@ -143,10 +151,13 @@ const Login: React.FC = () => {
             {error && <p className="text-red-500 text-center mt-2">Failed to login. Please try again.</p>}
           </form>
 
-          {/* Social Login Options */}
-          <div className="mt-8 flex items-center justify-between">
-            <Link to="/register" className="text-sm text-lemonGreen hover:text-green-700">Create an Account</Link>
-          </div>
+          <div className="mt-4 flex items-center ml-16">
+          <span className="text-sm text-gray-600"> Don't have an account? </span>
+          <Link to="/register" className="text-sm text-lemonGreen-light hover:text-green-700 ml-1">
+            <span className="font-bold underline">Create an Account</span>
+          </Link>
+        </div>
+
         </div>
       </div>
     </div>
