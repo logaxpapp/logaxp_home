@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ScaleOut from '../Slides/ScaleOut';
-import routes from '../../routing/routes';
+import routes from '../../routes/routes';
 
 const FooterAction: React.FC = () => {
   return (

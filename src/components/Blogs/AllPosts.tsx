@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Blog from './Blog';
 import { blogs } from '../../utils/blogs';
-import routes from '../../routing/routes';
+import routes from '../../routes/routes';
 import { Link } from 'react-router-dom';
 
 const AllPosts: React.FC = () => {

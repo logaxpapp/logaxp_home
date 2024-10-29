@@ -15,33 +15,34 @@ const Header: React.FC = () => {
     <header className="bg-gray-50 dark:bg-gray-900 shadow-md py-4">
       <div className="container mx-auto px-4 flex justify-between items-center">
         {/* Logo Section */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 text-[32px]">
           <img src={logo} alt="Logo" className="w-12 h-12" />
-          <Link to="/" className="text-2xl font-bold text-gray-700 dark:text-white">
+          <Link to="/" className="text-2xl font-bold text-gray-700 dark:text-white hover:no-underline">
             Loga<span className="text-lemonGreen-light">XP</span>
           </Link>
         </div>
 
         {/* Mobile Menu Icon */}
         <div className="md:hidden">
-          <button onClick={toggleMenu} aria-label="Toggle menu">
+          <button type='button' onClick={toggleMenu} aria-label="Toggle menu">
             {isMenuOpen ? <FaTimes className="w-6 h-6 text-gray-700" /> : <FaBars className="w-6 h-6 text-gray-700" />}
           </button>
         </div>
 
         {/* Navigation Links - Hidden on mobile, visible on larger screens */}
-        <nav className={`hidden md:flex space-x-6 text-lg`}>
+        <nav className={`hidden md:flex space-x-6 text-sm items-center`}>
           <Link to="/home" className="text-gray-700 font-semibold hover:text-lemonGreen dark:text-white">Home</Link>
           <Link to="/about" className="text-gray-700 font-semibold hover:text-lemonGreen dark:text-white">About</Link>
+          <Link to="/services" className="text-gray-700 font-semibold hover:text-lemonGreen dark:text-white">Services</Link>
           <Link to="/contact" className="text-gray-700 font-semibold hover:text-lemonGreen dark:text-white">Contact</Link>
         </nav>
 
         {/* Action Buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          <Link to="/login" className="bg-lemonGreen-light text-gray-700 px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200">
-            My Portal
+          <Link to="/login" className="bg-lemonGreen-light text-gray-700 px-6 py-2 rounded transition-colors duration-200 hover:no-underline font-medium" >
+            Get Started
           </Link>
-          <DarkModeToggle  />
+          <DarkModeToggle />
         </div>
       </div>
 
@@ -56,10 +57,13 @@ const Header: React.FC = () => {
               <Link to="/about" className="block text-center text-gray-700 font-semibold hover:text-lemonGreen">About</Link>
             </li>
             <li>
+              <Link to="/services" className="block text-center text-gray-700 font-semibold hover:text-lemonGreen">Services</Link>
+            </li>
+            <li>
               <Link to="/contact" className="block text-center text-gray-700 font-semibold hover:text-lemonGreen">Contact</Link>
             </li>
             <li className="text-center">
-              <Link to="/portal" className="bg-lemonGreen-light text-gray-700 px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200 inline-block">
+              <Link to="/portal" className="bg-lemonGreen-light text-gray-700 px-4 py-2 rounded transition-colors duration-200 inline-block outline-none">
                 My Portal
               </Link>
             </li>

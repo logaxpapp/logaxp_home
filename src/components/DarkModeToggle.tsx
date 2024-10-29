@@ -3,7 +3,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleTheme } from '../features/theme/themeSlice';
-import { RootState } from '../app/store';
+import { RootState } from '../store/store';
 import { FaLightbulb } from 'react-icons/fa';
 
 const DarkModeToggle: React.FC = () => {
@@ -16,14 +16,15 @@ const DarkModeToggle: React.FC = () => {
 
   return (
     <button
+      type='button'
       onClick={handleToggle}
-      className=" w-12  p-1"
+      className=" w-12  p-1 bg-inherit"
       aria-label="Toggle Dark Mode"
     >
       {theme === 'dark' ? (
         <FaLightbulb className="w-6 h-6 text-yellow-400" />
       ) : (
-        <FaLightbulb className="w-6 h-6 text-yel" />
+        <FaLightbulb className="w-6 h-6 text-gray-900" />
       )}
     </button>
   );

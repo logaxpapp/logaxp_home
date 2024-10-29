@@ -11,7 +11,7 @@ import FooterAction from '../../components/FooterAction/FooterAction';
 const Home: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
-    
+
       <main className="flex-grow">
         <Hero />
         <Trusts />
@@ -19,7 +19,7 @@ const Home: React.FC = () => {
         <Blogs />
         <FooterAction />
       </main>
-     
+
     </div>
   );
 };

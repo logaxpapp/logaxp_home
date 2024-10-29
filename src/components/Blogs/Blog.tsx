@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import routes from '../../routing/routes'; // Import routes
+import routes from '../../routes/routes'; // Import routes
 
 interface BlogProps {
   blog: {

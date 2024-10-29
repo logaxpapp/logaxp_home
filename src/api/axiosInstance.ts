@@ -1,7 +1,7 @@
 // src/api/axiosInstance.ts
 
 import axios from 'axios';
-import { store } from '../app/store';
+import { store } from '../store/store';
 import { clearUser } from "../store/slices/userSlice"; // Correctly import the clearUser action
 
 // Create an Axios instance

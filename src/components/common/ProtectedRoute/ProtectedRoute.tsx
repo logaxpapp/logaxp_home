@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAppSelector } from '../../../app/hooks';
+import { useAppSelector } from '../../../hooks/hooks';
 
 const ProtectedRoute: React.FC = () => {
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);

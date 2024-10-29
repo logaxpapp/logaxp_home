@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Site from './Site';
 import { Link } from 'react-router-dom';
-import routes from '../../routing/routes';
+import routes from '../../routes/routes';
 import { featuredSites } from './featuredSites';
 
 const FeaturedProducts: React.FC = () => {

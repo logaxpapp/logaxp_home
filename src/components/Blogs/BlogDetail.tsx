@@ -3,10 +3,10 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { blogs } from '../../utils/blogs';
-import routes from '../../routing/routes'; // Import routes
+import routes from '../../routes/routes'; // Import routes
 
 const BlogDetail: React.FC = () => {
-  const { id } = useParams<{ id?: string }>(); // Extract 'id' from URL
+  const { id } = useParams<{ id?: string; }>(); // Extract 'id' from URL
   const blogId = id ? parseInt(id, 10) : undefined; // Convert 'id' to number
   const blog = blogs.find((b) => b.id === blogId); // Find the corresponding blog
 

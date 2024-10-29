@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Site from './Site';
 import { Link } from 'react-router-dom';
-import routes from '../../routing/routes';
+import routes from '../../routes/routes';
 import { featuredSites } from './featuredSites'; // Ensure this path is correct
 
 const AllProducts: React.FC = () => {
@@ -19,7 +19,7 @@ const AllProducts: React.FC = () => {
         >
           <span className="text-lemonGreen font-semibold dark:text-white text-2xl"> </span>
           <h2 className="text-3xl md:text-5xl font-bold mt-2 mb-4 dark:text-white">
-          Our Range of Products
+            Our Range of Products
           </h2>
           <p className="text-gray-500  mt-2 max-w-lg mx-auto dark:text-gray-300">
             Discover our complete range of products designed to enhance your productivity and streamline your workflows.

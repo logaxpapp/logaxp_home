@@ -1,10 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       // 1. Custom Colors
@@ -37,17 +34,20 @@ module.exports = {
         },
         // Adding lemonGreen and deepBlue colors
         lemonGreen: {
-          light: '#89E101',  // Light Lemon Green
+          light: '#89E101', // Light Lemon Green
           DEFAULT: '#A3D900', // Default Lemon Green
-          dark: '#8ABB00',    // Darker Lemon Green
+          dark: '#8ABB00', // Darker Lemon Green
         },
         deepBlue: {
-          light: '#4A73C9',   // Light Deep Blue
+          light: '#4A73C9', // Light Deep Blue
           DEFAULT: '#1D4ED8', // Default Deep Blue
-          dark: '#1d3557',    // Darker Deep Blue
+          dark: '#1d3557', // Darker Deep Blue
         },
-        fontFamily: {
-          'jakarta': ['Plus Jakarta Sans', 'sans-serif'],
+        navy: {
+          DEFAULT: '#011C39',
+        },
+        gray: {
+          DEFAULT: '#393939',
         },
       },
 
@@ -57,10 +57,10 @@ module.exports = {
         '2/3': '66.666667%',
         '3/4': '75%', // Standard width
         '5/6': '83.333333%', // Larger custom width
-        '9/10': '90%',  // Custom width, 90%
-        '95': '95%',    // Custom width, 95%
-        '120': '120%',  // Custom width, larger than 100%
-        'full': '100%', // Full width
+        '9/10': '90%', // Custom width, 90%
+        95: '95%', // Custom width, 95%
+        120: '120%', // Custom width, larger than 100%
+        full: '100%', // Full width
       },
 
       // Other custom extensions (fontFamily, spacing, etc.) remain unchanged

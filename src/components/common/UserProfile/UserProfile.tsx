@@ -1,7 +1,7 @@
 // src/components/common/UserProfile/UserProfile.tsx
 
 import React from 'react';
-import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/hooks';
 import { clearUser, setName, setEmail } from '../../../store/slices/userSlice';
 import { useFetchAllUsersQuery } from '../../../api/apiSlice';
 
@@ -30,6 +30,8 @@ const UserProfile: React.FC = () => {
       <div className="mb-2">
         <label className="block text-gray-700">Name:</label>
         <input
+          title={'Name'}
+          placeholder='Enter your name'
           type="text"
           value={user.name}
           onChange={updateName}
@@ -39,6 +41,8 @@ const UserProfile: React.FC = () => {
       <div className="mb-2">
         <label className="block text-gray-700">Email:</label>
         <input
+          title={'Email'}
+          placeholder='Enter your email'
           type="email"
           value={user.email}
           onChange={updateEmail}

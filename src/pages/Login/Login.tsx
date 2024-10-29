@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLoginMutation } from '../../api/apiSlice';
-import { useAppDispatch } from '../../app/hooks';
+import { useAppDispatch } from '../../hooks/hooks';
 import { setUserInfo } from '../../store/slices/userSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Eye icons for password visibility toggle
@@ -14,14 +14,14 @@ const Login: React.FC = () => {
   const [login, { isLoading, error }] = useLoginMutation();
 
   const [credentials, setCredentials] = useState({ email: '', password: '' });
-  const [formErrors, setFormErrors] = useState<{ email?: string; password?: string }>({});
+  const [formErrors, setFormErrors] = useState<{ email?: string; password?: string; }>({});
   const [rememberMe, setRememberMe] = useState(false); // Remember Me state
   const [showPassword, setShowPassword] = useState(false); // Password visibility state
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value, 
+      [e.target.name]: e.target.value,
     }));
     setFormErrors((prev) => ({
       ...prev,
@@ -54,12 +54,9 @@ const Login: React.FC = () => {
       <div className="hidden lg:flex w-1/2 bg-lemonGreen-light items-center justify-center p-10 text-white">
         <div className="flex flex-col items-center text-center">
           <img src={IllustrationImage} alt="Illustration" className="mb-6 w-3/4" />
-          <h2 
-          className="text-[28px] font-bold leading-[52px] tracking-tight text-center text-black" 
-          style={{ fontFamily: 'Plus Jakarta Sans' }}
-        >
-          Connect with every LogaXP application
-        </h2>
+          <h2 className="text-[28px] font-bold leading-[52px] tracking-tight text-center text-black">
+            Connect with every LogaXP application
+          </h2>
 
           <p className="text-gray-800">Everything you need in an easily accessible dashboard.</p>
         </div>
@@ -81,8 +78,8 @@ const Login: React.FC = () => {
         </div>
 
         <div className="mx-auto w-full max-w-md mt-16">
-          <h2 className="text-[48px] text-gray-800 font-semibold dark:text-white " style={{ fontFamily: 'Plus Jakarta Sans' }}> Login</h2>
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-8" style={{ fontFamily: 'Plus Jakarta Sans' }}>Login to you account with your email and password</p>
+          <h2 className="text-[48px] text-gray-800 font-semibold dark:text-white "> Login</h2>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-8">Login to you account with your email and password</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Input */}
@@ -152,11 +149,11 @@ const Login: React.FC = () => {
           </form>
 
           <div className="mt-4 flex items-center ml-16">
-          <span className="text-sm text-gray-600"> Don't have an account? </span>
-          <Link to="/register" className="text-sm text-lemonGreen-light hover:text-green-700 ml-1">
-            <span className="font-bold underline">Create an Account</span>
-          </Link>
-        </div>
+            <span className="text-sm text-gray-600"> Don't have an account? </span>
+            <Link to="/register" className="text-sm text-lemonGreen-light hover:text-green-700 ml-1">
+              <span className="font-bold underline">Create an Account</span>
+            </Link>
+          </div>
 
         </div>
       </div>

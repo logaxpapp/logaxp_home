@@ -1,7 +1,4 @@
-// src/store/slices/userSlice.ts
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IUser } from '../../types/user';
 
 interface UserState {
   name: string;
@@ -32,7 +29,7 @@ const userSlice = createSlice({
     },
     setUserInfo(
       state,
-      action: PayloadAction<{ name: string; email: string; role: string; token: string }>
+      action: PayloadAction<{ name: string; email: string; role: string; token: string; }>
     ) {
       state.name = action.payload.name;
       state.email = action.payload.email;
