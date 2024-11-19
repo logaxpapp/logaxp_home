@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useBulkUploadUsersMutation, useCreateUserAndSendInviteMutation } from '../../api/apiSlice';
+import { useBulkUploadUsersMutation, useCreateUserAndSendInviteMutation } from '../../api/usersApi';
 import Button from '../../components/common/Button/Button';
 import Modal from '../../components/common/Feedback/Modal';
 import { useToast } from '../../features/Toast/ToastContext';

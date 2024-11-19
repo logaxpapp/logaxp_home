@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { useGetAllLoggedInUsersQuery, useSuspendUserMutation, useReactivateUserMutation, useLogoutMutation } from '../api/usersApi';
+import {
+  useGetAllLoggedInUsersQuery,
+  useSuspendUserMutation,
+  useReactivateUserMutation,
+  useLogoutMutation,
+} from '../api/usersApi';
 import Pagination from '../components/common/Pagination/Pagination';
 import DataTable, { Column } from '../components/common/DataTable/DataTable';
 import Button from '../components/common/Button/Button';
@@ -60,7 +65,7 @@ const LoggedInUsersList: React.FC = () => {
   const handleLogoutUser = async (userId: string) => {
     if (window.confirm('Are you sure you want to log this user out?')) {
       try {
-        await logoutUser().unwrap();  // userId parameter is not needed here
+        await logoutUser().unwrap(); // userId parameter is not needed here
         alert('User logged out successfully.');
       } catch (error) {
         alert('Failed to log out user.');
@@ -72,34 +77,35 @@ const LoggedInUsersList: React.FC = () => {
     { header: 'Name', accessor: 'name' },
     { header: 'Email', accessor: 'email' },
     { header: 'Role', accessor: 'role' },
-    { 
-      header: 'Last Accessed', 
-      accessor: (user) => user.lastAccessed ? new Date(user.lastAccessed).toLocaleString() : 'N/A' 
+    {
+      header: 'Last Accessed',
+      accessor: (user) =>
+        user.lastAccessed ? new Date(user.lastAccessed).toLocaleString() : 'N/A',
     },
     { header: 'Status', accessor: 'status' },
     {
       header: 'Actions',
       accessor: (user) => (
-        <div className="flex space-x-2">
-                      {user.status !== 'Suspended' ? (
-              <Button
-                variant="danger"
-                size="small"
-                onClick={() => handleSuspendUser(user._id)}
-                className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition duration-300"
-              >
-                Suspend
-              </Button>
-            ) : (
-              <Button
-                variant="success"
-                size="small"
-                onClick={() => handleReactivateUser(user._id)}
-                className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 transition duration-300"
-              >
-                Reactivate
-              </Button>
-            )}
+        <div className="flex flex-wrap space-x-2 space-y-2 md:space-y-0">
+          {user.status !== 'Suspended' ? (
+            <Button
+              variant="danger"
+              size="small"
+              onClick={() => handleSuspendUser(user._id)}
+              className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition duration-300"
+            >
+              Suspend
+            </Button>
+          ) : (
+            <Button
+              variant="success"
+              size="small"
+              onClick={() => handleReactivateUser(user._id)}
+              className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 transition duration-300"
+            >
+              Reactivate
+            </Button>
+          )}
 
           <Button
             variant="info"
@@ -118,19 +124,11 @@ const LoggedInUsersList: React.FC = () => {
   if (error) return <p className="text-red-500">Failed to load users.</p>;
 
   return (
-    <div className="bg-blue-50 p-4">
-      <div className="flex justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg">
-      <h2 className="text-2xl font-semibold  text-blue-700 font-primary">
-        Logged-in Users
-      </h2>
-      </div>
-
-      <div className="mb-4 flex justify-between items-center " style={{
-      fontFamily: "'Plus Jakarta Sans', sans-serif",
-      
-    }}>
+    <div className="p-4 bg-blue-50">
+      <div className="flex flex-wrap justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg">
+        <h2 className="text-xl font-semibold text-blue-700">Logged-in Users</h2>
         <select
-          className="border p-2 rounded"
+          className="border p-2 rounded text-sm"
           onChange={handleDateFilter}
           defaultValue=""
         >
@@ -143,10 +141,9 @@ const LoggedInUsersList: React.FC = () => {
 
       {data?.users?.length ? (
         <>
-          <DataTable
-            data={data.users}
-            columns={columns}
-          />
+          <div className="overflow-x-auto">
+            <DataTable data={data.users} columns={columns} />
+          </div>
           <Pagination
             currentPage={data.currentPage ?? 1}
             totalPages={data.totalPages ?? 1}
@@ -154,7 +151,7 @@ const LoggedInUsersList: React.FC = () => {
           />
         </>
       ) : (
-        <p>No logged-in users found.</p>
+        <p className="text-gray-500">No logged-in users found.</p>
       )}
     </div>
   );

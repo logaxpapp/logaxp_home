@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAssignSurveyMutation, useGetAllSurveysQuery } from '../../api/surveyApi';
-import { useFetchAllUsersQuery } from '../../api/apiSlice';
+import { useFetchAllUsersQuery } from '../../api/usersApi';
 import MultiSelect, { OptionType } from '../../components/common/Input/SelectDropdown/MultiSelect';
 import Button from '../../components/common/Button/Button';
 import { FaCheck, FaCalendarAlt } from 'react-icons/fa';
@@ -14,7 +14,7 @@ const AssignSurvey: React.FC = () => {
   const showToast = useToast().showToast; // Access the showToast function
 
   // Fetch all users and surveys
-  const { data: users, isLoading: isUsersLoading } = useFetchAllUsersQuery();
+  const { data: users, isLoading: isUsersLoading } = useFetchAllUsersQuery({page: 1, limit: 1000 });
   const { data: surveys, isLoading: isSurveysLoading } = useGetAllSurveysQuery();
 
   // Convert users and surveys to OptionType for MultiSelect

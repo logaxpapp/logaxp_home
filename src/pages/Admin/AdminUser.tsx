@@ -5,7 +5,7 @@ import {
   useReactivateUserMutation,
   useEditUserProfileMutation,
   useDeleteUserMutation,
-} from '../../api/apiSlice';
+} from '../../api/usersApi';
 import { IUser } from '../../types/user';
 import DataTable from '../../components/common/DataTable/DataTable';
 import Button from '../../components/common/Button/Button';
@@ -18,7 +18,8 @@ import { useToast } from '../../features/Toast/ToastContext';
 import CreateEditUserForm from '../../components/UserList/CreateUserForm';
 
 const AdminUser: React.FC = () => {
-  const { data, error, isLoading, refetch } = useFetchAllUsersQuery();
+  
+  const { data, error, isLoading, refetch } = useFetchAllUsersQuery({page: 1, limit: 500 });
   const [suspendUser] = useSuspendUserMutation();
   const [reactivateUser] = useReactivateUserMutation();
   const [editUserProfile] = useEditUserProfileMutation();
