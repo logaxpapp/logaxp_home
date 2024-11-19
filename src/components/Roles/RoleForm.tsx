@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { IRole } from '../../types/role';
+import { IPermission } from '../../types/permission';
 import TextInput from '../common/Input/TextInput';
 import Button from '../common/Button/Button';
 import { useGetPermissionsQuery } from '../../api/permissionApi';
-
 
 interface RoleFormProps {
   role: IRole | null;
@@ -28,7 +28,13 @@ const RoleForm: React.FC<RoleFormProps> = ({ role, onSubmit, onCancel }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ name, permissions: selectedPermissions });
+
+    // Map selectedPermissions (IDs) back to IPermission objects
+    const mappedPermissions: IPermission[] = allPermissions?.filter((permission) =>
+      selectedPermissions.includes(permission._id)
+    ) || [];
+
+    onSubmit({ name, permissions: mappedPermissions });
   };
 
   if (isLoading) return <div>Loading permissions...</div>;

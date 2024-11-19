@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Form } from '../../../components/common/Form';
 import TextInput from '../../../components/common/Input/TextInput';
 import Button from '../../../components/common/Button';
-import { useRegisterMutation } from '../../../api/apiSlice';
+import { useRegisterMutation } from '../../../api/usersApi';
 
 const Register: React.FC = () => {
   const [register, { isLoading, error }] = useRegisterMutation();

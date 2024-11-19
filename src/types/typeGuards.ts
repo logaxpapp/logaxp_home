@@ -1,6 +1,6 @@
-// src/types/typeGuards.ts
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { SerializedError } from '@reduxjs/toolkit';
 
-import { FetchBaseQueryError, SerializedError } from '@reduxjs/toolkit';
 
 export const isFetchBaseQueryError = (
   error: unknown

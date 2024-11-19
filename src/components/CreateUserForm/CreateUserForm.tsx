@@ -1,7 +1,7 @@
 // src/components/CreateUserForm/CreateUserForm.tsx
 
 import React, { useState } from 'react';
-import { useCreateUserMutation } from '../../api/apiSlice';
+import { useCreateUserMutation } from '../../api/usersApi';
 import { useNavigate } from 'react-router-dom';
 
 const CreateUserForm: React.FC = () => {

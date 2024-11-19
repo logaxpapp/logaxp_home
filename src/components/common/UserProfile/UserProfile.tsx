@@ -1,30 +1,35 @@
-// src/components/common/UserProfile/UserProfile.tsx
-
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectCurrentUser } from '../../../store/slices/authSlice';
 import { clearUser, setName, setEmail } from '../../../store/slices/userSlice';
-import { useFetchAllUsersQuery } from '../../../api/apiSlice';
-
+import { useFetchAllUsersQuery } from '../../../api/usersApi';
 
 const UserProfile: React.FC = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectCurrentUser);
 
-  // Example usage of RTK Query to fetch all users
-  const { data, error, isLoading } = useFetchAllUsersQuery();
+  // Fetch all users with RTK Query
+  const { data, error, isLoading } = useFetchAllUsersQuery({ page: 1, limit: 500 });
 
   const updateName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setName(e.target.value));
+    if (user) {
+      dispatch(setName(e.target.value));
+    }
   };
 
   const updateEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setEmail(e.target.value));
+    if (user) {
+      dispatch(setEmail(e.target.value));
+    }
   };
 
   const resetUser = () => {
     dispatch(clearUser());
   };
+
+  if (!user) {
+    return <div className="p-4 bg-white rounded shadow">No user selected.</div>;
+  }
 
   return (
     <div className="p-4 bg-white rounded shadow">
@@ -33,7 +38,7 @@ const UserProfile: React.FC = () => {
         <label className="block text-gray-700">Name:</label>
         <input
           type="text"
-          value={user.name}
+          value={user.name || ''}
           onChange={updateName}
           className="w-full px-3 py-2 border rounded"
         />
@@ -42,7 +47,7 @@ const UserProfile: React.FC = () => {
         <label className="block text-gray-700">Email:</label>
         <input
           type="email"
-          value={user.email}
+          value={user.email || ''}
           onChange={updateEmail}
           className="w-full px-3 py-2 border rounded"
         />
@@ -61,8 +66,10 @@ const UserProfile: React.FC = () => {
         {error && <div>Error fetching users.</div>}
         {data && (
           <ul>
-            {data.users.map((user) => (
-              <li key={user._id}>{user.name} - {user.email} - {user.role}</li>
+            {data.users.map((u) => (
+              <li key={u._id}>
+                {u.name} - {u.email} - {u.role}
+              </li>
             ))}
           </ul>
         )}

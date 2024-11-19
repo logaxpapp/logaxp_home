@@ -1,17 +1,16 @@
-// src/components/common/UI/Avatar/Avatar.tsx
-
 import React from 'react';
 import { AvatarProps } from './Avatar.types';
 
-const sizeClasses: Record<AvatarProps['size'], string> = {
+const sizeClasses: Record<'small' | 'medium' | 'large', string> = {
   small: 'h-8 w-8',
   medium: 'h-12 w-12',
   large: 'h-16 w-16',
 };
 
 const Avatar: React.FC<AvatarProps> = ({ src, alt = 'Avatar', size = 'medium', className = '' }) => {
+  const avatarSize = size || 'medium'; // Ensure `size` is always defined
   return (
-    <div className={`rounded-full overflow-hidden ${sizeClasses[size]} ${className}`}>
+    <div className={`rounded-full overflow-hidden ${sizeClasses[avatarSize]} ${className}`}>
       {src ? (
         <img src={src} alt={alt} className="object-cover w-full h-full" />
       ) : (

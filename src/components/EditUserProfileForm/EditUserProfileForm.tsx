@@ -1,7 +1,7 @@
 // src/components/EditUserProfileForm/EditUserProfileForm.tsx
 
 import React, { useState } from 'react';
-import { useEditUserProfileMutation } from '../../api/apiSlice';
+import { useEditUserProfileMutation } from '../../api/usersApi';
 
 interface EditUserProfileFormProps {
   userId: string;
