@@ -22,12 +22,23 @@ const Header: React.FC = () => {
         </div>
 
         {/* Mobile Menu and Dark Mode Toggle */}
-        <div className="md:hidden flex items-center space-x-2">
-          <button onClick={toggleMenu} aria-label="Toggle menu">
-            {isMenuOpen ? <FaTimes className="w-6 h-6 text-gray-700 dark:text-white" /> : <FaBars className="w-6 h-6 text-gray-700 dark:text-white" />}
-          </button>
-          <DarkModeToggle />
-        </div>
+          <div className="md:hidden flex items-center space-x-2">
+            <button
+              onClick={toggleMenu}
+              aria-label="Toggle menu"
+              className="bg-transparent focus:outline-none"
+            >
+              {isMenuOpen ? (
+                <FaTimes className="w-6 h-6 text-gray-700 dark:text-white" />
+              ) : (
+                <FaBars className="w-6 h-6 text-gray-700 dark:text-white" />
+              )}
+            </button>
+            <div className="bg-transparent">
+              <DarkModeToggle />
+            </div>
+          </div>
+
 
         {/* Navigation Links - Hidden on mobile, visible on larger screens */}
         <nav className="hidden md:flex space-x-6 text-lg">
