@@ -16,7 +16,7 @@ interface PasswordInputProps {
   showPassword: boolean; // Current state of password visibility
 }
 
-const PasswordInput: React.FC<PasswordInputProps> = ({
+export const PasswordInput: React.FC<PasswordInputProps> = ({
   label,
   toggleVisibility,
   showPassword,
@@ -48,4 +48,3 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   );
 };
 
-export default PasswordInput;

@@ -466,6 +466,18 @@ export const usersApi = createApi({
       }),
     }),
 
+    // src/api/usersApi.ts
+
+      // Add this endpoint in the `endpoints` section
+      registerUser: builder.mutation<IUser, { name: string; email: string; password: string }>({
+        query: (body) => ({
+          url: '/auth/register',
+          method: 'POST',
+          body,
+        }),
+      }),
+
+
     // CSRF Token Query
     getCsrfToken: builder.query<CsrfTokenResponse, void>({
       query: () => '/csrf-token',
@@ -501,6 +513,7 @@ export const {
   usePasswordResetMutation,
   useGetAllLoggedInUsersQuery,
   useChangePasswordMutation,
+  useRegisterUserMutation,
   
 
 

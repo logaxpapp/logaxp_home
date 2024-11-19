@@ -1,24 +1,27 @@
-// src/pages/Register.tsx
-
 import React, { useState } from 'react';
 import { Form } from '../../../components/common/Form';
 import TextInput from '../../../components/common/Input/TextInput';
 import Button from '../../../components/common/Button';
-import { useRegisterMutation } from '../../../api/usersApi';
+import { useRegisterUserMutation } from '../../../api/usersApi';
+import { PasswordInput } from '../../../components/common/Input/PasswordInput';
 
 const Register: React.FC = () => {
-  const [register, { isLoading, error }] = useRegisterMutation();
+  const [register, { isLoading, error }] = useRegisterUserMutation();
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     setFormErrors(prev => ({ ...prev, [e.target.name]: '' }));
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev); // Toggle the password visibility
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add form validation here
     try {
       await register(formData).unwrap();
       // Handle successful registration
@@ -53,11 +56,14 @@ const Register: React.FC = () => {
         <PasswordInput
           label="Password"
           name="password"
+          type={showPassword ? 'text' : 'password'} // Dynamically set type
           value={formData.password}
           onChange={handleChange}
           required
           error={formErrors.password}
           placeholder="••••••••"
+          toggleVisibility={togglePasswordVisibility} // Pass toggle function
+          showPassword={showPassword} // Pass current state of visibility
         />
         <Button type="submit" variant="primary" size="large" isLoading={isLoading} disabled={isLoading}>
           {isLoading ? 'Registering...' : 'Register'}

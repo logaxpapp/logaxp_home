@@ -1,3 +1,3 @@
 // src/components/common/Input/PasswordInput/index.ts
 
-export { default } from './PasswordInput';
+export { PasswordInput } from './PasswordInput';
