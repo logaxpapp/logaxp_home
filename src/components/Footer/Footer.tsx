@@ -53,7 +53,7 @@ const Footer: React.FC = () => {
           {/* Products */}
           <div>
             <h4 className="font-bold mb-4 text-lemonGreen">Products</h4>
-            <ul className="space-y-1">
+            <ul className="grid grid-cols-2 sm:grid-cols-1 gap-4">
               <li><Link to="/" className="hover:text-lemonGreen text-gray-700 dark:text-gray-400 text-sm">DocSend</Link></li>
               <li><Link to="/" className="hover:text-lemonGreen text-gray-700 dark:text-gray-400 text-sm">TimeSync</Link></li>
               <li><Link to="/" className="hover:text-lemonGreen text-gray-700 dark:text-gray-400 text-sm">TaskBrick</Link></li>
@@ -66,7 +66,7 @@ const Footer: React.FC = () => {
           {/* Business Types */}
           <div>
             <h4 className="font-bold mb-4 text-lemonGreen">Business Types</h4>
-            <ul className="space-y-1">
+            <ul className="grid grid-cols-2 sm:grid-cols-1 gap-4">
               <li><Link to="/" className="hover:text-lemonGreen text-gray-700 dark:text-gray-400 text-sm">Blog</Link></li>
               <li><Link to="/" className="hover:text-lemonGreen text-gray-700 dark:text-gray-400 text-sm">Food & Beverages</Link></li>
               <li><Link to="/" className="hover:text-lemonGreen text-gray-700 dark:text-gray-400 text-sm">App Development</Link></li>
@@ -79,7 +79,7 @@ const Footer: React.FC = () => {
           {/* Support */}
           <div>
             <h4 className="font-bold mb-4 text-lemonGreen">Support</h4>
-            <ul className="space-y-2">
+            <ul className="grid grid-cols-2 sm:grid-cols-1 gap-4">
               <li className="text-sm dark:text-gray-400">FAQ</li>
               <li><a href="tel:+16159306090" className="hover:text-lemonGreen text-gray-700 dark:text-gray-400 text-sm">+1 (615) 554-3592</a></li>
               <li><a href="tel:+18329465563" className="hover:text-lemonGreen text-gray-700 dark:text-gray-400 text-sm">+1 (832) 946-5563</a></li>
@@ -98,7 +98,6 @@ const Footer: React.FC = () => {
             <Link to="/legal" className="hover:text-gray-400 dark:hover:text-gray-500">Legal</Link>
             <Link to="/privacy-statement" className="hover:text-gray-400 dark:hover:text-gray-500">Privacy Policy</Link>
           </div>
-
           <div className="mt-4 lg:mt-0">
             <span className="text-gray-700 dark:text-gray-400">United States</span>
           </div>
