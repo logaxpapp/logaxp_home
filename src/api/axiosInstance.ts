@@ -2,11 +2,12 @@
 
 import axios from 'axios';
 import { store } from '../app/store';
-import { clearUser } from "../store/slices/userSlice"; // Correctly import the clearUser action
+import { clearUser } from "../store/slices/authSlice"; // **Correctly import from authSlice**
+import { setSessionExpired } from '../store/slices/sessionSlice'; 
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api/', // Replace with your API's base URL
+  baseURL: `${import.meta.env.VITE_BASE_URL}/api/`,  //  baseUrl: `${import.meta.env.VITE_BASE_URL}/api/`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -16,7 +17,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const state = store.getState();
-    const token = state.user.token; // Adjust based on your user state structure
+    const token = state.auth.user?.token; 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -25,23 +26,14 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle errors globally
+// **Single Response Interceptor Handling 401 Errors**
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Unauthorized, logout the user
-      store.dispatch(clearUser());
-    }
-    return Promise.reject(error);
-  }
-);
-
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      // Unauthorized, logout the user
+      // Unauthorized, set session as expired
+      store.dispatch(setSessionExpired(true));
+      // Additionally, clear user data
       store.dispatch(clearUser());
       // Optionally, redirect to login
       window.location.href = '/login';

@@ -1,16 +1,16 @@
-import BookMiz from '../assets/images/bookmiz.jpeg';
-import TaskBrick from '../assets/images/taskbrick.jpeg';
-import TimeSync from '../assets/images/timesync.jpeg';
+import BookMiz from '../assets/images/business.png';
+import TaskBrick from '../assets/images/it.png';
+import TimeSync from '../assets/images/data.png';
 import NewImage1 from '../assets/images/doccenter.png';
-import NewImage2 from '../assets/images/timesync.jpeg';
-import NewImage3 from '../assets/images/logabeauty.jpeg';
-import NewImage4 from '../assets/images/bookmiz.jpeg';
-import NewImage5 from '../assets/images/docsend.jpeg';
+import NewImage6 from '../assets/images/hrpolicy.png';
+import NewImage7 from '../assets/images/payroll&paymentmgt.png';
+import NewImage8 from '../assets/images/dashbord.png';
+import NewImage9 from '../assets/images/signature.png';
 
 export const blogs = [
   {
     id: 1,
-    title: 'How to Boost Your Business Efficiency',
+    title: 'Boost Your Business Efficiency',
     category: 'Business',
     duration: 15,
     summary: 'Learn effective strategies to enhance your business operations.',
@@ -46,7 +46,7 @@ export const blogs = [
     category: 'Security',
     duration: 30,
     summary: 'Learn about common cybersecurity threats and how to protect your business.',
-    poster: NewImage2,
+    poster: NewImage9,
   },
   {
     id: 6,
@@ -54,7 +54,7 @@ export const blogs = [
     category: 'Technology',
     duration: 22,
     summary: 'Discover how artificial intelligence is reshaping business landscapes.',
-    poster: NewImage3,
+    poster: NewImage6,
   },
   {
     id: 7,
@@ -62,7 +62,7 @@ export const blogs = [
     category: 'E-Commerce',
     duration: 28,
     summary: 'Learn key strategies for building and maintaining a successful e-commerce business.',
-    poster: NewImage4,
+    poster: NewImage7,
   },
   {
     id: 8,
@@ -70,6 +70,6 @@ export const blogs = [
     category: 'Marketing',
     duration: 20,
     summary: 'Explore the latest trends in digital marketing and how they can enhance your strategy.',
-    poster: NewImage5,
+    poster: NewImage8,
   },
 ];

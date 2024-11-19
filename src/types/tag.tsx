@@ -1,0 +1,32 @@
+// src/types/tag.ts
+
+export enum Tag {
+  Infrastructure = 'Infrastructure',
+  Urgent = 'Urgent',
+  SystemFailure = 'System Failure',
+  DataLoss = 'Data Loss',
+  SystemUpdate = 'System Update',
+  UserAuth = 'User Auth',
+  LoginIssue = 'Login Issue',
+  Performance = 'Performance',
+  UserExperience = 'User Experience',
+  NonUrgent = 'Non-Urgent',
+  PaymentIssue = 'Payment Issue',
+  Finance = 'Finance',
+  HRManagement = 'HR Management',
+  Reports = 'Reports',
+  Payroll = 'Payroll',
+  HR = 'HR',
+  Scheduling = 'Scheduling',
+  Profile = 'Profile',
+  // Add more tags as needed
+  Security = 'Security',
+  Bug = 'Bug',
+  Enhancement = 'Enhancement',
+  Documentation = 'Documentation',
+  CustomerSupport = 'Customer Support',
+  Feature = 'Feature',
+  Accessibility = 'Accessibility',
+  Compliance = 'Compliance',
+  Networking = 'Networking',
+}

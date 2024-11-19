@@ -1,16 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import logo1 from '../../assets/images/logo1.png';
-import logo2 from '../../assets/images/logo2.png';
-import logo3 from '../../assets/images/logo3.png';
-import logo4 from '../../assets/images/logo4.png';
+import logo1 from '../../assets/images/signature.png';
+import logo2 from '../../assets/images/pen.png';
+import logo3 from '../../assets/images/bookmiz.png';
+import logo4 from '../../assets/images/dashbord.png';
 
 const Trusts: React.FC = () => {
   const trustLogos = [
-    { src: logo1, name: 'Partner 1' },
-    { src: logo2, name: 'Partner 2' },
-    { src: logo3, name: 'Partner 3' },
-    { src: logo4, name: 'Partner 4' },
+    { src: logo1, name: 'GathePlux' },
+    { src: logo2, name: 'DocSend' },
+    { src: logo3, name: 'BookMiz' },
+    { src: logo4, name: 'TimeSync' },
   ];
 
   // Create an extended list of logos to ensure continuous scrolling without gaps

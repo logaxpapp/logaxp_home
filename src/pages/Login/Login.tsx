@@ -1,29 +1,37 @@
+// src/pages/Login.tsx
+
 import React, { useState } from 'react';
-import { useLoginMutation } from '../../api/apiSlice';
+import { useLoginMutation } from '../../api/usersApi';
 import { useAppDispatch } from '../../app/hooks';
-import { setUserInfo } from '../../store/slices/userSlice';
+import { setAuthCredentials } from '../../store/slices/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Eye icons for password visibility toggle
-import Logo from '../../assets/images/logo.png';
-import DarkModeToggle from '../../components/DarkModeToggle'; // Ensure your DarkModeToggle component is imported
+import Logo from '../../assets/images/sec.png';
+import DarkModeToggle from '../../components/DarkModeToggle';
 import IllustrationImage from '../../assets/images/Frame.png';
+import Button from '../../components/common/Button/Button';
+import TextInput from '../../components/common/Input/TextInput';
+import Checkbox from '../../components/common/Input/Checkbox';
+import Form from '../../components/common/Form/Form';
+import PasswordInput from '../../components/common/Input/PasswordInput';
+import { useToast } from '../../features/Toast/ToastContext';
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [login, { isLoading, error }] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
+  const { showToast } = useToast();
 
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [credentials, setCredentialsState] = useState({ email: '', password: '' });
   const [formErrors, setFormErrors] = useState<{ email?: string; password?: string }>({});
-  const [rememberMe, setRememberMe] = useState(false); // Remember Me state
-  const [showPassword, setShowPassword] = useState(false); // Password visibility state
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentials((prev) => ({
+    setCredentialsState(prev => ({
       ...prev,
       [e.target.name]: e.target.value, 
     }));
-    setFormErrors((prev) => ({
+    setFormErrors(prev => ({
       ...prev,
       [e.target.name]: undefined,
     }));
@@ -33,19 +41,41 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       const userData = await login(credentials).unwrap();
-      dispatch(setUserInfo(userData));
+      dispatch(setAuthCredentials({ user: userData.user }));
+  
+      // Store user data if remember me is selected
       if (rememberMe) {
-        // Store token if "Remember Me" is checked
-        localStorage.setItem('token', userData.token);
+        localStorage.setItem('user', JSON.stringify(userData.user));
       }
-      navigate('/dashboard');
-    } catch (err) {
+  
+      showToast('Logged in successfully!', 'success');
+  
+      // Check for password expiry notice
+      if (userData.user.passwordExpiryNotice) {
+        showToast(userData.user.passwordExpiryNotice, 'info');
+      }
+  
+      navigate('/dashboard'); // Navigate to dashboard
+    } catch (err: any) {
+      const status = err?.status;
+      const errorMessage = err?.data?.message || 'Failed to login. Please check your credentials.';
+  
+      if (status === 403) {
+        // Password has expired
+        showToast(errorMessage, 'error');
+        // Redirect to change password page
+        navigate('/change-password'); // Or display a modal/prompt
+      } else {
+        // Other errors
+        showToast(errorMessage, 'error');
+      }
       console.error('Failed to login:', err);
     }
   };
+  
 
   const togglePasswordVisibility = () => {
-    setShowPassword((prevState) => !prevState);
+    setShowPassword(prevState => !prevState);
   };
 
   return (
@@ -55,109 +85,92 @@ const Login: React.FC = () => {
         <div className="flex flex-col items-center text-center">
           <img src={IllustrationImage} alt="Illustration" className="mb-6 w-3/4" />
           <h2 
-          className="text-[28px] font-bold leading-[52px] tracking-tight text-center text-black" 
-          style={{ fontFamily: 'Plus Jakarta Sans' }}
-        >
-          Connect with every LogaXP application
-        </h2>
-
+            className="text-[28px] font-bold leading-[52px] tracking-tight text-center text-black" 
+            style={{ fontFamily: 'Plus Jakarta Sans' }}
+          >
+            Connect with every LogaXP application
+          </h2>
           <p className="text-gray-800">Everything you need in an easily accessible dashboard.</p>
         </div>
       </div>
 
       {/* Right Column (Login Form) */}
-      <div className="flex flex-col justify-center w-full lg:w-1/2 p-8 bg-white dark:bg-gray-900 transition-colors duration-300 relative">
+      <div className="flex flex-col justify-center w-full lg:w-1/2 p-8 bg-white dark:bg-gray-900 transition-colors duration-300 relative"  style={{ fontFamily: 'Plus Jakarta Sans' }}> 
         {/* Logo at the Top-Left */}
         <div className="absolute top-6 left-6 flex items-center">
-          <Link to="/" className="inline-flex items-center">
-            <img src={Logo} alt="LogaXP Logo" className="h-10" />
-            <span className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">LogaXP</span>
+          <Link to="/" className="inline-flex items-center font-bold text-2xl text-black dark:text-gray-100">
+            <img src={Logo} alt="LogaXP Logo" className="h-6" />
+           
           </Link>
         </div>
 
         {/* Dark Mode Toggle at the Top-Right */}
-        <div className="absolute top-6 right-6" >
+        <div className="absolute top-6 right-6">
           <DarkModeToggle />
         </div>
 
         <div className="mx-auto w-full max-w-md mt-16">
-          <h2 className="text-[48px] text-gray-800 font-semibold dark:text-white " style={{ fontFamily: 'Plus Jakarta Sans' }}> Login</h2>
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-8" style={{ fontFamily: 'Plus Jakarta Sans' }}>Login to you account with your email and password</p>
+          <h2 className="text-[48px] text-gray-800 font-semibold dark:text-white font-primary">Login</h2>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-8" style={{ fontFamily: 'Plus Jakarta Sans' }}>Login to your account with your email and password</p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <Form onSubmit={handleSubmit}>
             {/* Email Input */}
-            <div className="relative">
-              <label htmlFor="email" className="block text-black text-sm dark:text-gray-300 mb-1">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={credentials.email}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-lemonGreen"
-                placeholder="logaxp@example.com"
-              />
-              {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
-            </div>
+            <TextInput
+              label="Email Address"
+              name="email"
+              type="email"
+              value={credentials.email}
+              onChange={handleChange}
+              required
+              error={formErrors.email}
+              placeholder=""
+            />
 
             {/* Password Input with Eye Icon */}
-            <div className="relative">
-              <label htmlFor="password" className="block text-sm   text-black dark:text-gray-300 mb-1">Password</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                value={credentials.password}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 rounded focus:outline-none focus:ring bg-gray-50 focus:ring-lemonGreen"
-                placeholder="••••••••"
-              />
-              {/* Toggle Password Visibility */}
-              <span
-                onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-600 dark:text-gray-400 cursor-pointer"
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </span>
-              {formErrors.password && <p className="text-red-500 text-sm mt-1">{formErrors.password}</p>}
-            </div>
+            <PasswordInput
+              label="Password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              value={credentials.password}
+              onChange={handleChange}
+              required
+              error={formErrors.password}
+              placeholder=""
+              toggleVisibility={togglePasswordVisibility}
+              showPassword={showPassword}
+            />
 
             {/* Remember Me */}
             <div className="flex items-center justify-between mb-6">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe((prev) => !prev)}
-                  className="form-checkbox h-4 w-4 text-lemonGreen dark:bg-gray-700 dark:border-gray-600"
-                />
-                <span className="ml-2 text-gray-700 dark:text-gray-300">Remember Me</span>
-              </label>
+              <Checkbox
+                label="Remember Me"
+                checked={rememberMe}
+                onChange={() => setRememberMe(prev => !prev)}
+              />
               <Link to="/password-reset" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 text-sm">
                 Forgot Password?
               </Link>
             </div>
 
             {/* Submit Button */}
-            <button
+            <Button
               type="submit"
+              variant="primary"
+              size="large"
+              isLoading={isLoading}
               disabled={isLoading}
-              className="w-full bg-lemonGreen-light hover:bg-green-600 text-gray-900 font-semibold py-3 rounded transition-colors"
+              className="w-full"
             >
               {isLoading ? 'Logging in...' : 'Login'}
-            </button>
-
-            {/* Error Message */}
-            {error && <p className="text-red-500 text-center mt-2">Failed to login. Please try again.</p>}
-          </form>
+            </Button>
+          </Form>
 
           <div className="mt-4 flex items-center ml-16">
-          <span className="text-sm text-gray-600"> Don't have an account? </span>
-          <Link to="/register" className="text-sm text-lemonGreen-light hover:text-green-700 ml-1">
-            <span className="font-bold underline">Create an Account</span>
-          </Link>
-        </div>
-
+            <span className="text-sm text-gray-600">Don't have an account?</span>
+            <Link to="/register" className="text-sm text-lemonGreen-light hover:text-green-700 ml-1">
+              <span className="font-bold underline">Create an Account</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

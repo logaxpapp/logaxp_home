@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
-import logo from '../../assets/images/logo.png';
+import logo from '../../assets/images/sec.png';
 import DarkModeToggle from '../DarkModeToggle';
 
 const Header: React.FC = () => {
@@ -16,9 +16,9 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 flex justify-between items-center">
         {/* Logo Section */}
         <div className="flex items-center space-x-2">
-          <img src={logo} alt="Logo" className="w-12 h-12" />
+          <img src={logo} alt="Logo" className="w- h-6" />
           <Link to="/" className="text-2xl font-bold text-gray-700 dark:text-white">
-            Loga<span className="text-lemonGreen-light">XP</span>
+           
           </Link>
         </div>
 
@@ -38,7 +38,7 @@ const Header: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          <Link to="/login" className="bg-lemonGreen-light text-gray-700 px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200">
+          <Link to="/login" className="bg-lemonGreen-light text-white  px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200">
             My Portal
           </Link>
           <DarkModeToggle  />
@@ -59,7 +59,7 @@ const Header: React.FC = () => {
               <Link to="/contact" className="block text-center text-gray-700 font-semibold hover:text-lemonGreen">Contact</Link>
             </li>
             <li className="text-center">
-              <Link to="/portal" className="bg-lemonGreen-light text-gray-700 px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200 inline-block">
+              <Link to="/login" className="bg-lemonGreen-light text-gray-700 px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200 inline-block">
                 My Portal
               </Link>
             </li>

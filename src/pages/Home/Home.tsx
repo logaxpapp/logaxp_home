@@ -6,6 +6,7 @@ import Trusts from '../../components/Trusts/Trusts';
 import FeaturedProducts from '../../components/FeaturedProducts/FeaturedProducts';
 import Blogs from '../../components/Blogs/Blogs';
 import FooterAction from '../../components/FooterAction/FooterAction';
+import OurBusiness from '../../components/OurBusiness/OurBusiness';
 
 
 const Home: React.FC = () => {
@@ -16,6 +17,7 @@ const Home: React.FC = () => {
         <Hero />
         <Trusts />
         <FeaturedProducts />
+        <OurBusiness />
         <Blogs />
         <FooterAction />
       </main>

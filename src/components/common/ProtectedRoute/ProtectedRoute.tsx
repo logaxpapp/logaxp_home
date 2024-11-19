@@ -1,13 +1,19 @@
-// src/components/common/ProtectedRoute/ProtectedRoute.tsx
+// src/components/ProtectedRoute.tsx
 
-import React from 'react';
+import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAppSelector } from '../../../app/hooks';
+import { RootState } from '../../../app/store';
 
-const ProtectedRoute: React.FC = () => {
-  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+const ProtectedRoute = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+  if (!user) {
+    // If no user is found, redirect to login
+    return <Navigate to="/login" replace />;
+  }
+
+  // If user exists, allow access to the protected route
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

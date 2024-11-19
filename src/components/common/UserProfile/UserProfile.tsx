@@ -2,12 +2,14 @@
 
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { selectCurrentUser } from '../../../store/slices/authSlice';
 import { clearUser, setName, setEmail } from '../../../store/slices/userSlice';
 import { useFetchAllUsersQuery } from '../../../api/apiSlice';
 
+
 const UserProfile: React.FC = () => {
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.user);
+  const user = useAppSelector(selectCurrentUser);
 
   // Example usage of RTK Query to fetch all users
   const { data, error, isLoading } = useFetchAllUsersQuery();

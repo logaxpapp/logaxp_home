@@ -13,16 +13,16 @@ const ContactUs: React.FC = () => {
           className="w-full h-full object-cover rounded-lg shadow"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white text-4xl font-bold">Contact Us</h1>
+          <h1 className="text-white text-4xl font-bold font-primary text-[48px]">Contact Us</h1>
         </div>
       </div>
 
       {/* Contact Form Section */}
-      <div className="flex flex-col md:flex-row bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-6xl w-full p-8 md:space-x-12">
+      <div className="flex flex-col md:flex-row bg-white dark:bg-gray-700 rounded-lg shadow-lg max-w-6xl w-full p-8 md:space-x-12">
         {/* Form Section */}
         <div className="md:w-1/2">
-          <h2 className="text-2xl font-semibold text-blue-900 dark:text-white mb-4">Contact Us</h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <h2 className="text-2xl font-semibold text-blue-900 dark:text-white mb-4 font-primary">Contact Us</h2>
+          <p className="text-gray-700 dark:text-gray-300 mb-6 font-secondary">
             Have any question or concern about our products and how to leverage LogaXP for your business?
             Send us a message in the form below.
           </p>
@@ -87,20 +87,22 @@ const ContactUs: React.FC = () => {
       <div className="mt-12 max-w-7xl mx-auto text-gray-700 dark:text-gray-300 py-20 px-8 bg-gray-100 dark:bg-gray-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {/* Email Card */}
-          <div className="flex flex-col items-center bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg transition-shadow hover:shadow-xl">
-            <h4 className="text-xl font-bold text-blue-900 dark:text-lemonGreen">Email</h4>
+          <div className="flex flex-col items-center bg-white dark:bg-gray-700 rounded-lg p-6 shadow-lg transition-shadow hover:shadow-xl">
+            <h4 className="text-xl font-bold text-blue-900 dark:text-lemonGreen font-primary">Email</h4>
             <p className="text-center mt-2">support@logaxp.com</p>
           </div>
 
           {/* Live Chat Card */}
-          <div className="flex flex-col items-center bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg transition-shadow hover:shadow-xl">
-            <h4 className="text-xl font-bold text-blue-900 dark:text-lemonGreen">Live Chat</h4>
+          <div className="flex flex-col items-center bg-white dark:bg-gray-700 rounded-lg p-6 shadow-lg transition-shadow hover:shadow-xl">
+            <h4 className="text-xl font-bold text-blue-900 dark:text-lemonGreen font-primary">Email</h4>
+            <h4 className="text-xl font-bold text-blue-900 dark:text-lemonGreen ">Live Chat</h4>
             <p className="text-center mt-2">1105 Berry Street, Old Hickory, Tennessee 37138</p>
           </div>
 
           {/* Phone Card */}
-          <div className="flex flex-col items-center bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg transition-shadow hover:shadow-xl">
-            <h4 className="text-xl font-bold text-blue-900 dark:text-lemonGreen">Phone</h4>
+          <div className="flex flex-col items-center bg-white dark:bg-gray-700 rounded-lg p-6 shadow-lg transition-shadow hover:shadow-xl">
+            <h4 className="text-xl font-bold text-blue-900 dark:text-lemonGreen font-primary">Email</h4>
+            <h4 className="text-xl font-bold text-blue-900 dark:text-lemonGreen ">Phone</h4>
             <p className="text-center mt-2">+1 (615) 930-6090</p>
           </div>
         </div>

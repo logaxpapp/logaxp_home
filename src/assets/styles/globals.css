@@ -3,51 +3,45 @@
 /* Import Custom Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Hand:wght@400..700&family=Playwrite+PE:wght@100..400&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 /* Import Tailwind CSS Directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* CSS Variables for Theming */
 :root {
-  --color-primary: #1d4ed8; /* Blue-700 */
-  --color-secondary: #9333ea; /* Purple-600 */
-  --color-accent: #10b981; /* Green-500 */
-  --color-background: #f3f4f6; /* Gray-100 */
-  --color-text: #374151; /* Gray-700 */
-  --font-family-base: 'Inter', sans-serif;
-  --font-family-heading: 'Roboto Slab', serif;
+  /* Font Variables */
+  --font-primary: 'Menseal', sans-serif;
+  --font-secondary: 'Plus Jakarta Sans', sans-serif;
+
+  /* Color Variables */
+  --color-primary: #1d4ed8;
+  --color-secondary: #9333ea;
+  --color-accent: #10b981;
+  --color-background: #f3f4f6;
+  --color-text: #374151;
 }
 
-/* Global Styles */
+/* Global font usage */
 body {
-  font-family: var(--font-family-base);
+  font-family: var(--font-secondary);
   background-color: var(--color-background);
   color: var(--color-text);
-  line-height: 1.6;
-  margin: 0;
-  padding: 0;
 }
 
-/* Anchor Tags */
-a {
-  color: var(--color-primary);
-  text-decoration: none;
-  transition: color 0.3s ease;
+/* Heading font usage */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
 }
 
-a:hover {
-  color: var(--color-secondary);
-  text-decoration: underline;
+/* For specific font styling, you could also define additional utility classes if needed */
+.heading-primary {
+  font-family: var(--font-primary);
 }
-
-/* Buttons */
-button {
-  font-family: inherit;
-  cursor: pointer;
+.text-secondary {
+  font-family: var(--font-secondary);
 }
-
 /* Form Elements */
 input, textarea, select {
   @apply border border-gray-300 rounded px-3 py-2;
@@ -77,5 +71,76 @@ h1, h2, h3, h4, h5, h6 {
   button {
     background-color: var(--color-accent);
     color: #ffffff;
+  }
+}
+
+
+/* src/index.css or your global CSS file */
+
+/* Override react-select styles to integrate with Tailwind */
+.react-select__control {
+  @apply border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500;
+}
+
+.react-select__menu {
+  @apply mt-1 bg-white border border-gray-300 rounded-md shadow-lg;
+}
+
+.react-select__option {
+  @apply text-gray-900 cursor-pointer px-3 py-2;
+}
+
+.react-select__option--is-focused {
+  @apply bg-blue-100;
+}
+
+.react-select__option--is-selected {
+  @apply bg-blue-500 text-white;
+}
+
+.react-select__multi-value {
+  @apply bg-blue-100;
+}
+
+.react-select__multi-value__label {
+  @apply text-blue-700;
+}
+
+.react-select__multi-value__remove {
+  @apply text-blue-700 hover:text-blue-900;
+}
+
+
+/* src/index.css or a relevant CSS file */
+
+/* src/components/common/Loader.css */
+
+.spinner {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.double-bounce1,
+.double-bounce2 {
+  position: absolute;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: #3498db;
+  opacity: 0.6;
+  animation: bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+  animation-delay: -1.0s;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
   }
 }

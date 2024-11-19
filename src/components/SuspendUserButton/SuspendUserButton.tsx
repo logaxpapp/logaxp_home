@@ -1,7 +1,7 @@
 // src/components/SuspendUserButton/SuspendUserButton.tsx
 
 import React from 'react';
-import { useSuspendUserMutation } from '../../api/apiSlice';
+import { useSuspendUserMutation } from '../../api/usersApi';
 
 interface SuspendUserButtonProps {
   userId: string;
