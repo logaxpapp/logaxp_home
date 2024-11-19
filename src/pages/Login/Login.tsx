@@ -12,7 +12,7 @@ import Button from '../../components/common/Button/Button';
 import TextInput from '../../components/common/Input/TextInput';
 import Checkbox from '../../components/common/Input/Checkbox';
 import Form from '../../components/common/Form/Form';
-import PasswordInput from '../../components/common/Input/PasswordInput';
+import {PasswordInput} from '../../components/common/Input/PasswordInput';
 import { useToast } from '../../features/Toast/ToastContext';
 
 const Login: React.FC = () => {
