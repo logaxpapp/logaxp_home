@@ -1,9 +1,9 @@
-// src/pages/Login.tsx
-
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useLoginMutation } from '../../api/usersApi';
 import { useAppDispatch } from '../../app/hooks';
 import { setAuthCredentials } from '../../store/slices/authSlice';
+import { RootState } from '../../app/store'; // Import RootState type
 import { useNavigate, Link } from 'react-router-dom';
 import Logo from '../../assets/images/sec.png';
 import DarkModeToggle from '../../components/DarkModeToggle';
@@ -12,26 +12,28 @@ import Button from '../../components/common/Button/Button';
 import TextInput from '../../components/common/Input/TextInput';
 import Checkbox from '../../components/common/Input/Checkbox';
 import Form from '../../components/common/Form/Form';
-import {PasswordInput} from '../../components/common/Input/PasswordInput';
+import { PasswordInput } from '../../components/common/Input/PasswordInput';
 import { useToast } from '../../features/Toast/ToastContext';
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [login, { isLoading }] = useLoginMutation();
   const { showToast } = useToast();
 
+  const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken); // Access CSRF token
+
+  const [login, { isLoading }] = useLoginMutation();
   const [credentials, setCredentialsState] = useState({ email: '', password: '' });
   const [formErrors, setFormErrors] = useState<{ email?: string; password?: string }>({});
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentialsState(prev => ({
+    setCredentialsState((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value, 
+      [e.target.name]: e.target.value,
     }));
-    setFormErrors(prev => ({
+    setFormErrors((prev) => ({
       ...prev,
       [e.target.name]: undefined,
     }));
@@ -39,43 +41,45 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
+      if (!csrfToken) {
+        showToast('Failed to fetch CSRF token. Please refresh the page.', 'error');
+        return;
+      }
+
       const userData = await login(credentials).unwrap();
       dispatch(setAuthCredentials({ user: userData.user }));
-  
-      // Store user data if remember me is selected
+
       if (rememberMe) {
         localStorage.setItem('user', JSON.stringify(userData.user));
       }
-  
+
       showToast('Logged in successfully!', 'success');
-  
-      // Check for password expiry notice
+
       if (userData.user.passwordExpiryNotice) {
         showToast(userData.user.passwordExpiryNotice, 'info');
       }
-  
-      navigate('/dashboard'); // Navigate to dashboard
+
+      navigate('/dashboard');
     } catch (err: any) {
       const status = err?.status;
-      const errorMessage = err?.data?.message || 'Failed to login. Please check your credentials.';
-  
+      const errorMessage =
+        err?.data?.message || 'Failed to login. Please check your credentials.';
+
       if (status === 403) {
-        // Password has expired
-        showToast(errorMessage, 'error');
-        // Redirect to change password page
-        navigate('/change-password'); // Or display a modal/prompt
+        showToast('Session expired or invalid CSRF token. Please refresh the page.', 'error');
+      } else if (status === 401) {
+        showToast('Invalid email or password.', 'error');
       } else {
-        // Other errors
         showToast(errorMessage, 'error');
       }
       console.error('Failed to login:', err);
     }
   };
-  
 
   const togglePasswordVisibility = () => {
-    setShowPassword(prevState => !prevState);
+    setShowPassword((prevState) => !prevState);
   };
 
   return (
@@ -84,8 +88,8 @@ const Login: React.FC = () => {
       <div className="hidden lg:flex w-1/2 bg-lemonGreen-light items-center justify-center p-10 text-white">
         <div className="flex flex-col items-center text-center">
           <img src={IllustrationImage} alt="Illustration" className="mb-6 w-3/4" />
-          <h2 
-            className="text-[28px] font-bold leading-[52px] tracking-tight text-center text-black" 
+          <h2
+            className="text-[28px] font-bold leading-[52px] tracking-tight text-center text-black"
             style={{ fontFamily: 'Plus Jakarta Sans' }}
           >
             Connect with every LogaXP application
@@ -95,12 +99,14 @@ const Login: React.FC = () => {
       </div>
 
       {/* Right Column (Login Form) */}
-      <div className="flex flex-col justify-center w-full lg:w-1/2 p-8 bg-white dark:bg-gray-900 transition-colors duration-300 relative"  style={{ fontFamily: 'Plus Jakarta Sans' }}> 
+      <div
+        className="flex flex-col justify-center w-full lg:w-1/2 p-8 bg-white dark:bg-gray-900 transition-colors duration-300 relative"
+        style={{ fontFamily: 'Plus Jakarta Sans' }}
+      >
         {/* Logo at the Top-Left */}
         <div className="absolute top-6 left-6 flex items-center">
           <Link to="/" className="inline-flex items-center font-bold text-2xl text-black dark:text-gray-100">
             <img src={Logo} alt="LogaXP Logo" className="h-6" />
-           
           </Link>
         </div>
 
@@ -111,7 +117,12 @@ const Login: React.FC = () => {
 
         <div className="mx-auto w-full max-w-md mt-16">
           <h2 className="text-[48px] text-gray-800 font-semibold dark:text-white font-primary">Login</h2>
-          <p className="text-gray-600 dark:text-gray-300 text-sm mb-8" style={{ fontFamily: 'Plus Jakarta Sans' }}>Login to your account with your email and password</p>
+          <p
+            className="text-gray-600 dark:text-gray-300 text-sm mb-8"
+            style={{ fontFamily: 'Plus Jakarta Sans' }}
+          >
+            Login to your account with your email and password
+          </p>
 
           <Form onSubmit={handleSubmit}>
             {/* Email Input */}
@@ -145,7 +156,7 @@ const Login: React.FC = () => {
               <Checkbox
                 label="Remember Me"
                 checked={rememberMe}
-                onChange={() => setRememberMe(prev => !prev)}
+                onChange={() => setRememberMe((prev) => !prev)}
               />
               <Link to="/password-reset" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 text-sm">
                 Forgot Password?

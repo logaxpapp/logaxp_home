@@ -425,11 +425,19 @@ export const usersApi = createApi({
       try {
         const { data } = await queryFulfilled;
         dispatch(setAuthCredentials({ user: data.user }));
-      } catch (error) {
-        // Handle error if needed
+      } catch (error: any) {
+        // Handle specific errors
+        const status = error?.status;
+        if (status === 403) {
+          console.error("Forbidden: CSRF token invalid or expired.");
+        } else if (status === 401) {
+          console.error("Unauthorized: Invalid credentials.");
+        }
+        throw error; // Let the calling component handle the rest
       }
     },
   }),
+  
    
     // Logout Mutation
     logout: builder.mutation<void, void>({

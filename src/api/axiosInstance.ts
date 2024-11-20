@@ -1,9 +1,8 @@
-
-
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { store } from '../app/store';
-import { clearUser } from "../store/slices/authSlice";
+import { clearUser } from '../store/slices/authSlice';
 import { setSessionExpired } from '../store/slices/sessionSlice';
+import { setCsrfToken } from '../store/slices/csrfSlice';
 
 // Create an Axios instance
 const axiosInstance = axios.create({
@@ -16,10 +15,22 @@ const axiosInstance = axios.create({
 
 // Request interceptor to add auth token and CSRF token
 axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  async (config: InternalAxiosRequestConfig) => {
     const state = store.getState();
     const token = state.auth.user?.token; // Retrieve auth token
-    const csrfToken = state.csrf?.csrfToken; // Retrieve CSRF token
+    let csrfToken = state.csrf?.csrfToken; // Retrieve CSRF token
+
+    if (!csrfToken) {
+      try {
+        const response = await axiosInstance.get('/csrf-token');
+        csrfToken = response.data.csrfToken;
+        if (csrfToken) {
+          store.dispatch(setCsrfToken(csrfToken)); // Store CSRF token in Redux
+        }
+      } catch (err) {
+        console.error('Failed to fetch CSRF token', err);
+      }
+    }
 
     if (config.headers) {
       if (token) {
@@ -49,6 +60,8 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
+
+
 
 
 // // src/api/axiosInstance.ts

@@ -41,7 +41,7 @@ const Trusts: React.FC = () => {
         <motion.div
           className="flex gap-16 items-center whitespace-nowrap"
           initial={{ x: '20%' }}
-          animate={{ x: '-100%' }}
+          animate={{ x: '-60%' }}
           transition={{
             duration: 50, // Adjust scrolling speed
             repeat: Infinity,
@@ -51,7 +51,7 @@ const Trusts: React.FC = () => {
           {extendedLogos.map((logo, index) => (
             <div
               key={index}
-              className="flex flex-col items-center justify-center bg-green-50 dark:bg-gray-800 rounded-lg shadow-md p-6 transition-transform transform hover:scale-110 h-40 w-40 sm:h-48 sm:w-48"
+              className="flex flex-col items-center justify-center bg-slate-50 dark:bg-gray-800 rounded-lg shadow-md p-6 transition-transform transform hover:scale-110 h-40 w-40 sm:h-48 sm:w-48"
             >
               {/* Logo */}
               <img

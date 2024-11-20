@@ -1,3 +1,5 @@
+//App.tsx
+
 import React, { useEffect, Suspense, lazy, startTransition } from 'react';
 import { useSelector } from 'react-redux';
 import { useGetCsrfTokenQuery } from './api/usersApi';
