@@ -15,75 +15,50 @@
   --font-primary: 'Menseal', sans-serif;
   --font-secondary: 'Plus Jakarta Sans', sans-serif;
 
-  /* Color Variables */
-  --color-primary: #1d4ed8;
-  --color-secondary: #9333ea;
-  --color-accent: #10b981;
-  --color-background: #f3f4f6;
-  --color-text: #374151;
 }
 
 /* Global font usage */
-body {
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
   font-family: var(--font-secondary);
   background-color: var(--color-background);
   color: var(--color-text);
+  width: 100%;
 }
 
 /* Heading font usage */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-primary);
+  margin: 0; /* Prevent extra margin causing overflow */
 }
 
-/* For specific font styling, you could also define additional utility classes if needed */
-.heading-primary {
-  font-family: var(--font-primary);
-}
-.text-secondary {
-  font-family: var(--font-secondary);
-}
 /* Form Elements */
 input, textarea, select {
   @apply border border-gray-300 rounded px-3 py-2;
 }
 
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-family-heading);
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block; /* Prevent inline image spacing issues */
 }
 
-/* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #ffffff; /* Gray-800 */
-    color: #f3f4f6; /* Gray-100 */
-  }
-
-  a {
-    color: #60a5fa; /* Blue-400 */
-  }
-
-  a:hover {
-    color: #818cf8; /* Blue-500 */
-  }
-
-  /* Additional dark mode styles */
-  button {
-    background-color: var(--color-accent);
-    color: #ffffff;
-  }
+/* Buttons */
+button {
+  background-color: var(--color-accent);
+  color: #ffffff;
 }
 
-
-/* src/index.css or your global CSS file */
-
-/* Override react-select styles to integrate with Tailwind */
+/* React-Select Custom Styles */
 .react-select__control {
   @apply border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500;
 }
 
 .react-select__menu {
-  @apply mt-1 bg-white border border-gray-300 rounded-md shadow-lg;
+  @apply mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-w-full w-full overflow-x-hidden;
 }
 
 .react-select__option {
@@ -110,11 +85,7 @@ h1, h2, h3, h4, h5, h6 {
   @apply text-blue-700 hover:text-blue-900;
 }
 
-
-/* src/index.css or a relevant CSS file */
-
-/* src/components/common/Loader.css */
-
+/* Loader */
 .spinner {
   position: relative;
   width: 64px;
@@ -144,3 +115,25 @@ h1, h2, h3, h4, h5, h6 {
     transform: scale(1);
   }
 }
+
+/* Dark Mode Styles */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #1f2937; /* Gray-800 */
+    color: #f3f4f6; /* Gray-100 */
+  }
+
+  a {
+    color: #60a5fa; /* Blue-400 */
+  }
+
+  a:hover {
+    color: #818cf8; /* Blue-500 */
+  }
+
+  button {
+    background-color: var(--color-accent);
+    color: #ffffff;
+  }
+}
+

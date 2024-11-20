@@ -48,11 +48,13 @@ const Header: React.FC = () => {
         </nav>
 
         {/* Action Buttons */}
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden md:flex items-center space-x-4 bg-transparent">
           <Link to="/login" className="bg-lemonGreen-light text-white px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200">
             My Portal
           </Link>
+          <div className="text-black">
           <DarkModeToggle />
+          </div>
         </div>
       </div>
 
