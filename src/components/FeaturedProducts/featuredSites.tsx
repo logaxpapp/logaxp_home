@@ -4,6 +4,7 @@ import TimeSync from '../../assets/images/timesync.jpeg';
 import GatherPlus from '../../assets/images/doccenter.png';
 import LogaBeauty from '../../assets/images/logabeauty.jpeg';
 import DocSend from '../../assets/images/docsend.jpeg';
+import ProFixer from '../../assets/images/profix.png';
 
 
 export const featuredSites = [
@@ -18,6 +19,17 @@ export const featuredSites = [
         "Streamline your appointments and clients management",
       ],
     },
+    {
+      title: "ProFixer",
+      homePoster: ProFixer,
+      homePage: "/product7",
+      summary: "Join a network of skilled professionals and start earning more by connecting with customers who need your services. With ProFixer, you can set your own schedule, take on jobs that fit your skills, and get paid quickly.",
+      features: [
+          "Access to thousands of job opportunities",
+          "Work with the best tools and resources",
+          "Fast and secure payments",
+      ],
+  },
     {
       title: "TaskBrick",
       homePoster: TaskBrick,

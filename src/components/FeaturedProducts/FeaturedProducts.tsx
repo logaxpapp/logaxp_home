@@ -22,7 +22,7 @@ const FeaturedProducts: React.FC = () => {
           transition={{ duration: 1 }}
           className="mb-8"
         >
-          <span className="text-lemonGreen font-semibold text-2xl">Our Products</span>
+          <span className="text-lemonGreen font-extrabold text-3xl">Our Products</span>
           <h2 className="text-3xl md:text-5xl font-bold mt-2 mb-4 dark:text-white text-center">
             Featured Products
           </h2>
@@ -42,7 +42,7 @@ const FeaturedProducts: React.FC = () => {
         <div className="flex justify-center mt-8">
           <Link
             to={routes.allProducts}
-            className="bg-white text-lemonGreen border border-lemonGreen px-6 py-3 rounded-lg hover:bg-lemonGreen hover:text-white transition-colors duration-200"
+            className=" bg-lemonGreen text-white font-extrabold border border-lemonGreen px-6 py-3 rounded-lg hover:bg-lemonGreen-light hover:text-white transition-colors duration-200"
           >
             View All Products
           </Link>
