@@ -20,17 +20,17 @@ const Home: React.FC = () => {
         </section>
 
         {/* Featured Products Section */}
-        <section id="featured-products" className="bg-white dark:bg-gray-800 py-16">
+        <section id="featured-products" className="bg-gray-50 dark:bg-gray-800 py-16">
           <FeaturedProducts />
         </section>
 
         {/* Our Business Section */}
-        <section id="our-business" className="bg-gray-50 dark:bg-gray-900 py-16">
+        <section id="our-business" className=" dark:bg-gray-900 py-16">
           <OurBusiness />
         </section>
 
         {/* Blogs Section */}
-        <section id="blogs" className="bg-white dark:bg-gray-800 py-16">
+        <section id="blogs" className="dark:bg-gray-800 py-16">
           <Blogs />
         </section>
 

@@ -38,7 +38,7 @@ const Hero: React.FC = () => {
           {/* Call to Action */}
           <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6 mb-12">
             <Link
-              className="bg-lemonGreen-light text-white font-bold dark:text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-all duration-300 text-sm md:text-base"
+              className="bg-lemonGreen-light text-white font-bold dark:text-white px-6 py-3 rounded-lg hover:border-lemonGreen-light  hover:bg-white hover:border hover:text-lemonGreen-light transition-all duration-300 text-sm md:text-base"
               to={routes.allProducts}
             >
               Explore Services
