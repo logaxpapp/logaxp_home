@@ -40,6 +40,10 @@ axiosInstance.interceptors.request.use(
         config.headers['X-CSRF-Token'] = csrfToken;
       }
     }
+
+    // Debug: Log the headers to ensure the CSRF token is included
+    console.log('Request Headers:', config.headers);
+
     return config;
   },
   (error: AxiosError) => Promise.reject(error)
@@ -60,6 +64,7 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
+
 
 
 
