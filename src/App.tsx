@@ -95,11 +95,13 @@ const App: React.FC = () => {
    const isSessionExpired = useSelector((state: RootState) => state.session.isSessionExpired);
 
 
-  useEffect(() => {
+   useEffect(() => {
     if (csrfData?.csrfToken) {
+      console.log('Frontend Fetched CSRF Token:', csrfData.csrfToken); // Debugging the CSRF token
       dispatch(setCsrfToken(csrfData.csrfToken));
     }
   }, [csrfData, dispatch]);
+  
 
   useEffect(() => {
     const root = window.document.documentElement;

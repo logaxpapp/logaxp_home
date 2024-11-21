@@ -44,11 +44,7 @@ export const shiftApi = createApi({
   endpoints: (builder) => ({
       // --- Admin ShiftType Endpoints ---
 
-      
-    // CSRF Token Query
-    getCsrfToken: builder.query<CsrfTokenResponse, void>({
-        query: () => '/csrf-token',
-      }),
+  
 
     // Create Shift Type
     createShiftType: builder.mutation<IShiftType, Partial<IShiftType>>({

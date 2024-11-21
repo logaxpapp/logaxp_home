@@ -63,10 +63,12 @@ export const usersApi = createApi({
       prepareHeaders: (headers, { getState }) => {
         const csrfToken = (getState() as RootState).csrf.csrfToken;
         if (csrfToken) {
-          headers.set('X-CSRF-Token', csrfToken);
+          // Use `headers.append` or `headers.set` to add the CSRF token
+          headers.set('X-CSRF-Token', csrfToken); // Correct method to attach headers
         }
         return headers;
       },
+      
     });
 
     const result = await base(args, usersApi, extraOptions);

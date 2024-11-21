@@ -40,11 +40,7 @@ export const appraisalMetricApi = createApi({
   endpoints: (builder) => ({
     
 
-    // CSRF Token Query
-    getCsrfToken: builder.query<CsrfTokenResponse, void>({
-      query: () => '/csrf-token',
-    }),
-  
+
     /**
      * Fetch All Appraisal Metrics
      */

@@ -44,10 +44,6 @@ export const appraisalQuestionApi = createApi({
   endpoints: (builder) => ({
     
 
-    // CSRF Token Query
-    getCsrfToken: builder.query<CsrfTokenResponse, void>({
-      query: () => '/csrf-token',
-    }),
     fetchAppraisalQuestions: builder.query<IAppraisalQuestion[], void>({
       query: () => APPRAISAL_QUESTION_API,
       transformResponse: (response: { data: IAppraisalQuestion[] }) => response.data,

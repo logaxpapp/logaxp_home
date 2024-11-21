@@ -63,11 +63,6 @@ export const ticketsApi = createApi({
   endpoints: (builder) => ({
     
 
-    // CSRF Token Query
-    getCsrfToken: builder.query<CsrfTokenResponse, void>({
-      query: () => '/csrf-token',
-    }),
-
     // Ticket Endpoints (As previously defined)
     fetchTickets: builder.query<{ tickets: ITicket[]; total: number }, void>({
       query: () => TICKET_API,

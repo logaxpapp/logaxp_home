@@ -38,10 +38,7 @@ export const approvalsApi = createApi({
   tagTypes: ['Approval'],
   endpoints: (builder) => ({
 
-    // CSRF Token Query
-    getCsrfToken: builder.query<CsrfTokenResponse, void>({
-      query: () => '/csrf-token',
-    }),
+  
 
      // Submit Approval Request
      submitApprovalRequest: builder.mutation<IApprovalRequest, Partial<IApprovalRequest>>({

@@ -67,10 +67,7 @@ export const api = createApi({
   endpoints: (builder) => ({
     
 
-    // CSRF Token Query
-    getCsrfToken: builder.query<CsrfTokenResponse, void>({
-      query: () => '/csrf-token',
-    }),
+
       // Survey Endpoints
       createSurvey: builder.mutation<ISurvey, Partial<ISurvey>>({
         query: (body) => ({

@@ -8,24 +8,25 @@ import type { RootState } from '../app/store'; // Import RootState
 
 export const timeEntryApi = createApi({
   reducerPath: 'timeEntryApi',
-  baseQuery: async (args, api, extraOptions) => {
+  baseQuery: async (args, timeEntryApi, extraOptions) => {
     const base = fetchBaseQuery({
       baseUrl: `${import.meta.env.VITE_BASE_URL}/api/`,
-      credentials: 'include', // Include credentials
+      credentials: 'include',
       prepareHeaders: (headers, { getState }) => {
         const csrfToken = (getState() as RootState).csrf.csrfToken;
         if (csrfToken) {
-          headers.set('X-CSRF-Token', csrfToken); // Add CSRF token if available
+          // Use `headers.append` or `headers.set` to add the CSRF token
+          headers.set('X-CSRF-Token', csrfToken); // Correct method to attach headers
         }
         return headers;
       },
     });
 
-    const result = await base(args, api, extraOptions);
+    const result = await base(args, timeEntryApi, extraOptions);
 
     if (result.error && result.error.status === 401) {
       // Unauthorized, set session as expired
-      api.dispatch(setSessionExpired(true));
+      timeEntryApi.dispatch(setSessionExpired(true));
     }
 
     return result;

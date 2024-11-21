@@ -41,13 +41,18 @@ axiosInstance.interceptors.request.use(
       }
     }
 
-    // Debug: Log the headers to ensure the CSRF token is included
-    console.log('Request Headers:', config.headers);
+    // Debug: Log the headers to verify the CSRF token and Authorization header
+    console.log('Request Headers:', {
+      ...config.headers,
+      'X-CSRF-Token': csrfToken,
+      Authorization: token ? `Bearer ${token}` : undefined,
+    });
 
     return config;
   },
   (error: AxiosError) => Promise.reject(error)
 );
+
 
 // Response interceptor for handling errors
 axiosInstance.interceptors.response.use(

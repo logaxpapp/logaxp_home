@@ -29,7 +29,7 @@ import { persistReducer, persistStore } from 'redux-persist';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth'], // Only persist the auth slice
+  whitelist: ['auth', 'csrf']
 };
 
 // Combine all reducers
