@@ -5,6 +5,7 @@ import FeaturedProducts from '../../components/FeaturedProducts/FeaturedProducts
 import Blogs from '../../components/Blogs/Blogs';
 import FooterAction from '../../components/FooterAction/FooterAction';
 import OurBusiness from '../../components/OurBusiness/OurBusiness';
+import ScrollToTop from '../../components/common/ScrollToTop';
 
 const Home: React.FC = () => {
   return (
@@ -39,6 +40,9 @@ const Home: React.FC = () => {
           <FooterAction />
         </section>
       </main>
+
+      {/* Scroll To Top Button */}
+      <ScrollToTop />
     </div>
   );
 };

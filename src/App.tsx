@@ -10,6 +10,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Loader from './components/Loader';
 import SessionExpiredModal from './components/SessionExpiredModal';
 
+import { useAppSelector } from './app/hooks';
+import { connectSocket } from './socket';
+
+
 // Lazy-loaded components
 const Home = lazy(() => import('./pages/Home/Home'));
 const About = lazy(() => import('./pages/About/About'));
@@ -75,6 +79,22 @@ const ResourcesManage = lazy(() => import('./components/Resources/ResourcesManag
 const Support = lazy(() => import('./components/Support/Support'));
 const AdminSupportDashboard = lazy(() => import('./components/Support/AdminSupportDashboard'));
 const TicketDetailPage = lazy(() => import('./components/Support/TicketDetailPage'));
+const EmployeePayPeriodsList = lazy(() => import('./components/EmployeePayPeriods/EmployeePayPeriodsList'));
+const EmployeePayPeriodDetails = lazy(() => import('./components/EmployeePayPeriods/EmployeePayPeriodDetail'));
+const EmployeePayPeriodCreate  = lazy(() => import('./components/EmployeePayPeriods/EmployeePayPeriodCreate'));
+const EditUserForm = lazy(() => import('./components/UserList/EditUserForm'));
+const AdminChangeRequestsDashboard = lazy(() => import('./components/changeRequest/AdminChangeRequestsDashboard'));
+const CreateChangeRequest = lazy(() => import('./components/changeRequest/CreateChangeRequestForm'));
+const MyChangeRequests = lazy(() => import('./components/changeRequest/MyChangeRequest'));
+const DeletedChangeRequests = lazy(() => import('./components/changeRequest/DeletedChangeRequests'));
+const ChangeRequestDetail = lazy(() => import('./components/changeRequest/ChangeRequestDetail'));
+const ArticleList = lazy(() => import('./components/Article/ArticleList'));
+const ArticleDetail = lazy(() => import('./components/Article/ArticleDetail'));
+const ArticleEditor = lazy(() => import('./components/Article/ArticleEditor'));
+const  AdminArticleList = lazy(() => import('./components/Article/AdminArticleList'));
+const UserArticleList = lazy(() => import('./components/Article/UserArticleList'));
+const Notifications = lazy(() => import('./components/Notifications/Notifications'));
+const Chat = lazy(() => import('./components/Chat/Chat'));
 
 
 
@@ -89,7 +109,7 @@ const Layout = lazy(() => import('./components/Layout'));
 const App: React.FC = () => {
   const theme = useSelector((state: RootState) => state.theme.mode);
   const dispatch = useAppDispatch();
-  const { data: csrfData } = useGetCsrfTokenQuery();
+  const { data: csrfData, error: csrfError } = useGetCsrfTokenQuery();
 
    // Select session expiration state
    const isSessionExpired = useSelector((state: RootState) => state.session.isSessionExpired);
@@ -99,9 +119,19 @@ const App: React.FC = () => {
     if (csrfData?.csrfToken) {
       console.log('Frontend Fetched CSRF Token:', csrfData.csrfToken); // Debugging the CSRF token
       dispatch(setCsrfToken(csrfData.csrfToken));
+    } else if (csrfError) {
+      console.error('Failed to fetch CSRF token:', csrfError);
     }
-  }, [csrfData, dispatch]);
-  
+  }, [csrfData, csrfError, dispatch]);
+
+  const token = useSelector((state: RootState) => state.auth.user?.token);
+  const userId = useSelector((state: RootState) => state.auth.user?._id);
+
+  useEffect(() => {
+    if (token && userId) {
+      connectSocket(token, userId);
+    }
+  }, [token, userId]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -129,6 +159,22 @@ const App: React.FC = () => {
                     </Suspense>
                   }
                 />
+                <Route
+                path="/articles"
+                element={
+                  <Suspense fallback={<Loader />}>
+                    <ArticleList />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/articles/:slug"
+                element={
+                  <Suspense fallback={<Loader />}>
+                    <ArticleDetail />
+                  </Suspense>
+                }
+              />
                 <Route
                   path="/about"
                   element={
@@ -235,6 +281,54 @@ const App: React.FC = () => {
                     }
                   >
                     <Route
+                      path="notifications"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <Notifications />
+                        </Suspense>
+                      }
+                      />
+                      <Route
+                        path="chat/:chatType/:chatId"
+                        element={
+                          <Suspense fallback={<Loader />}>
+                            <Chat />
+                          </Suspense>
+                        }
+                      />
+                    <Route
+                    path="articles/create"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <ArticleEditor />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="articles/edit/:id"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <ArticleEditor />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="admin-articles"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        < AdminArticleList />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="user-articles"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <UserArticleList />
+                      </Suspense>
+                    }
+                  />
+                    <Route
                       index
                       element={
                         <Suspense fallback={<Loader />}>
@@ -266,14 +360,8 @@ const App: React.FC = () => {
                         </Suspense>
                       }
                     />
-                    <Route
-                      path="users"
-                      element={
-                        <Suspense fallback={<Loader />}>
-                          <UserList />
-                        </Suspense>
-                      }
-                    />
+                    <Route path="users" element={<UserList />} />
+                    <Route path="users/edit/:id" element={<EditUserForm />} />
                     <Route
                       path="user-management"
                       element={
@@ -628,8 +716,72 @@ const App: React.FC = () => {
                         </Suspense>
                       }
                       />
+                      <Route
+                      path="employeePayPeriods"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <EmployeePayPeriodsList />
+                        </Suspense>
+                      }
+                      />
+                      <Route
+                      path="employeePayPeriods/create"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <EmployeePayPeriodCreate />
+                        </Suspense>
+                      }
+                      />
+                      <Route
+                      path="employeePayPeriods/:id"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <EmployeePayPeriodDetails />
+                        </Suspense>
+                      }
+                      />
+                      <Route
+                      path="admin/change-requests"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <AdminChangeRequestsDashboard />
+                        </Suspense>
+                      }
+                      />
+                       <Route
+                      path="create-change-request"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <CreateChangeRequest />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="my-change-requests"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <MyChangeRequests />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="deleted-change-requests"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <DeletedChangeRequests />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="change-request-details/:id"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ChangeRequestDetail />
+                        </Suspense>
+                      }
+                    />
                   </Route>
-
+                 
                   <Route
                     path="/create-user"
                     element={

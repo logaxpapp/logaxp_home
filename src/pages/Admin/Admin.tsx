@@ -8,6 +8,7 @@ import AppraisalList from '../../components/Appraisal/ApprovalRequestList';
 import AdminAppraisalPeriods from '../../components/Appraisal/AdminAppraisalPeriods';
 import Reports from '../../components/Appraisal/AdminReports';
 import DeletionRequests from '../../components/UserList/DeletionRequests';
+import AuditLog from '../../components/Audit/AuditLog';
 import Login from '../../components/LoggedInUsersList';
 import { FaUser, FaUsers, FaTrashAlt, FaUpload, FaCheckCircle, FaList, FaCalendarAlt, FaChartBar } from 'react-icons/fa';
 
@@ -28,6 +29,7 @@ const Admin: React.FC = () => {
       { label: 'Appraisal List', id: 'AppraisalList', icon: <FaList />, component: <AppraisalList /> },
       { label: 'Appraisal Periods', id: 'AppraisalPeriods', icon: <FaCalendarAlt />, component: <AdminAppraisalPeriods /> },
       { label: 'Reports', id: 'Reports', icon: <FaChartBar />, component: <Reports /> },
+      { label: 'Audit Log', id: 'AuditLog', icon: <FaList />, component: <AuditLog /> },
     ],
     []
   );

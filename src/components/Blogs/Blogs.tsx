@@ -19,7 +19,7 @@ const Blogs: React.FC = () => {
           <span className="text-lemonGreen font-semibold uppercase tracking-wide">
             Blog
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold mt-2">
+          <h2 className="text-4xl md:text-5xl font-bold mt-2 dark:text-white">
             Featured Posts
           </h2>
         </div>

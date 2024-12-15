@@ -41,32 +41,32 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     try {
       if (!csrfToken) {
         showToast('Failed to fetch CSRF token. Please refresh the page.', 'error');
         return;
       }
-
+  
       const userData = await login(credentials).unwrap();
       dispatch(setAuthCredentials({ user: userData.user }));
-
+  
       if (rememberMe) {
         localStorage.setItem('user', JSON.stringify(userData.user));
       }
-
+  
       showToast('Logged in successfully!', 'success');
-
+  
       if (userData.user.passwordExpiryNotice) {
         showToast(userData.user.passwordExpiryNotice, 'info');
       }
-
+  
       navigate('/dashboard');
     } catch (err: any) {
       const status = err?.status;
       const errorMessage =
         err?.data?.message || 'Failed to login. Please check your credentials.';
-
+  
       if (status === 403) {
         showToast('Session expired or invalid CSRF token. Please refresh the page.', 'error');
       } else if (status === 401) {
@@ -77,6 +77,7 @@ const Login: React.FC = () => {
       console.error('Failed to login:', err);
     }
   };
+  
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);

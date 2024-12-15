@@ -1,7 +1,6 @@
 // src/types/user.ts
 
-
-// src/types/user.ts
+import { OnlineStatus } from './enums'; // Ensure you have the correct path
 
 export enum Application {
   LogaBeauty = 'LogaBeauty',
@@ -10,6 +9,7 @@ export enum Application {
   BookMiz = 'BookMiz',
   DocSend = 'DocSend',
   ProFixer = 'ProFixer',
+  // Add more applications as needed
 }
 
 export enum Department {
@@ -40,7 +40,6 @@ export enum JobTitle {
   // Add more job titles as needed
 }
 
-
 export interface IAddress {
   street?: string;
   city?: string;
@@ -53,6 +52,7 @@ export enum UserRole {
   Admin = 'admin',
   Support = 'support',
   User = 'user',
+  Approver = 'approver',
 }
 
 export enum UserStatus {
@@ -61,6 +61,23 @@ export enum UserStatus {
   Suspended = 'Suspended',
   PendingDeletion = 'Pending Deletion',
   Inactive = 'Inactive',
+}
+
+export enum OnboardingStep {
+  WelcomeEmail = 'WelcomeEmail',
+  ProfileSetup = 'ProfileSetup',
+  SystemTraining = 'SystemTraining',
+  ComplianceTraining = 'ComplianceTraining',
+  FirstTask = 'FirstTask',
+  // Add other onboarding steps as needed
+}
+
+export interface IUserMinimal {
+  _id: string;
+  name: string;
+  email: string;
+  profile_picture_url: string;
+  role: string;
 }
 
 export interface IUser {
@@ -77,20 +94,28 @@ export interface IUser {
   phone_number: string;
   address: IAddress;
   date_of_birth: string; // ISO string
-  employment_type: string;
-  onboarding_steps_completed: any[]; // Replace `any` with appropriate type
+  employment_type: EmploymentType; 
+  onboarding_steps_completed?: OnboardingStep[]; 
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
   password?: string; // Optional password field for password-based authentication
-  manager?: string | IUser; // Manager ID or IUser object
+  manager?: string | Pick<IUser, '_id' | 'name'>; 
   profile_picture_url?: string;
   createdBy?: string; // User ID who created the user
   updatedBy?: string; // User ID who last updated the user
-  token?: string; 
+  token?: string;
+  hourlyRate?: number;
+  overtimeRate?: number; 
   googleConnected?: boolean;
   lastAccessed?: string; // ISO string
   passwordExpiryNotice?: string; // ISO string
   acknowledgedPolicies?: string[]; // Policy IDs
- 
+  isLoggedIn?: boolean;
+  onlineStatus?: OnlineStatus; // **Added Property**
   __v: number;
+}
+
+// Type guard function
+function isIUser(sender: string | IUser | undefined): sender is IUser {
+  return typeof sender === 'object' && sender !== null && 'name' in sender;
 }

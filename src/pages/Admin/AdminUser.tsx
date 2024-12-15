@@ -1,4 +1,6 @@
-import React, { useState, useMemo, Fragment } from 'react';
+// src/components/UserList/AdminUser.tsx
+
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   useFetchAllUsersQuery,
   useSuspendUserMutation,
@@ -7,19 +9,17 @@ import {
   useDeleteUserMutation,
 } from '../../api/usersApi';
 import { IUser } from '../../types/user';
-import DataTable from '../../components/common/DataTable/DataTable';
+import DataTable, { Column } from '../../components/common/DataTable/DataTable';
 import Button from '../../components/common/Button/Button';
 import Modal from '../../components/common/Feedback/Modal';
 import ConfirmModal from '../../components/common/Feedback/ConfirmModal';
 import Pagination from '../../components/common/Pagination/Pagination';
-import { Menu, Transition } from '@headlessui/react';
-import { FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaBan, FaPlay, FaFileCsv } from 'react-icons/fa';
 import { useToast } from '../../features/Toast/ToastContext';
 import CreateEditUserForm from '../../components/UserList/CreateUserForm';
 
 const AdminUser: React.FC = () => {
-  
-  const { data, error, isLoading, refetch } = useFetchAllUsersQuery({page: 1, limit: 500 });
+  const { data, error, isLoading, refetch } = useFetchAllUsersQuery({ page: 1, limit: 500 });
   const [suspendUser] = useSuspendUserMutation();
   const [reactivateUser] = useReactivateUserMutation();
   const [editUserProfile] = useEditUserProfileMutation();
@@ -29,8 +29,23 @@ const AdminUser: React.FC = () => {
   // State for modals
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [userToDelete, setUserToDelete] = useState<IUser | null>(null);
+
+  // Debounce Search Term
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300); // 300ms debounce
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
 
   // Sorting and pagination state
   const [sortColumn, setSortColumn] = useState<keyof IUser | undefined>(undefined);
@@ -39,150 +54,103 @@ const AdminUser: React.FC = () => {
   const itemsPerPage = 5; // Adjust the number of users displayed per page
 
   // Define columns for DataTable
-  const columns = useMemo(
-    () => [
-      {
-        header: 'Name',
-        accessor: 'name' as keyof IUser,
-        sortable: true,
-      },
-      {
-        header: 'Email',
-        accessor: 'email' as keyof IUser,
-        sortable: true,
-      },
-      {
-        header: 'Role',
-        accessor: (user: IUser) => (
-          <span
-            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-              user.role === 'admin'
-                ? 'bg-red-100 text-red-800'
-                : user.role === 'support'
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-green-100 text-green-800'
-            }`}
-          >
-            {user.role}
-          </span>
-        ),
-        sortable: true,
-      },
-      {
-        header: 'Status',
-        accessor: (user: IUser) => (
-          <span
-            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-              user.status === 'Active'
-                ? 'bg-green-100 text-green-800'
-                : user.status === 'Suspended'
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-gray-100 text-gray-800'
-            }`}
-          >
-            {user.status}
-          </span>
-        ),
-        sortable: true,
-      },
-      {
-        header: 'Actions',
-        accessor: (user: IUser) => (
-          <ActionMenu
-            user={user}
-            onEdit={() => openEditModal(user)}
-            onSuspend={() => handleSuspend(user)}
-            onReactivate={() => handleReactivate(user)}
-            onDelete={() => handleDelete(user)}
-          />
-        ),
-        sortable: false,
-      },
-    ],
-    []
-  );
-
-  // Action Menu Component
-  interface ActionMenuProps {
-    user: IUser;
-    onEdit: () => void;
-    onSuspend: () => void;
-    onReactivate: () => void;
-    onDelete: () => void;
-  }
-
-  const ActionMenu: React.FC<ActionMenuProps> = ({ user, onEdit, onSuspend, onReactivate, onDelete }) => {
-    return (
-      <Menu as="div" className="relative inline-block text-left overflow-auto">
-        <Menu.Button className="inline-flex justify-center p-1 rounded-full hover:bg-gray-200">
-          <FaEllipsisV className="text-gray-500 hover:text-gray-700" />
-        </Menu.Button>
-        <Transition
-          as={Fragment}
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
+  const columns: Column<IUser>[] = useMemo(() => [
+    {
+      header: 'Name',
+      accessor: 'name' as keyof IUser,
+      sortable: true,
+    },
+    {
+      header: 'Email',
+      accessor: 'email' as keyof IUser,
+      sortable: true,
+    },
+    {
+      header: 'Role',
+      accessor: (user: IUser) => (
+        <span
+          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+            user.role === 'admin'
+              ? 'bg-red-100 text-red-800'
+              : user.role === 'support'
+              ? 'bg-blue-100 text-blue-800'
+              : 'bg-green-100 text-green-800'
+          }`}
         >
-          <Menu.Items className="z-10 origin-top-right absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg focus:outline-none">
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  className={`${
-                    active ? 'bg-gray-100 dark:bg-gray-600' : ''
-                  } flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}
-                  onClick={onEdit}
-                >
-                  <FaEdit className="mr-2" /> Edit
-                </button>
-              )}
-            </Menu.Item>
-            {user.status !== 'Suspended' ? (
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active ? 'bg-gray-100 dark:bg-gray-600' : ''
-                    } flex items-center w-full px-4 py-2 text-sm text-yellow-600`}
-                    onClick={onSuspend}
-                  >
-                    Suspend
-                  </button>
-                )}
-              </Menu.Item>
-            ) : (
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active ? 'bg-gray-100 dark:bg-gray-600' : ''
-                    } flex items-center w-full px-4 py-2 text-sm text-green-600`}
-                    onClick={onReactivate}
-                  >
-                    Reactivate
-                  </button>
-                )}
-              </Menu.Item>
-            )}
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  className={`${
-                    active ? 'bg-gray-100 dark:bg-gray-600' : ''
-                  } flex items-center w-full px-4 py-2 text-sm text-red-600`}
-                  onClick={onDelete}
-                >
-                  <FaTrash className="mr-2" /> Delete
-                </button>
-              )}
-            </Menu.Item>
-          </Menu.Items>
-        </Transition>
-      </Menu>
-    );
-  };
+          {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+        </span>
+      ),
+      sortable: true,
+    },
+    {
+      header: 'Status',
+      accessor: (user: IUser) => (
+        <span
+          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+            user.status === 'Active'
+              ? 'bg-green-100 text-green-800'
+              : user.status === 'Suspended'
+              ? 'bg-yellow-100 text-yellow-800'
+              : 'bg-gray-100 text-gray-800'
+          }`}
+        >
+          {user.status}
+        </span>
+      ),
+      sortable: true,
+    },
+    {
+      header: 'Actions',
+      accessor: (user: IUser) => (
+        <div className="flex space-x-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click
+              openEditModal(user);
+            }}
+            className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
+            title="Edit User"
+          >
+            <FaEdit className="text-gray-500 hover:text-gray-700" />
+          </button>
+          {user.status !== 'Suspended' ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent row click
+                handleSuspend(user);
+              }}
+              className="p-2 rounded-full hover:bg-yellow-200 focus:outline-none"
+              title="Suspend User"
+            >
+              <FaBan className="text-yellow-600 hover:text-yellow-800" />
+            </button>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent row click
+                handleReactivate(user);
+              }}
+              className="p-2 rounded-full hover:bg-green-200 focus:outline-none"
+              title="Reactivate User"
+            >
+              <FaPlay className="text-green-600 hover:text-green-800" />
+            </button>
+          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click
+              handleDelete(user);
+            }}
+            className="p-2 rounded-full hover:bg-red-200 focus:outline-none"
+            title="Delete User"
+          >
+            <FaTrash className="text-red-600 hover:text-red-800" />
+          </button>
+        </div>
+      ),
+      sortable: false,
+    },
+  ], []);
 
   // Open Edit/Create Modal
   const openEditModal = (user: IUser | null) => {
@@ -204,7 +172,7 @@ const AdminUser: React.FC = () => {
       refetch();
     } catch (err: any) {
       console.error('Failed to suspend user:', err);
-      showToast('Failed to suspend user.', 'error');
+      showToast(err?.data?.message || 'Failed to suspend user.', 'error');
     }
   };
 
@@ -216,7 +184,7 @@ const AdminUser: React.FC = () => {
       refetch();
     } catch (err: any) {
       console.error('Failed to reactivate user:', err);
-      showToast('Failed to reactivate user.', 'error');
+      showToast(err?.data?.message || 'Failed to reactivate user.', 'error');
     }
   };
 
@@ -237,7 +205,7 @@ const AdminUser: React.FC = () => {
         refetch();
       } catch (err: any) {
         console.error('Failed to delete user:', err);
-        showToast('Failed to delete user.', 'error');
+        showToast(err?.data?.message || 'Failed to delete user.', 'error');
       }
     }
   };
@@ -252,11 +220,18 @@ const AdminUser: React.FC = () => {
     }
   };
 
+  // Filtered Data: Only Admin Users and Search Term
   const filteredData = useMemo(() => {
-    // Filter to show only users with the role 'admin'
-    return data?.users.filter((user) => user.role === 'admin') || [];
-  }, [data]);
+    if (!data?.users) return [];
 
+    return data.users.filter((user) => 
+      user.role === 'admin' &&
+      (user.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+       user.email.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
+    );
+  }, [data, debouncedSearchTerm]);
+
+  // Sorted Data
   const sortedData = useMemo(() => {
     if (!sortColumn) return filteredData;
 
@@ -278,7 +253,7 @@ const AdminUser: React.FC = () => {
     return sorted;
   }, [filteredData, sortColumn, sortDirection]);
 
-  // Pagination logic
+  // Pagination Logic
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -286,6 +261,34 @@ const AdminUser: React.FC = () => {
   }, [sortedData, currentPage, itemsPerPage]);
 
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+  // Function to export selected users as CSV
+  const exportSelectedUsers = () => {
+    if (selectedRowIds.size === 0) {
+      showToast('No users selected for export.', 'error');
+      return;
+    }
+
+    const headers = ['Name', 'Email', 'Role', 'Status'];
+    const rows = Array.from(selectedRowIds).map(userId => {
+      const user = data?.users.find(user => user._id === userId);
+      if (!user) return ['-', '-', '-', '-'];
+      return [
+        user.name,
+        user.email,
+        user.role.charAt(0).toUpperCase() + user.role.slice(1),
+        user.status,
+      ];
+    });
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'selected_users_export.csv');
+    link.click();
+  };
 
   if (isLoading) {
     return <div className="text-center mt-10">Loading users...</div>;
@@ -297,20 +300,41 @@ const AdminUser: React.FC = () => {
 
   return (
     <div className="bg-blue-50 p-4">
+      {/* Header Section */}
       <div className="flex justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg">
-        <h1 className="text-2xl font-semibold text-blue-800 font-primary">Admin User</h1>
-        <Button variant="primary" onClick={() => openEditModal(null)}>
-          + Create User
-        </Button>
+        <h1 className="text-2xl font-semibold text-blue-800 font-primary">Admin Users</h1>
+        <div className="flex space-x-4">
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border rounded p-2"
+          />
+          {/* Create User Button */}
+          <Button variant="primary" onClick={() => openEditModal(null)}>
+            + Create User
+          </Button>
+          {/* Export Selected Users Button */}
+          <Button variant="edit" onClick={exportSelectedUsers}>
+          <FaFileCsv className="mr-2 text-white" size={20} />
+            Export Selected
+          </Button>
+        </div>
       </div>
 
       {/* DataTable */}
-      <DataTable
+      <DataTable<IUser>
         data={paginatedData}
         columns={columns}
         sortColumn={sortColumn}
         sortDirection={sortDirection}
         onSort={handleSort}
+        selectable
+        selectedRowIds={selectedRowIds}
+        onRowSelect={setSelectedRowIds}
+        onRowClick={(user) => openEditModal(user)}
       />
 
       {/* Pagination */}
@@ -334,6 +358,7 @@ const AdminUser: React.FC = () => {
           onSuccess={() => {
             closeEditModal();
             refetch();
+            showToast(selectedUser ? 'User updated successfully.' : 'User created successfully.', 'success');
           }}
         />
       </Modal>

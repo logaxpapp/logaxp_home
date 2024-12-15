@@ -1,27 +1,31 @@
-import React, { useState } from 'react';
+// src/components/ShiftList/ShiftList.tsx
+
+import React, { useState, useMemo } from 'react';
 import {
   useGetShiftsQuery,
   useCreateShiftMutation,
+  useCreateMultipleShiftsMutation,
   useUpdateShiftMutation,
   useDeleteShiftMutation,
   useAssignShiftMutation,
-  useCreateMultipleShiftsMutation,
 } from '../../api/shiftApi';
-import DataTable, { Column } from '../common/DataTable/DataTableFallBack';
+import { IShift } from '../../types/shift';
+import DataTable, { Column } from '../common/DataTable/DataTable';
 import Button from '../common/Button/Button';
 import ConfirmModal from '../common/Feedback/ConfirmModal';
 import Modal from '../common/Feedback/Modal';
-import { IShift } from '../../types/shift';
 import CreateShiftForm from './CreateShiftForm';
 import CreateMultipleShiftsForm from './CreateMultipleShiftsForm';
 import EditShiftForm from './EditShiftForm';
 import AssignShiftForm from './AssignShiftForm';
 import ActionsDropdown from '../common/ActionsDropdown';
 import Pagination from '../common/Pagination/Pagination';
+import { useToast } from '../../features/Toast/ToastContext';
+import { useNavigate } from 'react-router-dom';
 
 const ShiftList: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 10; // Number of shifts per page
 
   const { data, error, isLoading, refetch } = useGetShiftsQuery({
     page: currentPage,
@@ -34,166 +38,310 @@ const ShiftList: React.FC = () => {
   const [deleteShift] = useDeleteShiftMutation();
   const [assignShift] = useAssignShiftMutation();
 
-  const [isCreateModalOpen, setCreateModalOpen] = useState(false);
-  const [isCreateMultipleModalOpen, setCreateMultipleModalOpen] = useState(false);
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isCreateModalOpen, setCreateModalOpen] = useState<boolean>(false);
+  const [isCreateMultipleModalOpen, setCreateMultipleModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [currentShift, setCurrentShift] = useState<IShift | null>(null);
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [shiftToDelete, setShiftToDelete] = useState<IShift | null>(null);
-  const [isAssignModalOpen, setAssignModalOpen] = useState(false);
+  const [isAssignModalOpen, setAssignModalOpen] = useState<boolean>(false);
   const [shiftToAssign, setShiftToAssign] = useState<IShift | null>(null);
+
+  // Search term state
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // Row selection state
+  const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
+
+  const { showToast } = useToast();
+  const navigate = useNavigate();
 
   const totalPages = data ? Math.ceil(data.total / pageSize) : 1;
 
-  const columns: Column<IShift>[] = [
-    {
-      header: 'Shift Type',
-      accessor: (shift) => shift.shiftType?.name || 'N/A',
-      sortable: true,
-    },
-    {
-      header: 'Date',
-      accessor: (shift) =>
-        shift.date ? new Date(shift.date).toLocaleDateString() : 'Invalid Date', // Convert date string to a formatted date
-      sortable: true,
-    },
-    {
-      header: 'Start Time',
-      accessor: 'startTime',
-    },
-    {
-      header: 'End Time',
-      accessor: 'endTime',
-    },
-    {
-      header: 'Status',
-      accessor: 'status',
-    },
-    {
-      header: 'Assigned To',
-      accessor: (shift) => shift.assignedTo?.name || 'Unassigned',
-    },
-    {
-      header: 'Actions',
-      accessor: (shift) => (
-        <ActionsDropdown
-          onEdit={() => {
-            setCurrentShift(shift);
-            setEditModalOpen(true);
-          }}
-          onDelete={() => {
-            setShiftToDelete(shift);
-            setDeleteModalOpen(true);
-          }}
-          onAssign={() => {
-            setShiftToAssign(shift);
-            setAssignModalOpen(true);
-          }}
-        />
-      ),
-    },
-  ];
+  const columns: Column<IShift>[] = useMemo(
+    () => [
+      {
+        header: 'Shift Type',
+        accessor: 'shiftType' as keyof IShift,
+        sortable: true,
+        Cell: ({ value }) => value?.name || 'N/A',
+      },
+      {
+        header: 'Date',
+        accessor: 'date' as keyof IShift,
+        sortable: true,
+        Cell: ({ value }) =>
+          value ? new Date(value).toLocaleDateString() : 'Invalid Date',
+      },
+      {
+        header: 'Start Time',
+        accessor: 'startTime' as keyof IShift,
+        sortable: true,
+      },
+      {
+        header: 'End Time',
+        accessor: 'endTime' as keyof IShift,
+        sortable: true,
+      },
+      {
+        header: 'Status',
+        accessor: 'status' as keyof IShift,
+        sortable: true,
+      },
+      {
+        header: 'Assigned To',
+        accessor: 'assignedTo' as keyof IShift,
+        sortable: true,
+        Cell: ({ value }) => value?.name || 'Unassigned',
+      },
+      {
+        header: 'Actions',
+        accessor: '_id' as keyof IShift,
+        sortable: false,
+        Cell: ({ value }) => {
+          const shift = data?.shifts.find((s) => s._id === value);
+          return shift ? (
+            <ActionsDropdown
+              onEdit={() => {
+                setCurrentShift(shift);
+                setEditModalOpen(true);
+              }}
+              onDelete={() => {
+                setShiftToDelete(shift);
+                setDeleteModalOpen(true);
+              }}
+              onAssign={() => {
+                setShiftToAssign(shift);
+                setAssignModalOpen(true);
+              }}
+            />
+          ) : <span>N/A</span>;
+        },
+      },
+    ],
+    [data?.shifts]
+  );
+
+  const filteredShifts = useMemo<IShift[]>(() => {
+    if (!data?.shifts) return [];
+    return data.shifts.filter(
+      (shift) =>
+        (shift.shiftType?.name &&
+          shift.shiftType.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (shift.assignedTo?.name &&
+          shift.assignedTo.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  }, [data?.shifts, searchTerm]);
+
+  // Function to export selected shifts as CSV
+  const exportSelectedShifts = () => {
+    if (selectedRowIds.size === 0) {
+      showToast('No shifts selected for export.', 'error');
+      return;
+    }
+
+    const headers = ['Shift Type', 'Date', 'Start Time', 'End Time', 'Status', 'Assigned To'];
+    const rows = Array.from(selectedRowIds).map(shiftId => {
+      const shift = data?.shifts.find(shift => shift._id === shiftId);
+      if (!shift) return ['-', '-', '-', '-', '-', '-'];
+      return [
+        shift.shiftType?.name || 'N/A',
+        shift.date ? new Date(shift.date).toLocaleDateString() : 'Invalid Date',
+        shift.startTime || '-',
+        shift.endTime || '-',
+        shift.status || '-',
+        shift.assignedTo?.name || 'Unassigned',
+      ];
+    });
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'selected_shifts_export.csv');
+    link.click();
+  };
 
   const handleCreate = async (shiftData: Partial<IShift>) => {
-    await createShift(shiftData).unwrap();
-    setCreateModalOpen(false);
-    refetch();
+    try {
+      await createShift(shiftData).unwrap();
+      setCreateModalOpen(false);
+      refetch();
+      showToast('Shift created successfully.', 'success');
+    } catch (error: any) {
+      showToast(error?.data?.message || 'Failed to create shift.', 'error');
+    }
   };
 
   const handleCreateMultiple = async (shiftData: any) => {
-    await createMultipleShifts(shiftData).unwrap();
-    setCreateMultipleModalOpen(false);
-    refetch();
+    try {
+      await createMultipleShifts(shiftData).unwrap();
+      setCreateMultipleModalOpen(false);
+      refetch();
+      showToast('Multiple shifts created successfully.', 'success');
+    } catch (error: any) {
+      showToast(error?.data?.message || 'Failed to create multiple shifts.', 'error');
+    }
   };
 
   const handleUpdate = async (id: string, updates: Partial<IShift>) => {
-    await updateShift({ id, updates }).unwrap();
-    setEditModalOpen(false);
-    setCurrentShift(null);
-    refetch();
+    try {
+      await updateShift({ id, updates }).unwrap();
+      setEditModalOpen(false);
+      setCurrentShift(null);
+      refetch();
+      showToast('Shift updated successfully.', 'success');
+    } catch (error: any) {
+      showToast(error?.data?.message || 'Failed to update shift.', 'error');
+    }
   };
 
   const handleDelete = async (id: string) => {
-    await deleteShift(id).unwrap();
-    setDeleteModalOpen(false);
-    setShiftToDelete(null);
-    refetch();
+    try {
+      await deleteShift(id).unwrap();
+      setDeleteModalOpen(false);
+      setShiftToDelete(null);
+      refetch();
+      showToast('Shift deleted successfully.', 'success');
+    } catch (error: any) {
+      showToast(error?.data?.message || 'Failed to delete shift.', 'error');
+    }
   };
 
   const handleAssign = async (shiftId: string, userId: string) => {
-    await assignShift({ shiftId, userId }).unwrap();
-    setAssignModalOpen(false);
-    setShiftToAssign(null);
-    refetch();
+    try {
+      await assignShift({ shiftId, userId }).unwrap();
+      setAssignModalOpen(false);
+      setShiftToAssign(null);
+      refetch();
+      showToast('Shift assigned successfully.', 'success');
+    } catch (error: any) {
+      showToast(error?.data?.message || 'Failed to assign shift.', 'error');
+    }
   };
 
   return (
-    <div className="bg-blue-50 p-4 dark:bg-gray-700 dark:text-gray-50">
-      <div className="flex justify-between items-center mb-4 bg-gray-50 dark:bg-gray-600 p-4 rounded-lg">
-        <h3 className="text-2xl font-semibold font-primary text-gray-800 dark:text-lemonGreen-light">
-          Shift Management
-        </h3>
-        <div className="flex gap-4">
+    <div className="bg-blue-50 p-6 rounded-lg shadow-lg">
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg">
+        <h3 className="text-2xl font-semibold text-blue-800 font-primary">Shift Management</h3>
+        <div className="flex space-x-4">
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="Search shifts..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border rounded p-2"
+          />
+          {/* Create Shift Buttons */}
           <Button variant="primary" onClick={() => setCreateModalOpen(true)}>
             Create Shift
           </Button>
           <Button variant="success" onClick={() => setCreateMultipleModalOpen(true)}>
             Create Multiple Shifts
           </Button>
+          {/* Export Selected Shifts Button */}
+          <Button variant="secondary" onClick={exportSelectedShifts}>
+            Export Selected
+          </Button>
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="text-center text-blue-600 font-semibold py-10">Loading shifts...</div>
-      ) : error ? (
-        <div className="text-center text-red-600 font-semibold py-10">Error loading shifts.</div>
-      ) : (
-        <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <DataTable<IShift> data={data?.shifts || []} columns={columns} />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => setCurrentPage(page)}
+      {/* DataTable */}
+      <DataTable<IShift>
+        data={filteredShifts}
+        columns={columns}
+        selectable
+        selectedRowIds={selectedRowIds}
+        onRowSelect={setSelectedRowIds}
+        onRowClick={(shift) => {
+          setCurrentShift(shift);
+          setEditModalOpen(true);
+        }}
+        sortColumn={undefined} // Implement sorting state if needed
+        sortDirection={undefined}
+        onSort={undefined}
+      />
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
+
+      {/* Create Shift Modal */}
+      {isCreateModalOpen && (
+        <Modal
+          isOpen={isCreateModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          title="Create Shift"
+        >
+          <CreateShiftForm
+            onSubmit={handleCreate}
+            onCancel={() => setCreateModalOpen(false)}
           />
-        </div>
+        </Modal>
       )}
 
-      {/* Modals */}
-      <Modal isOpen={isCreateModalOpen} onClose={() => setCreateModalOpen(false)} title="Create Shift">
-        <CreateShiftForm onSubmit={handleCreate} onCancel={() => setCreateModalOpen(false)} />
-      </Modal>
+      {/* Create Multiple Shifts Modal */}
+      {isCreateMultipleModalOpen && (
+        <Modal
+          isOpen={isCreateMultipleModalOpen}
+          onClose={() => setCreateMultipleModalOpen(false)}
+          title="Create Multiple Shifts"
+        >
+          <CreateMultipleShiftsForm
+            onSubmit={handleCreateMultiple}
+            onCancel={() => setCreateMultipleModalOpen(false)}
+          />
+        </Modal>
+      )}
 
-      <Modal isOpen={isCreateMultipleModalOpen} onClose={() => setCreateMultipleModalOpen(false)} title="Create Multiple Shifts">
-        <CreateMultipleShiftsForm onSubmit={handleCreateMultiple} onCancel={() => setCreateMultipleModalOpen(false)} />
-      </Modal>
-
-      <Modal isOpen={isEditModalOpen} onClose={() => setEditModalOpen(false)} title="Edit Shift">
-        {currentShift && (
+      {/* Edit Shift Modal */}
+      {isEditModalOpen && currentShift && (
+        <Modal
+          isOpen={isEditModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          title="Edit Shift"
+        >
           <EditShiftForm
             shift={currentShift}
-            onSubmit={handleUpdate}
+            onSubmit={(updates) => handleUpdate(currentShift._id, updates)}
             onCancel={() => setEditModalOpen(false)}
           />
-        )}
-      </Modal>
+        </Modal>
+      )}
 
-      <Modal isOpen={isAssignModalOpen} onClose={() => setAssignModalOpen(false)} title="Assign Shift">
-        {shiftToAssign && (
+      {/* Assign Shift Modal */}
+      {isAssignModalOpen && shiftToAssign && (
+        <Modal
+          isOpen={isAssignModalOpen}
+          onClose={() => setAssignModalOpen(false)}
+          title="Assign Shift"
+        >
           <AssignShiftForm
             shift={shiftToAssign}
-            onSubmit={handleAssign}
+            onSubmit={(userId) => handleAssign(shiftToAssign._id, userId)}
             onCancel={() => setAssignModalOpen(false)}
           />
-        )}
-      </Modal>
+        </Modal>
+      )}
 
-      <ConfirmModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={() => shiftToDelete && handleDelete(shiftToDelete._id)}
-        title="Confirm Delete"
-        message={`Are you sure you want to delete the shift on "${shiftToDelete?.date}"?`}
-      />
+      {/* Confirm Delete Modal */}
+      {isDeleteModalOpen && shiftToDelete && (
+        <ConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          onConfirm={() => handleDelete(shiftToDelete._id)}
+          title="Confirm Delete"
+          message={`Are you sure you want to delete the shift on "${new Date(
+            shiftToDelete.date
+          ).toLocaleDateString()}"?`}
+        />
+      )}
     </div>
   );
 };

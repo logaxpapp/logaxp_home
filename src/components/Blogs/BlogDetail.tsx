@@ -24,7 +24,7 @@ const BlogDetail: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-4">{blog.title}</h1>
+      <h1 className="text-4xl font-bold mb-4 dark:text-white">{blog.title}</h1>
       <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-4">
         <span className="bg-lemonGreen text-deepBlue px-3 py-1 rounded-full font-semibold mr-4">
           {blog.category}

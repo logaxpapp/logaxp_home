@@ -15,10 +15,10 @@ const sessionSlice = createSlice({
   name: 'session',
   initialState,
   reducers: {
-    setSessionExpired(state, action: PayloadAction<boolean>) {
+    setSessionExpired(state: SessionState, action: PayloadAction<boolean>) {
       state.isSessionExpired = action.payload;
     },
-    clearSessionExpired(state) {
+    clearSessionExpired(state: SessionState) {
       state.isSessionExpired = false;
     },
   },

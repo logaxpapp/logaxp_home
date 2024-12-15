@@ -15,8 +15,8 @@ export const timeEntryApi = createApi({
       prepareHeaders: (headers, { getState }) => {
         const csrfToken = (getState() as RootState).csrf.csrfToken;
         if (csrfToken) {
-          // Use `headers.append` or `headers.set` to add the CSRF token
-          headers.set('X-CSRF-Token', csrfToken); // Correct method to attach headers
+          headers.set('X-CSRF-Token', csrfToken); // Attach CSRF token
+          console.log('CSRF Token attached to headers From TimeEntryApi:', csrfToken); // Debug
         }
         return headers;
       },
@@ -33,15 +33,14 @@ export const timeEntryApi = createApi({
   },
   tagTypes: ['TimeEntry'],
   endpoints: (builder) => ({
-    // Fetch Time Entries by Employee ID
-     // Fetch Shifts by Employee ID
-     fetchShiftsByEmployee: builder.query<{ shifts: IShift[] }, string>({
-        query: (employeeId) => `${TIME_ENTRY_API}/shifts?employee=${employeeId}`,
-        providesTags: (result) =>
-          result
-            ? result.shifts.map(({ _id }) => ({ type: 'TimeEntry' as const, id: _id }))
-            : [{ type: 'TimeEntry', id: 'LIST' }],
-      }),
+    // Fetch Shifts by Employee ID
+    fetchShiftsByEmployee: builder.query<{ shifts: IShift[] }, string>({
+      query: (employeeId) => `${TIME_ENTRY_API}/shifts?employee=${employeeId}`,
+      providesTags: (result) =>
+        result
+          ? result.shifts.map(({ _id }) => ({ type: 'TimeEntry' as const, id: _id }))
+          : [{ type: 'TimeEntry', id: 'LIST' }],
+    }),
   
       // Fetch Time Entries by Employee ID
       fetchTimeEntriesByEmployee: builder.query<
@@ -151,6 +150,7 @@ export const timeEntryApi = createApi({
 // Fetch current status for an employee
 fetchCurrentStatus: builder.query<any, string>({
     query: (employeeId) => `${TIME_ENTRY_API}/status/${employeeId}`,
+    
     providesTags: (result, error, employeeId) => [{ type: 'TimeEntry', id: employeeId }],
   }),
 

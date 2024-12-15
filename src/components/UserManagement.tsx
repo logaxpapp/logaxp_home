@@ -5,6 +5,7 @@ import {
   FaUserShield,
   FaKey,
   FaCogs,
+  FaNewspaper,
 } from 'react-icons/fa';
 import UserList from './UserList/UserList';
 import SettingsManagement from './Settings/SettingsManagement';
@@ -13,12 +14,16 @@ import Button from '../components/common/Button/Button';
 import Modal from '../components/common/Feedback/Modal';
 import CreateEditUserForm from './UserList/CreateUserForm';
 import PermissionsManagement from './Permissions/PermissionsManagement';
+import MyChangeRequests from './changeRequest/MyChangeRequest';
+import Articles from '../components/Article/AdminArticleList';
 
 enum UserManagementView {
   Users = 'Users',
   Roles = 'Roles',
   Permissions = 'Permissions',
   Settings = 'Settings',
+  ChangeRequests = 'MyChange Requests',
+  Articles = 'Articles',
 }
 
 const UserManagement: React.FC = () => {
@@ -36,6 +41,10 @@ const UserManagement: React.FC = () => {
         return <PermissionsManagement />;
       case UserManagementView.Settings:
         return <SettingsManagement />;
+      case UserManagementView.ChangeRequests:
+        return <MyChangeRequests />;
+      case UserManagementView.Articles:
+        return <Articles />;
       default:
         return <UserList />;
     }
@@ -45,43 +54,60 @@ const UserManagement: React.FC = () => {
     <div className="mx-auto p-4 sm:p-6 w-full min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
         {/* Header */}
-        <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-start sm:items-center justify-between">
-          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-200 font-primary mb-2 sm:mb-0">
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-200 font-primary mb-4">
             User Management
           </h2>
-          <div className="flex flex-wrap gap-2">
-            {Object.values(UserManagementView).map((view) => (
-              <button
-                key={view}
-                onClick={() => setCurrentView(view as UserManagementView)}
-                className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 rounded-md transition-colors duration-200 font-secondary text-sm sm:text-base ${
-                  currentView === view
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                {view === UserManagementView.Users && <FaUsers />}
-                {view === UserManagementView.Roles && <FaUserShield />}
-                {view === UserManagementView.Permissions && <FaKey />}
-                {view === UserManagementView.Settings && <FaCogs />}
-                <span>{view}</span>
-              </button>
-            ))}
+
+          <div className="flex flex-col gap-4">
+            {/* Core Management Buttons */}
+            <div className="flex flex-wrap gap-2">
+              {[
+                { key: UserManagementView.Users, label: 'Users', icon: <FaUsers /> },
+                { key: UserManagementView.Roles, label: 'Roles', icon: <FaUserShield /> },
+                { key: UserManagementView.Permissions, label: 'Permissions', icon: <FaKey /> },
+                { key: UserManagementView.Settings, label: 'Settings', icon: <FaCogs /> },
+              ].map(({ key, label, icon }) => (
+                <button
+                  key={key}
+                  onClick={() => setCurrentView(key)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors duration-200 font-secondary text-sm sm:text-base ${
+                    currentView === key
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {icon}
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Special Actions Buttons */}
+            <div className="flex flex-wrap gap-2 border-t pt-4 mt-4 border-gray-300 dark:border-gray-600">
+              <h3 className="w-full text-gray-600 dark:text-gray-400 font-medium text-sm">
+                Special Actions
+              </h3>
+              {[
+                { key: UserManagementView.ChangeRequests, label: 'MyChange Requests', icon: <FaUserPlus /> },
+                { key: UserManagementView.Articles, label: 'Manage Articles', icon: <FaNewspaper /> },
+              ].map(({ key, label, icon }) => (
+                <button
+                  key={key}
+                  onClick={() => setCurrentView(key)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors duration-200 font-secondary text-sm sm:text-base ${
+                    currentView === key
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {icon}
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-
-        {/* Action Button */}
-        {currentView === UserManagementView.Users && (
-          <div className="flex justify-end px-4 sm:px-6 py-4 bg-gray-50 dark:bg-gray-900">
-            <Button
-              variant="primary"
-              leftIcon={<FaUserPlus />}
-              onClick={() => setCreateUserModalOpen(true)}
-            >
-              Create User
-            </Button>
-          </div>
-        )}
 
         {/* Content Area */}
         <div className="p-4 sm:p-6 bg-white dark:bg-gray-800 transition-all duration-300">

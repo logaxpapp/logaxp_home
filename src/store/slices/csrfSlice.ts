@@ -1,6 +1,7 @@
 // src/store/slices/csrfSlice.ts
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 
 interface CsrfState {
   csrfToken: string | null;
@@ -24,5 +25,5 @@ const csrfSlice = createSlice({
 });
 
 export const { setCsrfToken, clearCsrfToken } = csrfSlice.actions;
-
+export const selectCsrfToken = (state: RootState) => state.csrf.csrfToken;
 export default csrfSlice.reducer;

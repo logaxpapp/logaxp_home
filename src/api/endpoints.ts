@@ -17,10 +17,11 @@ export const SHIFT_API = '/shifts';
 export const SHIFT_TYPE_API = '/shift-types';
 export const GOOGLE_CALENDAR_API = '/google-calendar';
 export const PAYPERIOD_API = '/payperiods';
-export const EMPLOYEE_PAYPERIOD_API = '/employee-payperiods';
+export const EMPLOYEE_PAYPERIOD_API = '/employee-pay-periods';
 export const TIME_ENTRY_API = '/time-entries';
 export const ROLE_API = '/roles';
 export const PERMISSION_API = '/permissions';
 export const SETTINGS_API = '/settings';
 export const SUPPORT_API = '/support';
+export const CHANGE_REQUEST_API = './change-requests'
 

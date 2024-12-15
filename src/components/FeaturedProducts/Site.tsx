@@ -69,7 +69,7 @@ const Site: React.FC<SiteProps> = ({ product, index }) => {
           to={product.homePage}
           target="_blank"
           rel="noreferrer"
-          className="inline-block border-2 w-1/3 items-center justify-center text-center border-lemonGreen-light text-lemonGreen-dark px-6 py-2 rounded-full hover:bg-lemonGreen hover:text-white transition-colors duration-200"
+          className="inline-block border-2 w-1/3 items-center justify-center text-center dark:text-white border-lemonGreen-light text-lemonGreen-dark px-6 py-2 rounded-full hover:bg-lemonGreen hover:text-white transition-colors duration-200"
         >
           Explore
         </Link>

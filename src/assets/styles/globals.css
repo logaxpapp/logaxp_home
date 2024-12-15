@@ -14,7 +14,7 @@
   /* Font Variables */
   --font-primary: 'Menseal', sans-serif;
   --font-secondary: 'Plus Jakarta Sans', sans-serif;
-
+  --font-third: 'Poppins', sans-serif;
 }
 
 /* Global font usage */
@@ -32,6 +32,12 @@ html, body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-primary);
   margin: 0; /* Prevent extra margin causing overflow */
+}
+
+p {
+  background-color: var(--color-background);
+  padding: rem;
+  font-family: var(--font-secondary);
 }
 
 /* Form Elements */
@@ -135,5 +141,10 @@ button {
     background-color: var(--color-accent);
     color: #ffffff;
   }
+}
+
+
+html {
+  scroll-behavior: smooth;
 }
 

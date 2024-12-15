@@ -1,3 +1,5 @@
+// src/components/ShiftList/EditShiftForm.tsx
+
 import React, { useState, useEffect } from 'react';
 import Button from '../common/Button/Button';
 import { IShiftType, IShift, ShiftStatus } from '../../types/shift';
@@ -7,7 +9,7 @@ import { useGetShiftTypesQuery } from '../../api/shiftApi';
 
 interface EditShiftFormProps {
   shift: IShift;
-  onSubmit: (id: string, updates: Partial<IShift>) => void;
+  onSubmit: (updates: Partial<IShift>) => void;
   onCancel: () => void;
 }
 
@@ -19,7 +21,7 @@ const EditShiftForm: React.FC<EditShiftFormProps> = ({ shift, onSubmit, onCancel
   const [startTime, setStartTime] = useState(shift.startTime);
   const [endTime, setEndTime] = useState(shift.endTime);
   const [applicationManaged, setApplicationManaged] = useState<string[]>(shift.applicationManaged);
-  const [isExcess, setIsExcess] = useState(shift.isExcess || false);
+  const [isExcess, setIsExcess] = useState<boolean>(shift.isExcess || false);
   const [status, setStatus] = useState<ShiftStatus>(shift.status);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ const EditShiftForm: React.FC<EditShiftFormProps> = ({ shift, onSubmit, onCancel
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (shiftType && date && startTime && endTime && applicationManaged) {
-      onSubmit(shift._id, {
+      onSubmit({
         shiftType: shiftType, // Pass the full IShiftType object
         date,
         startTime,

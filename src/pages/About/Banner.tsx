@@ -7,7 +7,7 @@ const Banner: React.FC = () => {
       <img
         src={banner}
         alt="Company Banner"
-        className="w-full md:w-3/4 h-auto rounded-lg shadow-lg object-cover transition-transform duration-500 transform hover:scale-105"
+        className="w-full md:w-2/4 h-auto rounded-lg shadow-lg object-cover transition-transform duration-500 transform hover:scale-105"
       />
     </section>
   );

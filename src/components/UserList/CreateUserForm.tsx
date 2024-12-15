@@ -115,9 +115,9 @@ const CreateEditUserForm: React.FC<CreateEditUserFormProps> = ({
           onChange={handleChange}
           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
         >
-          <option value="User">User</option>
-          <option value="Admin">Admin</option>
-          <option value="Support">Support</option>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+          <option value="support">Support</option>
         </select>
       </div>
 

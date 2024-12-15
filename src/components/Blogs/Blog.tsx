@@ -27,7 +27,7 @@ const Blog: React.FC<BlogProps> = ({ blog }) => {
         </div>
       </div>
       <div className="p-6">
-        <h3 className="text-2xl font-bold mb-2">{blog.title}</h3>
+        <h3 className="text-2xl font-bold mb-2 dark:text-gray-200">{blog.title}</h3>
         <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-4">
           <span>{`${blog.duration} mins read`}</span>
         </div>

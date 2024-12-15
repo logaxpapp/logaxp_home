@@ -28,7 +28,7 @@ const DashboardHome: React.FC = () => {
 
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 max-w-7xl mx-auto ">
         {featureCards.slice(0, 3).map((feature, index) => (
           <div
             key={index}

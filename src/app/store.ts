@@ -2,7 +2,12 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import exampleReducer from '../store/slices/exampleSlice';
 import userReducer from '../store/slices/userSlice';
 import themeReducer from '../features/theme/themeSlice';
+import socketReducer from '../store/slices/socketSlice';
+import notificationReducer from '../store/slices/notificationSlice';
+import messageReducer from '../store/slices/messageSlice';
+import userStatusReducer from '../store/slices/userStatusSlice';
 import authReducer from '../store/slices/authSlice';
+import groupMessagesReducer from '../store/slices/groupMessageSlice';
 import csrfReducer from '../store/slices/csrfSlice';
 import sessionReducer from '../store/slices/sessionSlice';
 import { api } from '../api/apiSlice';
@@ -22,6 +27,12 @@ import { ticketsApi } from '../api/ticketsApi';
 import { approvalsApi } from '../api/approvalsApi';
 import { appraisalQuestionApi } from '../api/appraisalQuestionApi';
 import { appraisalMetricApi } from '../api/appraisalMetricApi';
+import { changeRequestApi } from '../api/changeRequestApi';
+import { auditApi } from '../api/auditApi';
+import { articleApi } from '../api/articleApi';
+import { notificationApi } from '../api/notificationApi';
+import { messageApi } from '../api/messageApi';
+import { groupApi } from '../api/groupApi';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 
@@ -40,6 +51,11 @@ const rootReducer = combineReducers({
   auth: authReducer,
   csrf: csrfReducer,
   session: sessionReducer,
+  socket: socketReducer,
+  notifications: notificationReducer,
+  messages: messageReducer,
+  groupMessages: groupMessagesReducer,
+  userStatus: userStatusReducer,
   [api.reducerPath]: api.reducer,
   [employeePayPeriodApi.reducerPath]: employeePayPeriodApi.reducer,
   [timeEntryApi.reducerPath]: timeEntryApi.reducer,
@@ -57,6 +73,12 @@ const rootReducer = combineReducers({
   [approvalsApi.reducerPath]: approvalsApi.reducer,
   [appraisalQuestionApi.reducerPath]: appraisalQuestionApi.reducer,
   [appraisalMetricApi.reducerPath]: appraisalMetricApi.reducer,
+  [changeRequestApi.reducerPath]: changeRequestApi.reducer,
+  [auditApi.reducerPath]: auditApi.reducer,
+  [articleApi.reducerPath]: articleApi.reducer,
+  [notificationApi.reducerPath]: notificationApi.reducer,
+  [messageApi.reducerPath]: messageApi.reducer,
+  [groupApi.reducerPath]: groupApi.reducer,
 
 });
 
@@ -87,6 +109,13 @@ export const store = configureStore({
       approvalsApi.middleware,
       appraisalQuestionApi.middleware,
       appraisalMetricApi.middleware,
+      changeRequestApi.middleware,
+      auditApi.middleware,
+      articleApi.middleware,
+      notificationApi.middleware,
+      messageApi.middleware,
+      groupApi.middleware,
+      
     ),
 });
 

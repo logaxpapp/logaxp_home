@@ -56,6 +56,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      // Custom max-widths
+      maxWidth: {
+        '8xl': '103rem',  // 1536px
+        '9xl': '112rem', // 1792px
+        '10xl': '128rem', // 2048px
+      },
       // 1. Custom Colors
       colors: {
         primary: {
@@ -95,6 +101,7 @@ module.exports = {
           DEFAULT: '#1D4ED8', // Default Deep Blue
           dark: '#011934',
           lighter: '#1D4ED8', // Lighter Deep Blue
+          new:'#023e8a',
         },
       },
 
@@ -109,6 +116,8 @@ module.exports = {
         '120': '120%',
         'full': '100%',
       },
+     
+
 
       fontFamily: {
         primary: ['Menseal', 'sans-serif'],

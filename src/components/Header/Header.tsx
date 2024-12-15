@@ -1,14 +1,40 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
-import logo from '../../assets/images/sec.png';
 import DarkModeToggle from '../DarkModeToggle';
+import logo from '../../assets/images/sec.png';
+
+const sections = [
+  { id: 'home', label: 'Home', link: '/' },
+  { id: 'about', label: 'About', link: '/about' },
+  // { id: 'blog', label: 'Blog', link: '/#blog' }, // Blog section within Home
+  { id: 'contact', label: 'Contact', link: '/contact' },
+];
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+ 
+  // Determine the active section
+  const getActiveSection = (): string => {
+    const currentPath = location.pathname + location.hash;
+    const section = sections.find((s) => s.link === currentPath || s.link === location.pathname);
+    return section ? section.id : sections[0].id; // Default to 'Home'
+  };
+
+  const [activeSection, setActiveSection] = useState<string>(getActiveSection);
+
+  // Update active section on route change
+  useEffect(() => {
+    setActiveSection(getActiveSection());
+  }, [location]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
   };
 
   return (
@@ -22,57 +48,69 @@ const Header: React.FC = () => {
         </div>
 
         {/* Mobile Menu and Dark Mode Toggle */}
-          <div className="md:hidden flex items-center space-x-2">
-            <button
-              onClick={toggleMenu}
-              aria-label="Toggle menu"
-              className="bg-transparent focus:outline-none"
-            >
-              {isMenuOpen ? (
-                <FaTimes className="w-6 h-6 text-gray-700 dark:text-white" />
-              ) : (
-                <FaBars className="w-6 h-6 text-gray-700 dark:text-white" />
-              )}
-            </button>
-            <div className="bg-transparent">
-              <DarkModeToggle />
-            </div>
-          </div>
+        <div className="md:hidden flex items-center space-x-2">
+          <button
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+            className="bg-transparent focus:outline-none"
+          >
+            {isMenuOpen ? (
+              <FaTimes className="w-6 h-6 text-gray-700 dark:text-white" />
+            ) : (
+              <FaBars className="w-6 h-6 text-gray-700 dark:text-white" />
+            )}
+          </button>
+          <DarkModeToggle />
+        </div>
 
-
-        {/* Navigation Links - Hidden on mobile, visible on larger screens */}
+        {/* Desktop Navigation Links */}
         <nav className="hidden md:flex space-x-6 text-lg">
-          <Link to="/home" className="text-gray-700 font-semibold hover:text-lemonGreen dark:text-white">Home</Link>
-          <Link to="/about" className="text-gray-700 font-semibold hover:text-lemonGreen dark:text-white">About</Link>
-          <Link to="/contact" className="text-gray-700 font-semibold hover:text-lemonGreen dark:text-white">Contact</Link>
+          {sections.map((section) => (
+            <Link
+              key={section.id}
+              to={section.link}
+              className={`text-gray-700 font-semibold hover:text-lemonGreen dark:text-white ${
+                activeSection === section.id ? 'border-b-2 border-lemonGreen' : ''
+              }`}
+            >
+              {section.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Action Buttons */}
         <div className="hidden md:flex items-center space-x-4 bg-transparent">
-          <Link to="/login" className="bg-lemonGreen-light text-white px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200">
+          <Link
+            to="/login"
+            className="bg-lemonGreen-light text-white px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200"
+          >
             My Portal
           </Link>
-          <div className="text-black">
           <DarkModeToggle />
-          </div>
         </div>
       </div>
 
-      {/* Mobile Menu - Visible on mobile, hidden on larger screens */}
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <nav className="md:hidden mt-4">
           <ul className="space-y-4">
-            <li>
-              <Link to="/home" className="block text-center text-gray-700 font-semibold hover:text-lemonGreen dark:text-white">Home</Link>
-            </li>
-            <li>
-              <Link to="/about" className="block text-center text-gray-700 font-semibold hover:text-lemonGreen dark:text-white">About</Link>
-            </li>
-            <li>
-              <Link to="/contact" className="block text-center text-gray-700 font-semibold hover:text-lemonGreen dark:text-white">Contact</Link>
-            </li>
+            {sections.map((section) => (
+              <li key={section.id}>
+                <Link
+                  to={section.link}
+                  className="block text-center text-gray-700 font-semibold hover:text-lemonGreen dark:text-white"
+                  onClick={closeMenu}
+                >
+                  {section.label}
+                </Link>
+              </li>
+            ))}
             <li className="text-center">
-              <Link to="/login" className="bg-lemonGreen-light text-gray-700 px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200 inline-block">
+              <Link
+                to="/login"
+                className="bg-lemonGreen-light text-white font-bold px-4 py-2 rounded hover:bg-green-600 transition-colors duration-200 inline-block"
+                onClick={closeMenu}
+              >
                 My Portal
               </Link>
             </li>

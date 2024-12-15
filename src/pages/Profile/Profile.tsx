@@ -7,15 +7,17 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectCurrentUser, setAuthCredentials } from '../../store/slices/authSlice';
 import { useToast } from '../../features/Toast/ToastContext';
 import EditSectionModal from './EditSectionModal';
-import Modal from '../../components/common/Feedback/Modal'; // Reusing the modal
+import Modal from '../../components/common/Feedback/Modal';
 import {
   IUser,
   IAddress,
   UserRole,
   Application
 } from '../../types/user';
-import { FaPencilAlt } from 'react-icons/fa'; // Import edit icon
+import ProfileHeader from './ProfileHeader';
 import { uploadImage } from '../../services/cloudinaryService';
+import ProfileCard from './ProfileCard';
+import LoadingSpinner from '../../components/Loader';
 
 const Profile: React.FC = () => {
   const user = useAppSelector(selectCurrentUser);
@@ -36,11 +38,10 @@ const Profile: React.FC = () => {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <p className="text-gray-800 dark:text-white">Loading user data...</p>
+        <LoadingSpinner />
       </div>
     );
   }
-
 
   // Destructure role for easier access and to assist TypeScript in type narrowing
   const { role } = user;
@@ -68,12 +69,7 @@ const Profile: React.FC = () => {
   // Function to open the edit modal
   const openEditModal = (section: keyof IUser) => {
     setEditingSection(section);
-    // **Key Change:** Initialize `sectionData` as an empty object if editing 'address' and no address exists
-    if (section === 'address' && !user.address) {
-      setSectionData({});
-    } else {
-      setSectionData(user[section]);
-    }
+    setSectionData(section === 'address' && !user.address ? {} : user[section]);
   };
 
   const closeEditModal = () => {
@@ -89,7 +85,6 @@ const Profile: React.FC = () => {
 
     try {
       const updatedUser = await editProfile({ userId: user._id, updates: updatedData }).unwrap();
-      console.log('Updated User:', updatedUser); // Debugging log
 
       // Validate that essential fields are present
       if (!updatedUser.name || !updatedUser.email) {
@@ -146,136 +141,42 @@ const Profile: React.FC = () => {
   return (
     <div className="min-h-screen p-6 bg-gray-100 dark:bg-gray-900">
       <div className=" mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow">
-      
-
-       {/* Profile Picture and Basic Info */}
-      <div className="flex flex-col md:flex-row items-center md:items-start mb-8 space-y-4 md:space-y-0 relative">
-        {/* Profile Picture Section */}
-        <div className="relative">
-          {user.profile_picture_url ? (
-            <img
-              src={user.profile_picture_url}
-              alt={`${user.name || 'User'}'s profile`}
-              className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover cursor-pointer"
-              onClick={openProfilePicModal}
+       
+      <ProfileHeader user={user} openProfilePicModal={openProfilePicModal} />
+        {/* Profile Details */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Editable Sections */}
+          {editableFields.map((field) => (
+            <ProfileCard
+              key={field}
+              title={getFieldTitle(field)}
+              value={getFieldValue(user, field)}
+              onEdit={() => openEditModal(field)}
+              isEditable={true}
             />
-          ) : (
-            <div
-              className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white text-xl sm:text-2xl cursor-pointer"
-              onClick={openProfilePicModal}
-            >
-              {user.name?.charAt(0).toUpperCase() || 'U'}
-            </div>
-          )}
-          {/* Edit Icon Overlay */}
-          <div
-            className="absolute bottom-2 right-2 bg-blue-500 dark:bg-blue-400 text-white rounded-full p-2 cursor-pointer border-2 border-white shadow-md"
-            onClick={openProfilePicModal}
-            aria-label="Change Profile Picture"
-            role="button"
-          >
-            <FaPencilAlt className="w-4 h-4" />
-          </div>
-        </div>
-
-        {/* Basic Info Section */}
-        <div className="text-center md:text-left md:ml-6">
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white">
-            {user.name || 'Unnamed User'}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300">
-            {user.email || 'No Email Provided'}
-          </p>
-          <p className="text-gray-600 dark:text-gray-300">
-            <strong>Role:</strong> {capitalizeFirstLetter(user.role)}
-          </p>
-          <p className="text-gray-600 dark:text-gray-300">
-            <strong>Status:</strong> {capitalizeFirstLetter(user.status)}
-          </p>
-        </div>
-      </div>
-
-
-        {/* Profile Sections Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ProfileSection
-            title="Job Title"
-            value={user.job_title || 'Not Set'}
-            onEdit={() => openEditModal('job_title')}
-            isEditable={editableFields.includes('job_title')}
-          />
-
-          <ProfileSection
-            title="Department"
-            value={user.department || 'Not Set'}
-            onEdit={() => openEditModal('department')}
-            isEditable={editableFields.includes('department')}
-          />
-
-          <ProfileSection
-            title="Employee ID"
-            value={user.employee_id || 'Not Set'}
-            onEdit={() => openEditModal('employee_id')}
-            isEditable={editableFields.includes('employee_id')}
-          />
-
-          <ProfileSection
-            title="Phone Number"
-            value={user.phone_number || 'Not Set'}
-            onEdit={() => openEditModal('phone_number')}
-            isEditable={editableFields.includes('phone_number')}
-          />
-
-          <ProfileSection
-            title="Address"
-            value={user.address ? formatAddress(user.address) : 'Not Set'}
-            onEdit={() => openEditModal('address')}
-            isEditable={editableFields.includes('address')}
-          />
-
-          <ProfileSection
-            title="Date of Birth"
-            value={user.date_of_birth ? new Date(user.date_of_birth).toLocaleDateString() : 'Not Set'}
-            onEdit={() => openEditModal('date_of_birth')}
-            isEditable={editableFields.includes('date_of_birth')}
-          />
-
-          <ProfileSection
-            title="Employment Type"
-            value={user.employment_type || 'Not Set'}
-            onEdit={() => openEditModal('employment_type')}
-            isEditable={editableFields.includes('employment_type')}
-          />
-
-          <ProfileSection
-            title="Onboarding Steps Completed"
-            value={user.onboarding_steps_completed?.join(', ') || 'None'}
-            onEdit={() => openEditModal('onboarding_steps_completed')}
-            isEditable={editableFields.includes('onboarding_steps_completed')}
-          />
-
-          <ProfileSection
-            title="Manager"
-            value={user.manager ? (typeof user.manager === 'string' ? user.manager : user.manager.name) : 'Not Set'}
-            onEdit={() => openEditModal('manager')}
-            isEditable={editableFields.includes('manager')}
-          />
-
-          {user.applications_managed && user.applications_managed.length > 0 && (
-            <ProfileSection
-                title="Applications Managed"
-                value={user.applications_managed.map((app) => Application[app] || app).join(', ') || 'None'}
-                onEdit={() => openEditModal('applications_managed')}
-                isEditable={editableFields.includes('applications_managed')}
-              />
-          
-          )}
+          ))}
 
           {/* Non-Editable Sections */}
-          <NonEditableSection title="Account Created" value={user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Invalid Date'} />
-          <NonEditableSection title="Last Updated" value={user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'Invalid Date'} />
-          <NonEditableSection title="Created By" value={user.createdBy || 'N/A'} />
-          <NonEditableSection title="Updated By" value={user.updatedBy || 'N/A'} />
+          <ProfileCard
+            title="Account Created"
+            value={formatDate(user.createdAt)}
+            isEditable={false}
+          />
+          <ProfileCard
+            title="Last Updated"
+            value={formatDate(user.updatedAt)}
+            isEditable={false}
+          />
+          <ProfileCard
+            title="Created By"
+            value={user.createdBy || 'N/A'}
+            isEditable={false}
+          />
+          <ProfileCard
+            title="Updated By"
+            value={user.updatedBy || 'N/A'}
+            isEditable={false}
+          />
         </div>
       </div>
 
@@ -285,13 +186,12 @@ const Profile: React.FC = () => {
           isOpen={Boolean(editingSection)}
           onClose={closeEditModal}
           section={editingSection}
-          // **Key Change:** Pass `sectionData` instead of `user[editingSection]`
           currentValue={sectionData}
           onSubmit={handleSectionUpdate}
         />
       )}
 
-      {/* Profile Picture Upload Modal (Now Accessible to All Users) */}
+      {/* Profile Picture Upload Modal */}
       <Modal
         isOpen={isProfilePicModalOpen}
         onClose={closeProfilePicModal}
@@ -316,15 +216,19 @@ const Profile: React.FC = () => {
             <img
               src={URL.createObjectURL(selectedFile)}
               alt="Profile Preview"
-              className="w-24 h-24 rounded-full object-cover"
+              className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover shadow-md"
             />
           )}
         </div>
-        <div className="flex justify-end mt-4 space-x-4">
+        <div className="flex justify-end mt-6 space-x-4">
           <Button variant="secondary" onClick={closeProfilePicModal} disabled={uploading}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleProfilePictureUpload} disabled={!selectedFile || uploading}>
+          <Button
+            variant="primary"
+            onClick={handleProfilePictureUpload}
+            disabled={!selectedFile || uploading}
+          >
             {uploading ? 'Uploading...' : 'Upload'}
           </Button>
         </div>
@@ -333,48 +237,102 @@ const Profile: React.FC = () => {
   );
 };
 
-interface ProfileSectionProps {
-  title: string;
-  value: string;
-  onEdit: () => void;
-  isEditable: boolean;
-}
+// Utility Functions
 
-const ProfileSection: React.FC<ProfileSectionProps> = ({ title, value, onEdit, isEditable }) => (
-  <div className="flex justify-between items-start p-4 bg-gray-50 dark:bg-gray-700 rounded-md shadow">
-    <div>
-      <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-400">{value}</p>
-    </div>
-    {isEditable && (
-      <Button variant="outline" size="small" onClick={onEdit} aria-label={`Edit ${title}`}>
-        <FaPencilAlt className="text-gray-500 dark:text-gray-300" />
-      </Button>
-    )}
-  </div>
-);
+// Maps IUser keys to user-friendly titles
+// Define a type for the specific keys you want to map
+type MappedUserKeys = 
+  | 'name'
+  | 'email'
+  | 'job_title'
+  | 'department'
+  | 'employee_id'
+  | 'phone_number'
+  | 'address'
+  | 'date_of_birth'
+  | 'employment_type'
+  | 'onboarding_steps_completed'
+  | 'applications_managed'
+  | 'manager'
+  | 'profile_picture_url'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'createdBy'
+  | 'updatedBy';
 
-interface NonEditableSectionProps {
-  title: string;
-  value: string;
-}
+const getFieldTitle = (field: keyof IUser): string => {
+  const titles: Record<MappedUserKeys, string> = {
+    name: 'Full Name',
+    email: 'Email Address',
+    job_title: 'Job Title',
+    department: 'Department',
+    employee_id: 'Employee ID',
+    phone_number: 'Phone Number',
+    address: 'Address',
+    date_of_birth: 'Date of Birth',
+    employment_type: 'Employment Type',
+    onboarding_steps_completed: 'Onboarding Steps',
+    applications_managed: 'Applications Managed',
+    manager: 'Manager',
+    profile_picture_url: 'Profile Picture',
+    createdAt: 'Account Created',
+    updatedAt: 'Last Updated',
+    createdBy: 'Created By',
+    updatedBy: 'Updated By',
+  };
+  
+  // Type assertion to ensure field is within MappedUserKeys
+  if (field in titles) {
+    return titles[field as MappedUserKeys];
+  }
+  
+  return field; // Fallback if not mapped
+};
 
-const NonEditableSection: React.FC<NonEditableSectionProps> = ({ title, value }) => (
-  <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-md shadow">
-    <div>
-      <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-400">{value}</p>
-    </div>
-  </div>
-);
+const getFieldValue = (user: IUser, field: keyof IUser): string => {
+  switch (field) {
+    case 'address':
+      return user.address ? formatAddress(user.address) : 'Not Set';
+    case 'date_of_birth':
+      return user.date_of_birth
+        ? new Date(user.date_of_birth).toLocaleDateString()
+        : 'Not Set';
+    case 'onboarding_steps_completed':
+      return user.onboarding_steps_completed?.join(', ') || 'None';
+    case 'applications_managed':
+      return user.applications_managed
+        ?.map((app) => Application[app] || app)
+        .join(', ') || 'None';
+    case 'manager':
+      if (user.manager) {
+        return typeof user.manager === 'string'
+          ? `Manager ID: ${user.manager}`
+          : user.manager.name || 'Not Set';
+      }
+      return 'Not Set';
+    case 'profile_picture_url':
+      return user.profile_picture_url ? 'Uploaded' : 'Not Set';
+    default:
+      return user[field] !== undefined && user[field] !== null
+        ? String(user[field])
+        : 'Not Set';
+  }
+};
 
-// Utility function to format address
+
+
+// Formats the address object into a readable string
 const formatAddress = (address: IAddress): string => {
   const { street, city, state, zip, country } = address;
   return [street, city, state, zip, country].filter(Boolean).join(', ');
 };
 
-// Utility function to capitalize the first letter
+// Formats date strings into a readable format
+const formatDate = (dateString?: string): string => {
+  return dateString ? new Date(dateString).toLocaleDateString() : 'Invalid Date';
+};
+
+// Capitalizes the first letter of a string
 const capitalizeFirstLetter = (str: string): string => {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);

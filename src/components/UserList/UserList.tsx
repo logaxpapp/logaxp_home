@@ -1,3 +1,5 @@
+// src/components/UserList/UserList.tsx
+
 import React, { useState, useMemo } from 'react';
 import {
   useFetchAllUsersQuery,
@@ -10,13 +12,21 @@ import DataTable from '../common/DataTable/DataTable';
 import Modal from '../common/Feedback/Modal';
 import ConfirmModal from '../common/Feedback/ConfirmModal';
 import { useToast } from '../../features/Toast/ToastContext';
-import CreateEditUserForm from './CreateUserForm';
+import CreateUserForm from './CreateUserForm';
 import ActionMenu from './ActionMenu';
 import Pagination from '../common/Pagination/Pagination';
+import { useNavigate } from 'react-router-dom';
+import Button from '../common/Button/Button';
 
 const UserList: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const usersPerPage = 10; // Number of users per page
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState<boolean>(false);
+  const [userToDelete, setUserToDelete] = useState<IUser | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
 
   const { data, error, isLoading, refetch } = useFetchAllUsersQuery({
     page: currentPage,
@@ -28,24 +38,15 @@ const UserList: React.FC = () => {
   const [deleteUser] = useDeleteUserMutation();
   const { showToast } = useToast();
 
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
-  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<IUser | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const openEditModal = (user: IUser) => {
-    setSelectedUser(user);
-    setIsEditModalOpen(true);
-  };
+  const navigate = useNavigate();
 
   const handleSuspend = async (user: IUser) => {
     try {
       await suspendUser(user._id).unwrap();
       showToast(`${user.name} has been suspended.`, 'success');
       refetch();
-    } catch {
-      showToast('Failed to suspend user.', 'error');
+    } catch (err: any) {
+      showToast(err?.data?.message || 'Failed to suspend user.', 'error');
     }
   };
 
@@ -54,8 +55,8 @@ const UserList: React.FC = () => {
       await reactivateUser(user._id).unwrap();
       showToast(`${user.name} has been reactivated.`, 'success');
       refetch();
-    } catch {
-      showToast('Failed to reactivate user.', 'error');
+    } catch (err: any) {
+      showToast(err?.data?.message || 'Failed to reactivate user.', 'error');
     }
   };
 
@@ -64,14 +65,13 @@ const UserList: React.FC = () => {
     setIsConfirmDeleteOpen(true);
   };
 
-  const filteredUsers = useMemo(() => {
-    if (!data?.users) return [];
-    return data.users.filter(
-      (user) =>
-        user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user?.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [data?.users, searchTerm]);
+  const openEditPage = (user: IUser) => {
+    if (!user._id) {
+      console.error('User ID is undefined');
+      return;
+    }
+    navigate(`/dashboard/users/edit/${user._id}`);
+  };
 
   const columns = useMemo(
     () => [
@@ -93,7 +93,7 @@ const UserList: React.FC = () => {
               user.role === 'Admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
             }`}
           >
-            {user.role}
+            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
           </span>
         ),
         sortable: true,
@@ -103,7 +103,7 @@ const UserList: React.FC = () => {
         accessor: (user: IUser) => (
           <ActionMenu
             user={user}
-            onEdit={() => openEditModal(user)}
+            onEdit={() => openEditPage(user)}
             onSuspend={() => handleSuspend(user)}
             onReactivate={() => handleReactivate(user)}
             onDelete={() => handleDelete(user)}
@@ -111,25 +111,96 @@ const UserList: React.FC = () => {
         ),
       },
     ],
-    []
+    [openEditPage, handleSuspend, handleReactivate, handleDelete]
   );
 
-  if (isLoading) return <div>Loading users...</div>;
-  if (error) return <div>Error loading users</div>;
+  const filteredUsers = useMemo<IUser[]>(() => {
+    if (!data?.users) return [];
+    return data.users.filter(
+      (user) =>
+        user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [data?.users, searchTerm]);
+
+  // Function to export selected users as CSV
+  const exportSelectedUsers = () => {
+    if (selectedRowIds.size === 0) {
+      showToast('No users selected for export.', 'error');
+      return;
+    }
+
+    const headers = ['Name', 'Email', 'Role'];
+    const rows = Array.from(selectedRowIds).map(userId => {
+      const user = data?.users.find(user => user._id === userId);
+      if (!user) return ['-', '-', '-'];
+      return [
+        user.name,
+        user.email,
+        user.role.charAt(0).toUpperCase() + user.role.slice(1),
+      ];
+    });
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'selected_users_export.csv');
+    link.click();
+  };
+
+  if (isLoading) return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="text-xl text-gray-600 dark:text-gray-300">
+        Loading users...
+      </div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="text-xl text-red-600">Error loading users</div>
+    </div>
+  );
 
   return (
     <div className="bg-blue-50 p-6 rounded-lg shadow-lg">
+      {/* Header Section */}
       <div className="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg">
         <h2 className="text-2xl font-semibold text-blue-800 font-primary">Manage Users</h2>
-        <input
-          type="text"
-          placeholder="Search users..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border rounded p-2"
-        />
+        <div className="flex space-x-4">
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border rounded p-2"
+          />
+          {/* Create User Button */}
+          <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+            Create User
+          </Button>
+          {/* Export Selected Users Button */}
+          <Button variant="secondary" onClick={exportSelectedUsers}>
+            Export Selected
+          </Button>
+        </div>
       </div>
-      <DataTable data={filteredUsers} columns={columns} />
+
+      {/* DataTable */}
+      <DataTable
+        data={filteredUsers}
+        columns={columns}
+        selectable
+        selectedRowIds={selectedRowIds}
+        onRowSelect={setSelectedRowIds}
+        onRowClick={openEditPage}
+        sortColumn={undefined} // You can implement sorting state if needed
+        sortDirection={undefined}
+        onSort={undefined}
+      />
 
       {/* Pagination Component */}
       <Pagination
@@ -138,39 +209,50 @@ const UserList: React.FC = () => {
         onPageChange={(page) => setCurrentPage(page)}
       />
 
-      {/* Edit User Modal */}
-      {isEditModalOpen && (
+      {/* Create User Modal */}
+      {isCreateModalOpen && (
         <Modal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          title="Edit User"
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          title="Create User"
         >
-          <CreateEditUserForm
+          <CreateUserForm
             user={selectedUser}
-            onClose={() => setIsEditModalOpen(false)}
+            onClose={() => setIsCreateModalOpen(false)} // Fixed the onClose handler
             onSuccess={() => {
-              setIsEditModalOpen(false);
+              setIsCreateModalOpen(false);
               refetch();
+              showToast('User created successfully.', 'success');
             }}
           />
         </Modal>
       )}
 
       {/* Confirm Delete Modal */}
-      <ConfirmModal
-        isOpen={isConfirmDeleteOpen}
-        onClose={() => setIsConfirmDeleteOpen(false)}
-        onConfirm={async () => {
-          if (userToDelete) {
-            await deleteUser(userToDelete._id).unwrap();
-            showToast(`${userToDelete.name} has been deleted.`, 'success');
-            refetch();
-            setIsConfirmDeleteOpen(false);
-          }
-        }}
-        title="Confirm Delete"
-        message={`Are you sure you want to delete ${userToDelete?.name}?`}
-      />
+      {isConfirmDeleteOpen && userToDelete && (
+        <ConfirmModal
+          isOpen={isConfirmDeleteOpen}
+          onClose={() => setIsConfirmDeleteOpen(false)}
+          onConfirm={async () => {
+            try {
+              await deleteUser(userToDelete._id).unwrap();
+              showToast(`${userToDelete.name} has been deleted.`, 'success');
+              refetch();
+              setIsConfirmDeleteOpen(false);
+              // Optionally remove from selected rows
+              setSelectedRowIds(prev => {
+                const newSelected = new Set(prev);
+                newSelected.delete(userToDelete._id);
+                return newSelected;
+              });
+            } catch {
+              showToast('Failed to delete user.', 'error');
+            }
+          }}
+          title="Confirm Delete"
+          message={`Are you sure you want to delete ${userToDelete.name}? This action cannot be undone.`}
+        />
+      )}
     </div>
   );
 };

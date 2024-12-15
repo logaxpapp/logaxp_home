@@ -13,6 +13,7 @@ import DropdownMenu from '../common/DropdownMenu/DropdownMenu';
 import SettingForm from './SettingForm';
 import HistoryTable from './HistoryTable';
 
+
 const SettingsManagement: React.FC = () => {
   const { data: settings, isLoading, error } = useGetSettingsQuery();
   const [updateSetting] = useUpdateSettingMutation();

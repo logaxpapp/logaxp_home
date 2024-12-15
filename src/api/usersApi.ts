@@ -63,10 +63,10 @@ export const usersApi = createApi({
       prepareHeaders: (headers, { getState }) => {
         const csrfToken = (getState() as RootState).csrf.csrfToken;
         if (csrfToken) {
-          // Use `headers.append` or `headers.set` to add the CSRF token
-          headers.set('X-CSRF-Token', csrfToken); // Correct method to attach headers
+          headers.set('X-CSRF-Token', csrfToken); // Set CSRF token
+          console.log('CSRF Token attached to headers:', csrfToken); // Debug
         }
-        return headers;
+        return headers;      
       },
       
     });
@@ -428,19 +428,17 @@ export const usersApi = createApi({
         const { data } = await queryFulfilled;
         dispatch(setAuthCredentials({ user: data.user }));
       } catch (error: any) {
-        // Handle specific errors
         const status = error?.status;
         if (status === 403) {
           console.error("Forbidden: CSRF token invalid or expired.");
         } else if (status === 401) {
           console.error("Unauthorized: Invalid credentials.");
         }
-        throw error; // Let the calling component handle the rest
+        throw error;
       }
     },
   }),
-  
-   
+
     // Logout Mutation
     logout: builder.mutation<void, void>({
       query: () => ({
@@ -457,6 +455,14 @@ export const usersApi = createApi({
           // Handle error if needed
         }
       },
+    }),
+
+    adminLogoutUser: builder.mutation<{ message: string }, string>({
+      query: (userId) => ({
+        url: `${AUTH_API}/admin/logout/${userId}`, // Adjust the endpoint as per your backend
+        method: 'POST',
+      }),
+      invalidatesTags: (result, error, userId) => [{ type: 'Auth', id: userId }],
     }),
 
     changePassword: builder.mutation<void, { currentPassword: string; newPassword: string }>({
@@ -524,10 +530,8 @@ export const {
   useGetAllLoggedInUsersQuery,
   useChangePasswordMutation,
   useRegisterUserMutation,
+  useAdminLogoutUserMutation,
   
-
-
-
 // Google Calendar
   useInitiateGoogleAuthMutation,
   useFetchGoogleCalendarEventsQuery,

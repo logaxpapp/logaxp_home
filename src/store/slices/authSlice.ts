@@ -1,8 +1,8 @@
 // src/store/slices/authSlice.ts
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IUser } from '../../types/user'; 
-import { RootState } from '../../app/store'; // Adjust the path based on your project structure
+import { IUser } from '../../types/user';
+import { RootState } from '../../app/store';
 
 interface AuthState {
   user: IUser | null;
@@ -18,10 +18,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setAuthCredentials: (
-      state,
-      action: PayloadAction<{ user: IUser | null }>
-    ) => {
+    setAuthCredentials: (state: AuthState, action: PayloadAction<{ user: IUser | null }>) => {
       state.user = action.payload.user;
       if (action.payload.user) {
         localStorage.setItem('user', JSON.stringify(action.payload.user));
@@ -29,15 +26,15 @@ const authSlice = createSlice({
         localStorage.removeItem('user');
       }
     },
-    logout: (state) => {
+    logout: (state: AuthState) => {
       state.user = null;
       localStorage.removeItem('user');
     },
-    clearUser: (state) => { // **Add this reducer**
+    clearUser: (state: AuthState) => {
       state.user = null;
       localStorage.removeItem('user');
     },
-    setGoogleConnected: (state, action: PayloadAction<boolean>) => { // **New reducer**
+    setGoogleConnected: (state: AuthState, action: PayloadAction<boolean>) => {
       if (state.user) {
         state.user.googleConnected = action.payload;
       }

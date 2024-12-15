@@ -1,3 +1,5 @@
+// src/types/employeePayPeriod.ts
+
 import { IPayPeriod } from './payPeriodTypes';
 import { IUser } from './user';
 
@@ -8,6 +10,8 @@ export interface IEmployeePayPeriod {
   totalHours: number; // Total hours worked in the pay period
   regularHours: number; // Regular hours worked (non-overtime)
   overtimeHours: number; // Overtime hours worked
+  hourlyRate: number; // Hourly rate
+  overtimeRate: number; // Overtime rate
   totalPay: number; // Total pay for the pay period
   regularPay: number; // Regular pay
   overtimePay: number; // Overtime pay
