@@ -29,7 +29,8 @@ const Dashboard: React.FC = () => {
         <Navbar toggleSidebar={toggleSidebar} />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 dark:from-gray-900 dark:to-gray-800">
+        <main className="flex-1 overflow-auto bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300
+         dark:from-gray-900 dark:to-gray-800">
           {/* Content Outlet */}
           <Outlet />
         </main>

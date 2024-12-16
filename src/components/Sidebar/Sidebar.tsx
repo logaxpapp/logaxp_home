@@ -100,14 +100,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="relative inset-0 bg-black bg-opacity-50 z-40 md:hidden"
           onClick={toggleSidebar}
         ></div>
       )}
 
       <div
         className={`
-           fixed inset-y-0 left-0 w-56 bg-gradient-to-t from-teal-900 via-sky-900 to-cyan-800 dark:bg-gray-700
+           fixed inset-y-0 left-0 w-56 bg-deepBlue-dark dark:bg-gray-700
           shadow-xl transform ${isOpen ? 'translate-x-0' : '-translate-x-full'}
           transition-transform duration-200 ease-in-out z-50 md:translate-x-0 md:static
           before:content-[''] before:absolute before:inset-0
@@ -121,7 +121,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
         <div className="relative z-20 flex flex-col h-full">
           {/* Header / Logo */}
-          <div className="flex items-center justify-between p-4 bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900  dark:bg-gray-800 bg-opacity-90 border-b border-gray-600">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-t
+           from-teal-600 via-cyan-900 to-gray-900 
+            dark:bg-gray-500 bg-opacity-50 border-b border-gray-600">
             <div className="flex items-center space-x-3">
               <NavLink to="/" className="text-white hover:text-gray-300">
                 <FaHome size={20} />

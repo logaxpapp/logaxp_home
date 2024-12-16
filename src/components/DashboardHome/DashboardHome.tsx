@@ -20,7 +20,13 @@ const DashboardHome: React.FC = () => {
   ];
 
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 dark:from-gray-900 dark:to-gray-800">
+    <div className="p-8 min-h-screen bg-gradient-to-br
+     from-gray-100  via-gray-200 to-gray-300 dark:from-gray-900 dark:to-gray-800
+     before:content-[''] before:absolute before:inset-0
+          before:bg-[url('../../assets/images/star.svg')] before:bg-repeat before:bg-[length:20px_20px]
+          before:animate-twinkle before:pointer-events-none before:z-0
+          dark:before:bg-[url('../../assets/images/star-pattern-dark.svg')]
+     ">
     {/* Header Section */}
         <div className="p-5 bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900  rounded-3xl shadow-2xl max-w-7xl mx-auto mb-16 transform hover:scale-105 transition-transform duration-300">
       <ClockInOutForm />

@@ -34,7 +34,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         relative 
         flex items-center justify-between 
         w-full px-4 py-2 
-        bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900 dark:bg-gray-700
+        bg-deepBlue-dark dark:bg-gray-700
           before:content-[''] before:absolute before:inset-0
           before:bg-[url('../../assets/images/star.svg')] before:bg-repeat before:bg-[length:20px_20px]
           before:animate-twinkle
@@ -64,10 +64,10 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
       </button>
 
       {/* Center Content */}
-      <div className="flex flex-col items-center text-center">
-        <h2 className="font-semibold text-lg">Service Center</h2>
+      <div className="flex flex-col text-left">
+        <h2 className="font-semibold text-base items-start">Welcome !</h2>
         <p className="text-sm text-gray-200 dark:text-gray-300">
-          Welcome, {user?.name || 'User'}
+          {user?.name || 'User'}
         </p>
       </div>
 

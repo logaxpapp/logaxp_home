@@ -1,5 +1,3 @@
-// src/types/ticket.ts
-
 import { Tag } from './tag';
 import { IUser } from './user';
 
@@ -13,7 +11,6 @@ export interface IComment {
   content: string;
   date: string;
 }
-
 
 export interface IAttachment {
   id: string;
@@ -33,7 +30,6 @@ export interface IActivityLog {
   date: string;
 }
 
-
 export interface ITicket {
   _id: string;
   title: string;
@@ -44,17 +40,23 @@ export interface ITicket {
     | 'Access Request'
     | 'Bug Report'
     | 'Feature Request'
-    | 'General Inquiry';
+    | 'General Inquiry'
+    | 'Escalated'
+    | 'Closed'; // Updated categories
   application: 'Loga Beauty' | 'GatherPlux' | 'TimeSync' | 'BookMiz';
   status: 'Pending' | 'In Progress' | 'Resolved' | 'Closed' | 'Open' | 'Critical';
-  assignedTo?: IUser; // Updated to use IUser interface
+  assignedTo?: IUser;
   department: 'HR' | 'IT' | 'Sales' | 'Marketing' | 'Finance';
   date: string;
   dueDate?: string;
-  tags: Tag[]; // Updated to use Tag enum
+  tags: Tag[];
   comments: IComment[];
   attachments: IAttachment[];
   activityLog: IActivityLog[];
-  createdBy: string; // User ID or IUser interface
+  createdBy: string;
   updatedBy?: string;
+
+  // New fields
+  watchers: IUser[]; // or string[] depending on what the backend returns
+  customFields: Record<string, any>;
 }
