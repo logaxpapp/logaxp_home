@@ -116,15 +116,13 @@ module.exports = {
         '120': '120%',
         'full': '100%',
       },
-     
-
+      
 
       fontFamily: {
         primary: ['Menseal', 'sans-serif'],
         secondary: ['Plus Jakarta Sans', 'sans-serif'],
       },
 
-      // Other custom extensions (spacing, etc.) remain unchanged
     },
   },
 

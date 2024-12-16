@@ -22,13 +22,13 @@ const DashboardHome: React.FC = () => {
   return (
     <div className="p-8 min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 dark:from-gray-900 dark:to-gray-800">
     {/* Header Section */}
-        <div className="p-5 bg-gradient-to-r from-lime-100 via-lime-200 to-lime-300 rounded-3xl shadow-2xl max-w-7xl mx-auto mb-16 transform hover:scale-105 transition-transform duration-300">
+        <div className="p-5 bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900  rounded-3xl shadow-2xl max-w-7xl mx-auto mb-16 transform hover:scale-105 transition-transform duration-300">
       <ClockInOutForm />
     </div>
 
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 max-w-7xl mx-auto ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 max-w-7xl mx-auto">
         {featureCards.slice(0, 3).map((feature, index) => (
           <div
             key={index}
@@ -62,7 +62,7 @@ const DashboardHome: React.FC = () => {
                 <div className="p-3 bg-deepBlue-dark rounded-lg shadow text-white">
                   {feature.icon}
                 </div>
-                <h2 className="text-lg font-medium text-deepBlue group-hover:text-deepBlue-lighter transition-colors">
+                <h2 className="text-[16px] font-medium text-deepBlue group-hover:text-deepBlue-lighter transition-colors">
                   {feature.name}
                 </h2>
               </div>

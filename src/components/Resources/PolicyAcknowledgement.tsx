@@ -46,10 +46,10 @@ const PolicyAcknowledgement: React.FC = () => {
   return (
     <div className="mx-auto p-6 bg-gray-50 min-h-screen">
       {/* Header Section */}
-      <header className="relative  rounded-lg shadow-lg p-6 text-gray-500">
+      <header className="relative  rounded-lg shadow-lg p-2 text-gray-500">
         <div className="flex flex-col sm:flex-row items-center justify-between">
           <div>
-            <h1 className="text-3xl font-extrabold mb-2 font-primary text-blue-500">Policy Acknowledgement</h1>
+            <h1 className="text-xl font-extrabold mb-2 font-primary text-blue-500">Policy Acknowledgement</h1>
             <p className="text-lg">
               Review and acknowledge your company's policies. Ensure you are up-to-date with the latest information.
             </p>

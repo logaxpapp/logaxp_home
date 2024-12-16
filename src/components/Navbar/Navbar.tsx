@@ -15,7 +15,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false); // State for Notification Dropdown
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const user = useAppSelector(selectCurrentUser);
 
@@ -29,46 +29,76 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-md px-4 py-1 flex justify-between items-center w-full">
-      {/* Sidebar Toggle Button for Mobile View */}
+    <header 
+      className="
+        relative 
+        flex items-center justify-between 
+        w-full px-4 py-2 
+        bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900 dark:bg-gray-700
+          before:content-[''] before:absolute before:inset-0
+          before:bg-[url('../../assets/images/star.svg')] before:bg-repeat before:bg-[length:20px_20px]
+          before:animate-twinkle
+          before:pointer-events-none
+        text-white
+      "
+    >
+     
+      <div
+        className="
+          absolute inset-0 
+          bg-[url('../../assets/images/star.svg')] bg-repeat bg-[length:20px_20px] 
+          opacity-80
+          animate-twinkle
+          pointer-events-none
+          z-[-1]
+        "
+      ></div>
+
+      {/* Mobile Sidebar Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className="text-gray-500 dark:text-white focus:outline-none md:hidden"
+        className="text-white focus:outline-none md:hidden"
         aria-label="Toggle Sidebar"
       >
         <FaBars className="w-6 h-6" />
       </button>
 
-      {/* Navbar Center Content (Greeting and Welcome Message) */}
-      <div className="flex flex-col items-center">
-        <h2 className="font-semibold text-blue-900 dark:text-white text-lg">Service Center</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Welcome, {user?.name || 'User'}</p>
+      {/* Center Content */}
+      <div className="flex flex-col items-center text-center">
+        <h2 className="font-semibold text-lg">Service Center</h2>
+        <p className="text-sm text-gray-200 dark:text-gray-300">
+          Welcome, {user?.name || 'User'}
+        </p>
       </div>
 
       {/* Right-side Controls */}
       <div className="flex items-center space-x-2 md:space-x-4">
         {/* Notification Bell */}
         <div className="relative">
-  <button
-    onClick={toggleNotifications}
-    className="relative text-gray-500 hover:text-lemonGreen focus:outline-none dark:text-gray-400 dark:hover:text-lemonGreen"
-    aria-label="Notifications"
-  >
-    <FaBell className="w-5 h-5 md:w-6 md:h-6" />
-    {/* Notification Badge */}
-    <span className="absolute top-0 right-0 inline-block w-2 h-2 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full"></span>
-  </button>
+          <button
+            onClick={toggleNotifications}
+            className="relative text-white hover:text-lemonGreen focus:outline-none"
+            aria-label="Notifications"
+          >
+            <FaBell className="w-5 h-5 md:w-6 md:h-6" />
+            {/* Notification Badge */}
+            <span className="absolute top-0 right-0 inline-block w-2 h-2 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full"></span>
+          </button>
 
-  {/* Dropdown */}
-  {isNotificationOpen && (
-    <div
-      className="absolute right-0 mt-2 w-96 bg-white border border-gray-200 shadow-lg rounded-md dark:bg-gray-700 dark:border-gray-600 z-50"
-    >
-      <Notifications />
-    </div>
-  )}
-</div>
-
+          {isNotificationOpen && (
+            <div
+              className="
+                absolute right-0 mt-2 w-96 
+                bg-white dark:bg-gray-700 
+                border border-gray-200 dark:border-gray-600 
+                shadow-lg rounded-md 
+                z-50
+              "
+            >
+              <Notifications />
+            </div>
+          )}
+        </div>
 
         {/* User Profile Section */}
         <div className="hidden md:flex items-center space-x-2">
@@ -79,14 +109,21 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               className="w-8 h-8 rounded-full object-cover"
             />
           ) : (
-            <FaUserCircle className="w-8 h-8 text-deepBlue dark:text-white" />
+            <FaUserCircle className="w-8 h-8 text-white" />
           )}
         </div>
 
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="text-gray-500 border rounded-full p-2 bg-slate-50 hover:text-red-500 dark:border-gray-600 dark:bg-gray-700 focus:outline-none"
+          className="
+            text-white hover:text-red-400 
+            border border-white/20 
+            rounded-full p-2 
+            bg-white/10 
+            focus:outline-none
+            transition-colors duration-150
+          "
           aria-label="Logout"
         >
           <FaSignOutAlt className="w-5 h-5" />

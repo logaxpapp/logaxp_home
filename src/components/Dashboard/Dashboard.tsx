@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
 
         {/* Floating Chat Button */}
         <button
-          className="fixed bottom-6 right-6 bg-lemonGreen-light  hover:bg-blue-700 text-white p-4 rounded-full shadow-lg"
+          className="fixed bottom-6 right-6 bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900  hover:bg-blue-200 text-white p-4 rounded-full shadow-lg"
           onClick={toggleChat}
           aria-label="Open Chat"
         >
@@ -69,7 +69,7 @@ const Dashboard: React.FC = () => {
                   </button>
 
                 </div>
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto ">
                   <Chat />
                 </div>
               </div>

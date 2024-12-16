@@ -25,7 +25,7 @@ const ResourcesManage: React.FC = () => {
   return (
     <div className="bg-gray-100 dark:bg-gray-900 min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 p-6 text-white shadow-md">
+      <div className="bg p-6 text-gray-600 shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h1 className="text-3xl font-bold">Resource Management</h1>
           <p className="text-sm opacity-90">
@@ -42,7 +42,7 @@ const ResourcesManage: React.FC = () => {
               onClick={() => setActiveTab('resourceList')}
               className={`w-1/3 py-3 text-center font-semibold transition-all ${
                 activeTab === 'resourceList'
-                  ? 'bg-indigo-500 text-white'
+                  ? 'bg-teal-600 text-white'
                   : 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
               }`}
             >
@@ -52,7 +52,7 @@ const ResourcesManage: React.FC = () => {
               onClick={() => setActiveTab('policyAcknowledgement')}
               className={`w-1/3 py-3 text-center font-semibold transition-all ${
                 activeTab === 'policyAcknowledgement'
-                  ? 'bg-indigo-500 text-white'
+                  ? 'bg-teal-600 text-white'
                   : 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
               }`}
             >
@@ -62,7 +62,7 @@ const ResourcesManage: React.FC = () => {
               onClick={() => setActiveTab('userResources')}
               className={`w-1/3 py-3 text-center font-semibold transition-all ${
                 activeTab === 'userResources'
-                  ? 'bg-indigo-500 text-white'
+                  ? 'bg-teal-600 text-white'
                   : 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
               }`}
             >

@@ -84,10 +84,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         key={link.name}
         to={link.path}
         className={({ isActive }) =>
-          `flex items-center p-2 my-1 rounded-md text-sm font-medium transition-colors duration-150 ${
+          `flex items-center p-2 my-1 rounded-md text-[12.5px] font-medium transition-colors duration-150 ${
             isActive
-              ? 'bg-blue-700 text-white shadow-sm'
-              : 'text-gray-100 hover:bg-blue-800 hover:bg-opacity-60'
+              ? 'bg-teal-600 text-white shadow-sm'
+              : 'text-gray-100 hover:bg-teal-300 hover:bg-opacity-60'
           }`
         }
       >
@@ -106,17 +106,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       )}
 
       <div
-        className={`fixed inset-y-0 left-0 w-64 bg-gradient-to-tr from-gray-900 via-blue-900 to-gray-700 shadow-xl transform ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-200 ease-in-out z-50 md:translate-x-0 md:static`}
-        
+        className={`
+           fixed inset-y-0 left-0 w-56 bg-gradient-to-t from-teal-900 via-sky-900 to-cyan-800 dark:bg-gray-700
+          shadow-xl transform ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          transition-transform duration-200 ease-in-out z-50 md:translate-x-0 md:static
+          before:content-[''] before:absolute before:inset-0
+          before:bg-[url('../../assets/images/star.svg')] before:bg-repeat before:bg-[length:20px_20px]
+          before:animate-twinkle before:pointer-events-none before:z-0
+          dark:before:bg-[url('../../assets/images/star-pattern-dark.svg')]
+        `}
       >
         {/* Dark overlay for text visibility */}
-        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div className="absolute inset-0 bg-black bg-opacity-20 z-10"></div>
 
-        <div className="relative z-10 flex flex-col h-full">
+        <div className="relative z-20 flex flex-col h-full">
           {/* Header / Logo */}
-          <div className="flex items-center justify-between p-4 bg-blue-900 dark:bg-gray-800 bg-opacity-90 border-b border-gray-600">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900  dark:bg-gray-800 bg-opacity-90 border-b border-gray-600">
             <div className="flex items-center space-x-3">
               <NavLink to="/" className="text-white hover:text-gray-300">
                 <FaHome size={20} />
@@ -159,7 +164,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               </>
             )}
             
-
             {currentUser?.role === 'user' && (
               <>
                 <h3 className="text-gray-300 text-xs uppercase font-semibold tracking-wider mt-4 mb-2">
@@ -171,9 +175,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             )}
           </nav>
         
-         
           {/* Footer / Logout */}
-          <div className="flex-shrink-0 p-3 border-t border-gray-600 bg-blue-900 dark:bg-gray-800 bg-opacity-90">
+          <div className="flex-shrink-0 p-3 border-t border-gray-600 bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900  dark:bg-gray-800 bg-opacity-90">
             <button
               onClick={handleLogout}
               className="w-full flex items-center p-2 rounded-md text-sm font-medium text-gray-100 hover:bg-red-500 hover:text-white transition-colors duration-150"

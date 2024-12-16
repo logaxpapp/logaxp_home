@@ -13,7 +13,7 @@
 :root {
   /* Font Variables */
   --font-primary: 'Menseal', sans-serif;
-  --font-secondary: 'Plus Jakarta Sans', sans-serif;
+  --font-secondary: 'Plus Jakarta Sans';
   --font-third: 'Poppins', sans-serif;
 }
 
@@ -22,7 +22,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  font-family: var(--font-secondary);
+  font-family: var(--font-third);
   background-color: var(--color-background);
   color: var(--color-text);
   width: 100%;
