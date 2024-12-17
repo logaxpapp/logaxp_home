@@ -66,6 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     { name: 'Admin', path: '/dashboard/admin', icon: <FaUserCog /> },
     { name: 'Survey', path: '/dashboard/manage-surveys', icon: <FaSass /> },
     { name: 'Support', path: '/dashboard/support', icon: <FaBell /> },
+    { name: 'Faqs', path: '/dashboard/faqs', icon: <FaBell /> },
   ];
 
   const userLinks: NavLinkItem[] = [

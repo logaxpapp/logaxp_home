@@ -14,6 +14,7 @@ import { connectSocket } from './socket';
 
 // Lazy-loaded components
 const Home = lazy(() => import('./pages/Home/Home'));
+const FAQ = lazy(() => import('./pages/FAQ/FAQ'));
 const About = lazy(() => import('./pages/About/About'));
 const Contact = lazy(() => import('./pages/ContactUs/ContactUs'));
 const PrivacyStatement = lazy(() => import('./pages/Privacy/PrivacyStatement'));
@@ -93,6 +94,7 @@ const  AdminArticleList = lazy(() => import('./components/Article/AdminArticleLi
 const UserArticleList = lazy(() => import('./components/Article/UserArticleList'));
 const Notifications = lazy(() => import('./components/Notifications/Notifications'));
 const Chat = lazy(() => import('./components/Chat/Chat'));
+const ListFaqs = lazy(() => import('./pages/FAQ/ListFaqs'));
 
 
 
@@ -154,6 +156,14 @@ const App: React.FC = () => {
                   element={
                     <Suspense fallback={<Loader />}>
                       <Home />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/faq"
+                  element={
+                    <Suspense fallback={<Loader />}>
+                      <FAQ />
                     </Suspense>
                   }
                 />
@@ -775,6 +785,14 @@ const App: React.FC = () => {
                       element={
                         <Suspense fallback={<Loader />}>
                           <ChangeRequestDetail />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="faqs"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ListFaqs />
                         </Suspense>
                       }
                     />
