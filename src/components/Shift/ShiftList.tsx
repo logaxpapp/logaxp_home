@@ -22,6 +22,7 @@ import ActionsDropdown from '../common/ActionsDropdown';
 import Pagination from '../common/Pagination/Pagination';
 import { useToast } from '../../features/Toast/ToastContext';
 import { useNavigate } from 'react-router-dom';
+import { FaPlus } from 'react-icons/fa';
 
 const ShiftList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -224,30 +225,46 @@ const ShiftList: React.FC = () => {
   return (
     <div className="bg-blue-50 p-6 rounded-lg shadow-lg">
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-2xl font-semibold text-blue-800 font-primary">Shift Management</h3>
-        <div className="flex space-x-4">
-          {/* Search Input */}
-          <input
-            type="text"
-            placeholder="Search shifts..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="border rounded p-2"
-          />
-          {/* Create Shift Buttons */}
-          <Button variant="primary" onClick={() => setCreateModalOpen(true)}>
-            Create Shift
-          </Button>
-          <Button variant="success" onClick={() => setCreateMultipleModalOpen(true)}>
-            Create Multiple Shifts
-          </Button>
-          {/* Export Selected Shifts Button */}
-          <Button variant="secondary" onClick={exportSelectedShifts}>
-            Export Selected
-          </Button>
-        </div>
-      </div>
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 bg-white p-4 rounded-lg shadow-sm gap-4">
+  {/* Search Input */}
+  <div className="flex-1">
+    <input
+      type="text"
+      placeholder="Search shifts..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="w-full md:w-64 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+    />
+  </div>
+
+  {/* Action Buttons */}
+  <div className="flex flex-wrap justify-end gap-2">
+    <Button
+      variant="primary"
+      onClick={() => setCreateModalOpen(true)}
+      className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+    >
+      <FaPlus className="text-white" /> Create
+    </Button>
+
+    <Button
+      variant="success"
+      onClick={() => setCreateMultipleModalOpen(true)}
+      className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-green-600 transition"
+    >
+      <FaPlus className="text-white" /> Bulk Create
+    </Button>
+
+    <Button
+      variant="secondary"
+      onClick={exportSelectedShifts}
+      className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-400 transition"
+    >
+      Export
+    </Button>
+  </div>
+</div>
+
 
       {/* DataTable */}
       <DataTable<IShift>

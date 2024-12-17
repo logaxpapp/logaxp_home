@@ -92,11 +92,7 @@ const MyShifts: React.FC = () => {
 
   return (
     <div className="bg-blue-50 p-4 dark:bg-gray-700">
-      <div className="flex justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg dark:bg-gray-600">
-        <h2 className="text-3xl font-bold text-blue-800 font-primary border-gray-300 dark:text-lemonGreen-light">
-          My Shifts
-        </h2>
-      </div>
+      
         {/* Data Table */}
         <div className="overflow-x-auto">
           {isLoading ? (

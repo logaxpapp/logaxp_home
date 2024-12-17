@@ -65,13 +65,13 @@ const PayPeriodList: React.FC = () => {
   return (
     <div className="bg-blue-50 p-4 dark:bg-gray-700">
       <div className="flex justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg dark:bg-gray-600">
-        <h1 className="text-3xl font-bold text-blue-800 font-primary dark:text-lemonGreen-light">Manage Pay Periods</h1>
+      <h2 className="text-2xl font-semibold text-blue-800 dark:text-white">Manage Pay Periods</h2>
         <Button 
           variant="primary"
           onClick={() => setIsCreateModalOpen(true)}
         >
           <FaPlus className="mr-2" />
-          Create Pay Period
+          Add Pay Period
         </Button>
       </div>
 

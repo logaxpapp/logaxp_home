@@ -23,9 +23,7 @@ const MySurveyResponses: React.FC = () => {
 
   return (
     <div className="bg-blue-50 p-4">
-      <div className="flex justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg">
-      <h2 className="text-2xl font-extrabold text-blue-800  text-center">Completed Surveys</h2>
-          </div>
+      
 
       {data?.responses && data.responses.length > 0 ? (
         <>

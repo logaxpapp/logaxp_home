@@ -28,7 +28,7 @@ const ManageSurvey: React.FC = () => {
         
         {/* Header Section */}
         <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row items-center justify-between">
-          <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 dark:text-gray-200 text-center md:text-left font-primary">
+          <h2 className="text-xl md:text-xl font-semibold text-gray-800 dark:text-gray-200 text-center md:text-left font-primary">
             Survey Management
           </h2>
           <Button

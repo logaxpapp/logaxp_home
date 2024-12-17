@@ -267,25 +267,32 @@ const ShiftCalendar: React.FC = () => {
   return (
     <div className="bg-blue-50 p-4 dark:bg-gray-700">
       <div className="flex justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg dark:bg-gray-700">
-        <h2 className="text-3xl font-bold text-blue-800 mb-4 md:mb-0 font-primary dark:text-lemonGreen-light">Shift Calendar</h2>
+        
 
         {/* Sync Button */}
-        <button
-          onClick={handleSyncWithGoogleCalendar}
-          className="flex items-center gap-3 bg-red-500 text-white py-2 px-6 rounded-full hover:bg-red-600 transition duration-150 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-red-500"
-          disabled={isCreatingEvent}
-          aria-label="Sync Shifts with Google Calendar"
-          title="Click to sync your shifts with Google Calendar"
-        >
-          {isCreatingEvent ? (
-            <FaSpinner className="animate-spin w-5 h-5" />
-          ) : (
-            <FaSyncAlt className="w-5 h-5" />
-          )}
-          <span className="font-semibold">Sync with Google</span>
-          <FaGoogle className="w-5 h-5 text-yellow-200" />
-        </button>
-      </div>
+        {/* Sync Button */}
+          <button
+            onClick={handleSyncWithGoogleCalendar}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              isCreatingEvent ? 'cursor-not-allowed opacity-70' : ''
+            }`}
+            disabled={isCreatingEvent}
+            aria-label="Sync Shifts with Google Calendar"
+          >
+            {/* Loader or Icon */}
+            {isCreatingEvent ? (
+              <FaSpinner className="animate-spin w-5 h-5 text-gray-600" />
+            ) : (
+              <FaSyncAlt className="w-5 h-5 text-gray-600" />
+            )}
+
+            {/* Button Text */}
+            <span className="text-gray-700 font-medium text-sm">
+              Sync with Google Calendar
+            </span>
+          </button>
+
+            </div>
 
       {/* Loading and Error States */}
       {(isShiftsLoading || isGoogleEventsFetching) && (

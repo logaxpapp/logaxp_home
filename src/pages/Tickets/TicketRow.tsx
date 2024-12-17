@@ -55,8 +55,8 @@ const TicketRow: React.FC<TicketRowProps> = ({
   };
 
   return (
-    <tr className="hover:bg-gray-50 cursor-pointer" onClick={handleRowClick}>
-      <td className="px-4 py-4 whitespace-nowrap text-sm text-blue-600 hover:underline">
+    <tr className="hover:bg-gray-50 cursor-pointer dark:bg-gray-700 dark:text-gray-300" onClick={handleRowClick}>
+      <td className="px-4 py-4 whitespace-nowrap text-sm text-blue-600 hover:underline dark:text-blue-400">
         {ticket.title}
       </td>
       <td className="px-4 py-4 whitespace-nowrap flex items-center">

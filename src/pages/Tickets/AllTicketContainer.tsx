@@ -270,7 +270,7 @@ const AllTicketContainer: React.FC = () => {
   );
 
   return (
-    <div className="p-6 min-h-screen bg-blue-50">
+    <div className="p-6 min-h-screen bg-blue-50 dark:bg-gray-700">
       {/* Back Button */}
       <div className="mb-4">
         <FaArrowAltCircleLeft
@@ -282,7 +282,7 @@ const AllTicketContainer: React.FC = () => {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-semibold text-blue-800">
+        <h1 className="text-3xl font-semibold text-blue-800 dark:text-blue-500">
           All Tickets ({totalTickets})
         </h1>
         <Button

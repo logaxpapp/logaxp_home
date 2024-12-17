@@ -119,16 +119,16 @@ const MyTicket: React.FC = () => {
   };
 
   return (
-    <div className="p-4 min-h-screen bg-gray-50">
+    <div className="p-4 min-h-screen bg-gray-50 dark:bg-gray-700 ">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-semibold text-blue-800 font-primary flex items-center">
+          <h1 className="text-2xl font-semibold text-blue-800 dark:text-blue-500 font-primary flex items-center">
             {showPersonalTickets ? 'My Personal Tickets' : 'All Tickets'}
             <span className="text-blue-600 font-semibold text-lg ml-2">
               ({ticketCount})
             </span>
           </h1>
-          <p className="text-gray-500">
+          <p className="text-gray-500 dark:text-white">
             {showPersonalTickets ? 'View tickets assigned to you or created by you' : 'Manage and track all tickets'}
           </p>
         </div>
@@ -176,7 +176,7 @@ const MyTicket: React.FC = () => {
                   <div>
                     <div className="flex justify-between items-center">
                       <Link to={`${ticket._id}`}>
-                        <h3 className="text-md font-semibold text-gray-700 hover:text-blue-500 line-clamp-1">
+                        <h3 className="text-md font-semibold text-gray-700 hover:text-blue-500 line-clamp-1 dark:text-gray-50">
                           {ticket.title}
                         </h3>
                       </Link>
@@ -242,7 +242,7 @@ const MyTicket: React.FC = () => {
                         </Transition>
                       </Menu>
                     </div>
-                    <p className="text-gray-500 mt-2 text-sm line-clamp-3">
+                    <p className="text-gray-500 mt-2 text-sm line-clamp-3 dark:text-gray-300">
                       {ticket.description}
                     </p>
 
@@ -276,7 +276,7 @@ const MyTicket: React.FC = () => {
                         >
                           {ticket.status}
                         </span>
-                        <span className="ml-2 text-gray-500 text-xs">- {ticket.application}</span>
+                        <span className="ml-2 text-gray-500 text-xs dark:text-lemonGreen">- {ticket.application}</span>
                       </div>
                       <button
                         onClick={() => toggleWatchers(ticket._id)}

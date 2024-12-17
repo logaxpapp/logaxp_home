@@ -28,9 +28,7 @@ const HighlightsSection = () => {
     <motion.section
       className="
         relative py-12 px-4 md:px-8 lg:px-16 overflow-hidden
-        bg-gradient-to-tr
-        from-[#d5dbe1] via-[#d4e8ed] to-[#f0f3f4]
-        dark:from-gray-800 dark:via-gray-700 dark:to-gray-700
+        bg-gray-50 dark:bg-gray-800
       "
       variants={containerVariants}
       initial="initial"
@@ -51,7 +49,7 @@ const HighlightsSection = () => {
       >
         {/* Card 1 */}
         <motion.div
-          className="flex flex-col items-center gap-4 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition"
+          className="flex flex-col items-center gap-4 bg-slate-100 dark:bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition"
           variants={cardVariants}
         >
           <FaCogs className="text-lemonGreen-light text-4xl" />
@@ -65,7 +63,7 @@ const HighlightsSection = () => {
 
         {/* Card 2 */}
         <motion.div
-          className="flex flex-col items-center gap-4 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition"
+          className="flex flex-col items-center gap-4 bg-slate-100 dark:bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition"
           variants={cardVariants}
         >
           <FaChartLine className="text-lemonGreen-light text-4xl" />
@@ -79,7 +77,7 @@ const HighlightsSection = () => {
 
         {/* Card 3 */}
         <motion.div
-          className="flex flex-col items-center gap-4 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition"
+          className="flex flex-col items-center gap-4 bg-slate-100 dark:bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition"
           variants={cardVariants}
         >
           <FaUsers className="text-lemonGreen-light text-4xl" />

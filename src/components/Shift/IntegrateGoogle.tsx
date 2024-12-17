@@ -48,9 +48,7 @@ const IntegrateGoogle: React.FC = () => {
 
   return (
     <div className="bg-blue-50 p-4 dark:bg-gray-700">
-      <div className="flex justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg dark:bg-gray-600">
-      <h2 className="text-3xl font-bold text-blue-800 font-primary dark:text-lemonGreen-light">Google integration</h2>
-      </div>
+      
       <div className="bg-white dark:bg-gray-600 shadow-md rounded-lg w-full p-8 md:p-12 flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-200">
         {/* Header Section */}
         <header className="w-full flex flex-col items-center mb-6">
