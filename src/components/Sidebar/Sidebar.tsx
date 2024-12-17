@@ -178,7 +178,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           </nav>
         
           {/* Footer / Logout */}
-          <div className="flex-shrink-0 p-3 border-t border-gray-600 bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900  dark:bg-gray-800 bg-opacity-90">
+          <div className="flex-shrink-0 p-3 border-t border-gray-600 bg-gradient-to-t
+           from-teal-600 via-cyan-900 to-cyan-900  dark:bg-gray-800 bg-opacity-90">
             <button
               onClick={handleLogout}
               className="w-full flex items-center p-2 rounded-md text-sm font-medium text-gray-100 hover:bg-red-500 hover:text-white transition-colors duration-150"

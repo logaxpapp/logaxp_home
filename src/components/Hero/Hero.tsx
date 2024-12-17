@@ -2,15 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import ScaleOut from '../Slides/ScaleOut';
 import routes from '../../routing/routes';
-import banner from '../../assets/images/banner.jpeg'; // If you decide not to use banner, remove this import
-import HeroVideo from '../../assets/videos/hero3.mp4'; // Ensure the video file exists at this path
+import HeroVideo from '../../assets/videos/hero3.mp4'; 
 import InfoSection from './InfoSection';
+import HighlightsSection from './HighlightsSection';
+
 
 const Hero: React.FC = () => {
   return (
     <>
       {/* Hero Section with Video Background */}
-      <section className="relative w-full pt-10 px-4 md:px-8 lg:px-16 flex flex-col gap-6 items-center overflow-hidden bg-gray-50 dark:bg-gray-900">
+      <section className="relative w-full h-[700px] px-4 md:px-8 lg:px-16 flex flex-col justify-center items-center overflow-hidden bg-gray-50 dark:bg-gray-900">
         {/* Background Video */}
         <div className="absolute inset-0 h-full w-full overflow-hidden z-0">
           <video
@@ -26,7 +27,7 @@ const Hero: React.FC = () => {
         </div>
 
         {/* Hero Content Overlay */}
-        <ScaleOut className="relative w-full flex flex-col items-center z-10 text-center">
+        <ScaleOut className="relative w-full flex flex-col items-center z-10 text-center pt-10">
           {/* Tagline for Desktop */}
           <p className="hidden sm:block font-primary px-4 py-2 border my-2 mb-4 border-lemonGreen-light dark:border-lemonGreen rounded-full font-semibold text-sm md:text-base uppercase tracking-wide text-white">
             Transform Your Business with Tailored IT Solutions
@@ -69,17 +70,17 @@ const Hero: React.FC = () => {
         </ScaleOut>
       </section>
 
-      {/* Optional Banner Section - If you want to keep a static image below */}
-      <section className="flex justify-center bg-gray-50 dark:bg-gray-900 p-8 md:p-16">
-        <img
-          alt="banner"
-          className="w-full md:w-3/4 lg:w-5/6 h-auto object-cover rounded-lg shadow-lg dark:filter dark:brightness-90"
-          src={banner}
-        />
-      </section>
+      
 
       {/* Additional Info Section */}
       <InfoSection title="Tailored IT Solutions" subtitle="Driving Your Success" />
+
+      {/* Highlights Section: Replace Static Image Section */}
+      
+        <HighlightsSection />
+
+        
+      
     </>
   );
 };
