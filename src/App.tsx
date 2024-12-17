@@ -9,8 +9,6 @@ import { RootState } from './app/store';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Loader from './components/Loader';
 import SessionExpiredModal from './components/SessionExpiredModal';
-
-import { useAppSelector } from './app/hooks';
 import { connectSocket } from './socket';
 
 
