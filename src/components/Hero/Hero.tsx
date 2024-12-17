@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ScaleOut from '../Slides/ScaleOut';
 import routes from '../../routing/routes';
-import HeroVideo from '../../assets/videos/hero3.mp4'; 
+import HeroVideo from '../../assets/videos/hero3.mp4';
+import Hero2Video from '../../assets/videos/hero.mp4';
 import InfoSection from './InfoSection';
 import HighlightsSection from './HighlightsSection';
 
-
 const Hero: React.FC = () => {
+  const [showFirstVideo, setShowFirstVideo] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Toggle between true and false every 2 minutes
+      setShowFirstVideo(prev => !prev);
+    }, 120000); // 2 minutes in milliseconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+
   return (
     <>
       {/* Hero Section with Video Background */}
@@ -16,7 +27,7 @@ const Hero: React.FC = () => {
         <div className="absolute inset-0 h-full w-full overflow-hidden z-0">
           <video
             className="w-full h-full object-cover"
-            src={HeroVideo}
+            src={showFirstVideo ? HeroVideo : Hero2Video}
             autoPlay
             loop
             muted
@@ -70,17 +81,11 @@ const Hero: React.FC = () => {
         </ScaleOut>
       </section>
 
-      
-
       {/* Additional Info Section */}
       <InfoSection title="Tailored IT Solutions" subtitle="Driving Your Success" />
 
-      {/* Highlights Section: Replace Static Image Section */}
-      
-        <HighlightsSection />
-
-        
-      
+      {/* Highlights Section */}
+      <HighlightsSection />
     </>
   );
 };
