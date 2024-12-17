@@ -1,13 +1,24 @@
+// src/components/FAQ/ListFaqs.tsx
+
 import React, { useState } from 'react';
-import { useListFAQsQuery, useCreateFAQMutation, useUpdateFAQMutation, useDeleteFAQMutation } from '../../api/faqApi';
+import {
+  useListFAQsQuery,
+  useCreateFAQMutation,
+  useUpdateFAQMutation,
+  useDeleteFAQMutation,
+} from '../../api/faqApi';
 import Button from '../../components/common/Button/Button';
 import Pagination from '../../components/common/Pagination/Pagination';
 import Modal from '../../components/common/Feedback/Modal';
 import ConfirmModal from '../../components/common/Feedback/ConfirmModal';
 import { IFAQ } from '../../types/faq';
 import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
+import { useToast } from '../../features/Toast/ToastContext';
+import { Application } from '../../types/enums'; // Import Application enum
 
 const ListFaqs: React.FC = () => {
+  const { showToast } = useToast(); // Destructure showToast from useToast
+
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFAQ, setSelectedFAQ] = useState<IFAQ | null>(null);
   const [isCreateEditModalOpen, setIsCreateEditModalOpen] = useState(false);
@@ -44,23 +55,33 @@ const ListFaqs: React.FC = () => {
   };
 
   const handleSaveFAQ = async (formData: Partial<IFAQ>) => {
-    if (selectedFAQ) {
-      await updateFAQ({ id: selectedFAQ._id, data: formData });
-    } else {
-      await createFAQ(formData);
+    try {
+      if (selectedFAQ) {
+        await updateFAQ({ id: selectedFAQ._id, data: formData }).unwrap();
+        showToast('FAQ updated successfully!', 'success');
+      } else {
+        await createFAQ(formData).unwrap();
+        showToast('FAQ created successfully!', 'success');
+      }
+      setIsCreateEditModalOpen(false);
+    } catch (err) {
+      console.error('Failed to save FAQ:', err);
+      showToast('Failed to save FAQ. Please try again.', 'error');
     }
-    setIsCreateEditModalOpen(false);
   };
 
   const handleDeleteFAQ = async () => {
     if (selectedFAQ) {
-      await deleteFAQ(selectedFAQ._id);
-      setIsDeleteModalOpen(false);
+      try {
+        await deleteFAQ(selectedFAQ._id).unwrap();
+        setIsDeleteModalOpen(false);
+        showToast('FAQ deleted successfully!', 'success');
+      } catch (err) {
+        console.error('Failed to delete FAQ:', err);
+        showToast('Failed to delete FAQ. Please try again.', 'error');
+      }
     }
   };
-
-  if (isLoading) return <div>Loading FAQs...</div>;
-  if (error) return <div>Error loading FAQs</div>;
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto">
@@ -83,40 +104,88 @@ const ListFaqs: React.FC = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {faqs.map((faq) => (
-              <tr key={faq._id}>
-                <td className="px-4 py-2 text-sm text-gray-700">{faq.question}</td>
-                <td className="px-4 py-2 text-sm text-gray-700">{faq.application}</td>
-                <td className="px-4 py-2 text-right space-x-2">
-                  <Button
-                    variant="primary"
-                    leftIcon={<FaEdit />}
-                    onClick={() => openEditModal(faq)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    leftIcon={<FaTrash />}
-                    onClick={() => openDeleteModal(faq)}
-                  >
-                    Delete
-                  </Button>
+            {/* Loading State */}
+            {isLoading ? (
+              <tr>
+                <td className="px-4 py-2 text-sm text-gray-700" colSpan={3}>
+                  <div className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      ></path>
+                    </svg>
+                    Loading FAQs...
+                  </div>
                 </td>
               </tr>
-            ))}
+            ) : error ? (
+              /* Error State */
+              <tr>
+                <td className="px-4 py-2 text-sm text-red-500" colSpan={3}>
+                  Error loading FAQs. Please try again later.
+                </td>
+              </tr>
+            ) : faqs.length > 0 ? (
+              /* Display FAQs */
+              faqs.map((faq) => (
+                <tr key={faq._id}>
+                  <td className="px-4 py-2 text-sm text-gray-700">{faq.question}</td>
+                  <td className="px-4 py-2 text-sm text-gray-700">{faq.application}</td>
+                  <td className="px-4 py-2 text-right space-x-2">
+                    <Button
+                      variant="primary"
+                      leftIcon={<FaEdit />}
+                      onClick={() => openEditModal(faq)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="danger"
+                      leftIcon={<FaTrash />}
+                      onClick={() => openDeleteModal(faq)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              /* Empty List State */
+              <tr>
+                <td className="px-4 py-2 text-sm text-gray-700" colSpan={3}>
+                  No FAQs found. Click "Add FAQ" to create one.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Pagination */}
-      <div className="mt-4 flex justify-end">
-      <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      </div>
+      {totalPages > 1 && (
+        <div className="mt-4 flex justify-end">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        </div>
+      )}
 
       {/* Create/Edit Modal */}
       {isCreateEditModalOpen && (
@@ -129,9 +198,10 @@ const ListFaqs: React.FC = () => {
             onSubmit={(e) => {
               e.preventDefault();
               const formData = {
-                question: (e.target as any).question.value,
-                answer: (e.target as any).answer.value,
-                application: (e.target as any).application.value,
+                question: (e.target as any).question.value.trim(),
+                answer: (e.target as any).answer.value.trim(),
+                application: (e.target as any).application.value.trim(),
+                // Optionally, add createdBy or updatedBy fields here
               };
               handleSaveFAQ(formData);
             }}
@@ -157,12 +227,21 @@ const ListFaqs: React.FC = () => {
               </div>
               <div>
                 <label className="block text-gray-700">Application</label>
-                <input
+                <select
                   name="application"
                   defaultValue={selectedFAQ?.application || ''}
                   className="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
                   required
-                />
+                >
+                  <option value="" disabled>
+                    Select Application
+                  </option>
+                  {Object.values(Application).map((app) => (
+                    <option key={app} value={app}>
+                      {app}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="mt-6 flex justify-end space-x-4">
