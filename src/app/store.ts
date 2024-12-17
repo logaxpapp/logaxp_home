@@ -1,3 +1,4 @@
+import { faqApi } from './../api/faqApi';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import exampleReducer from '../store/slices/exampleSlice';
 import userReducer from '../store/slices/userSlice';
@@ -79,6 +80,7 @@ const rootReducer = combineReducers({
   [notificationApi.reducerPath]: notificationApi.reducer,
   [messageApi.reducerPath]: messageApi.reducer,
   [groupApi.reducerPath]: groupApi.reducer,
+  [faqApi.reducerPath]: faqApi.reducer,
 
 });
 
@@ -115,6 +117,7 @@ export const store = configureStore({
       notificationApi.middleware,
       messageApi.middleware,
       groupApi.middleware,
+      faqApi.middleware,
       
     ),
 });
