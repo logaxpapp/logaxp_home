@@ -14,10 +14,20 @@ import ConfirmModal from '../../components/common/Feedback/ConfirmModal';
 import { IFAQ } from '../../types/faq';
 import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 import { useToast } from '../../features/Toast/ToastContext';
-import { Application } from '../../types/enums'; // Import Application enum
+import { Link } from 'react-router-dom';
+
+
+export enum Application {
+  DocSend = 'DocSend',
+  TimeSync = 'TimeSync',
+  TaskBrick = 'TaskBrick',
+  Beautyhub = 'Beautyhub',
+  BookMiz = 'BookMiz',
+  GatherPlux = 'GatherPlux', 
+}
 
 const ListFaqs: React.FC = () => {
-  const { showToast } = useToast(); // Destructure showToast from useToast
+  const { showToast } = useToast();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFAQ, setSelectedFAQ] = useState<IFAQ | null>(null);
@@ -64,9 +74,10 @@ const ListFaqs: React.FC = () => {
         showToast('FAQ created successfully!', 'success');
       }
       setIsCreateEditModalOpen(false);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to save FAQ:', err);
-      showToast('Failed to save FAQ. Please try again.', 'error');
+      const errorMessage = err?.data?.message || 'Failed to save FAQ. Please try again.';
+      showToast(errorMessage, 'error');
     }
   };
 
@@ -76,9 +87,10 @@ const ListFaqs: React.FC = () => {
         await deleteFAQ(selectedFAQ._id).unwrap();
         setIsDeleteModalOpen(false);
         showToast('FAQ deleted successfully!', 'success');
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to delete FAQ:', err);
-        showToast('Failed to delete FAQ. Please try again.', 'error');
+        const errorMessage = err?.data?.message || 'Failed to delete FAQ. Please try again.';
+        showToast(errorMessage, 'error');
       }
     }
   };
@@ -144,7 +156,11 @@ const ListFaqs: React.FC = () => {
               /* Display FAQs */
               faqs.map((faq) => (
                 <tr key={faq._id}>
-                  <td className="px-4 py-2 text-sm text-gray-700">{faq.question}</td>
+                  <td className="px-4 py-2 text-sm text-gray-700">
+                    <Link to={`/faqs/${faq._id}`} className="text-blue-600 hover:underline">
+                      {faq.question}
+                    </Link>
+                  </td>
                   <td className="px-4 py-2 text-sm text-gray-700">{faq.application}</td>
                   <td className="px-4 py-2 text-right space-x-2">
                     <Button

@@ -1,18 +1,22 @@
+// src/api/faqApi.ts
+
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../app/store';
 import { setSessionExpired } from '../store/slices/sessionSlice';
 
 // Types
-interface IFAQ {
+export interface IFAQ {
   _id: string;
   question: string;
   answer: string;
-  application: string; // Enum can be enforced here
+  application: string; 
+  createdBy: string;   // string for simplicity
+  updatedBy?: string;
   createdAt: string;
   updatedAt: string;
 }
 
-interface IFAQListResponse {
+export interface IFAQListResponse {
   data: IFAQ[];
   total: number;
   page: number;
@@ -42,11 +46,8 @@ export const faqApi = createApi({
   },
   tagTypes: ['FAQs', 'FAQ'],
   endpoints: (builder) => ({
-    // Public: Get all FAQs
-    listFAQs: builder.query<
-      IFAQListResponse,
-      { application?: string; page?: number; limit?: number }
-    >({
+    // Public: Get all FAQs with pagination
+    listFAQs: builder.query<IFAQListResponse, { application?: string; page?: number; limit?: number }>({
       query: ({ application, page = 1, limit = 10 }) => ({
         url: 'faqs',
         params: { application, page, limit },

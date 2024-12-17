@@ -15,6 +15,7 @@ import { connectSocket } from './socket';
 // Lazy-loaded components
 const Home = lazy(() => import('./pages/Home/Home'));
 const FAQ = lazy(() => import('./pages/FAQ/FAQ'));
+const FAQDetail = lazy(() => import('./pages/FAQ/FAQDetail'));
 const About = lazy(() => import('./pages/About/About'));
 const Contact = lazy(() => import('./pages/ContactUs/ContactUs'));
 const PrivacyStatement = lazy(() => import('./pages/Privacy/PrivacyStatement'));
@@ -793,6 +794,14 @@ const App: React.FC = () => {
                       element={
                         <Suspense fallback={<Loader />}>
                           <ListFaqs />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="faqs/:id"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <FAQDetail />
                         </Suspense>
                       }
                     />
