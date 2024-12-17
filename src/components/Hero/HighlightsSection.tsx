@@ -29,7 +29,7 @@ const HighlightsSection = () => {
       className="
         relative py-12 px-4 md:px-8 lg:px-16 overflow-hidden
         bg-gradient-to-tr
-        from-[#dfe3e4] via-[#d7eef4] to-[#f0f3f4]
+        from-[#d5dbe1] via-[#d4e8ed] to-[#f0f3f4]
         dark:from-gray-800 dark:via-gray-700 dark:to-gray-700
       "
       variants={containerVariants}
@@ -38,7 +38,7 @@ const HighlightsSection = () => {
       viewport={{ once: true, amount: 0.3 }}
     >
       <div className="max-w-7xl mx-auto text-center mb-10 relative z-10">
-        <h2 className="font-primary text-3xl md:text-4xl font-bold dark:text-white mb-4">
+        <h2 className="font-primary text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
           Why Choose LogaXP?
         </h2>
         <p className="text-gray-500 dark:text-gray-300 text-sm md:text-base max-w-2xl mx-auto">
