@@ -11,7 +11,7 @@ const Hero: React.FC = () => {
   return (
     <>
       {/* Hero Section with Video Background */}
-      <section className="relative w-full h-[700px] px-4 md:px-8 lg:px-16 flex flex-col justify-center items-center overflow-hidden bg-gray-50 dark:bg-gray-900">
+      <section className="relative w-full h-[580px] px-4 md:px-8 lg:px-16 flex flex-col justify-center items-center overflow-hidden bg-gray-50 dark:bg-gray-900">
         {/* Background Video */}
         <div className="absolute inset-0 h-full w-full overflow-hidden z-0">
           <video
