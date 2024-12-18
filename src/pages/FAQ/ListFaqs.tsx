@@ -7,7 +7,7 @@ import {
   useUpdateFAQMutation,
   useDeleteFAQMutation,
 } from '../../api/faqApi';
-import Button from '../../components/common/Button/Button';
+import Button from './Button';
 import Pagination from '../../components/common/Pagination/Pagination';
 import Modal from '../../components/common/Feedback/Modal';
 import ConfirmModal from '../../components/common/Feedback/ConfirmModal';
@@ -15,7 +15,8 @@ import { IFAQ } from '../../types/faq';
 import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 import { useToast } from '../../features/Toast/ToastContext';
 import { Link } from 'react-router-dom';
-
+import { Tooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css'; // Ensure CSS is imported
 
 export enum Application {
   DocSend = 'DocSend',
@@ -23,7 +24,7 @@ export enum Application {
   TaskBrick = 'TaskBrick',
   Beautyhub = 'Beautyhub',
   BookMiz = 'BookMiz',
-  GatherPlux = 'GatherPlux', 
+  GatherPlux = 'GatherPlux',
 }
 
 const ListFaqs: React.FC = () => {
@@ -157,26 +158,42 @@ const ListFaqs: React.FC = () => {
               faqs.map((faq) => (
                 <tr key={faq._id}>
                   <td className="px-4 py-2 text-sm text-gray-700">
-                    <Link to={`/faqs/${faq._id}`} className="text-blue-600 hover:underline">
+                    <Link
+                      to={`/dashboard/faqs/${faq._id}`}
+                      className="text-blue-600 hover:underline"
+                    >
                       {faq.question}
                     </Link>
                   </td>
                   <td className="px-4 py-2 text-sm text-gray-700">{faq.application}</td>
-                  <td className="px-4 py-2 text-right space-x-2">
-                    <Button
-                      variant="primary"
-                      leftIcon={<FaEdit />}
-                      onClick={() => openEditModal(faq)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="danger"
-                      leftIcon={<FaTrash />}
-                      onClick={() => openDeleteModal(faq)}
-                    >
-                      Delete
-                    </Button>
+                  <td className="px-4 py-2 text-right">
+                    <div className="flex justify-end space-x-2">
+                      {/* Edit Button */}
+                      <Button
+                        variant="primary"
+                        iconOnly
+                        onClick={() => openEditModal(faq)}
+                        data-tooltip-id={`edit-tooltip-${faq._id}`}
+                        data-tooltip-content="Edit FAQ"
+                        aria-label="Edit FAQ"
+                      >
+                        <FaEdit />
+                      </Button>
+                      <Tooltip id={`edit-tooltip-${faq._id}`} place="top" />
+
+                      {/* Delete Button */}
+                      <Button
+                        variant="danger"
+                        iconOnly
+                        onClick={() => openDeleteModal(faq)}
+                        data-tooltip-id={`delete-tooltip-${faq._id}`}
+                        data-tooltip-content="Delete FAQ"
+                        aria-label="Delete FAQ"
+                      >
+                        <FaTrash />
+                      </Button>
+                      <Tooltip id={`delete-tooltip-${faq._id}`} place="top" />
+                    </div>
                   </td>
                 </tr>
               ))
