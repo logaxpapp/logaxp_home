@@ -97,7 +97,7 @@ const ListFaqs: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-white mt-4 rounded-lg shadow-md mx-auto">
+    <div className="p-6 bg-white mt-2 rounded-lg shadow-md mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">FAQs</h1>

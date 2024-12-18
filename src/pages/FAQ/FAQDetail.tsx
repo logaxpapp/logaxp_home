@@ -14,7 +14,7 @@ export enum Application {
     TaskBrick = 'TaskBrick',
     Beautyhub = 'Beautyhub',
     BookMiz = 'BookMiz',
-    GatherPlux = 'GatherPlux', 
+    GatherPlux = 'GatherPlux',
   }
 
 const FAQDetail: React.FC = () => {
@@ -33,7 +33,7 @@ const FAQDetail: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md mt-4 mx-auto">
+    <div className="p-6 bg-white rounded-lg shadow-md mt-2 mx-auto">
       <Link to="/dashboard/faqs">
         <Button variant="secondary" leftIcon={<FaArrowLeft />}>
           Back to FAQs
