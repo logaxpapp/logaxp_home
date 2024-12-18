@@ -34,7 +34,7 @@ const FAQDetail: React.FC = () => {
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md mt-4 mx-auto">
-      <Link to="/faqs">
+      <Link to="/dashboard/faqs">
         <Button variant="secondary" leftIcon={<FaArrowLeft />}>
           Back to FAQs
         </Button>
