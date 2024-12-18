@@ -67,6 +67,10 @@ const ListFaqs: React.FC = () => {
 
   const handleSaveFAQ = async (formData: Partial<IFAQ>) => {
     try {
+      if (!Object.values(Application).includes(formData.application as Application)) {
+        throw new Error(`Invalid application value: ${formData.application}`);
+      }
+  
       if (selectedFAQ) {
         await updateFAQ({ id: selectedFAQ._id, data: formData }).unwrap();
         showToast('FAQ updated successfully!', 'success');
@@ -81,6 +85,7 @@ const ListFaqs: React.FC = () => {
       showToast(errorMessage, 'error');
     }
   };
+  
 
   const handleDeleteFAQ = async () => {
     if (selectedFAQ) {
