@@ -66,6 +66,7 @@ const ListFaqs: React.FC = () => {
   };
 
   const handleSaveFAQ = async (formData: Partial<IFAQ>) => {
+    console.log('Form Data:', formData); // Ensure application is sent
     try {
       if (!Object.values(Application).includes(formData.application as Application)) {
         throw new Error(`Invalid application value: ${formData.application}`);
