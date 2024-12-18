@@ -97,7 +97,7 @@ const ListFaqs: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto">
+    <div className="p-6 bg-white mt-4 rounded-lg shadow-md mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">FAQs</h1>
@@ -177,7 +177,7 @@ const ListFaqs: React.FC = () => {
                         data-tooltip-content="Edit FAQ"
                         aria-label="Edit FAQ"
                       >
-                        <FaEdit />
+                        <FaEdit className='text-yellow-400'/>
                       </Button>
                       <Tooltip id={`edit-tooltip-${faq._id}`} place="top" />
 
@@ -190,7 +190,7 @@ const ListFaqs: React.FC = () => {
                         data-tooltip-content="Delete FAQ"
                         aria-label="Delete FAQ"
                       >
-                        <FaTrash />
+                        <FaTrash className='text-gray-50'/>
                       </Button>
                       <Tooltip id={`delete-tooltip-${faq._id}`} place="top" />
                     </div>
