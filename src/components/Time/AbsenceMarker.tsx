@@ -42,7 +42,7 @@ const AbsenceMarker: React.FC<AbsenceMarkerProps> = ({ employeeId }) => {
   }
 
   return (
-    <div className="p-4 bg-gray-100 rounded-lg shadow-sm mt-4">
+    <div className="p-4 bg-gray-100 rounded-lg shadow-sm mt-4 font-secondary">
       <h1 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-yellow-100">Mark Absence</h1>
   
       

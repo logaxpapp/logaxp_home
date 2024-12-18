@@ -23,7 +23,7 @@ const FilterByShiftDropdown: React.FC<Props> = ({ onChange }) => {
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 font-secondary">
       <label htmlFor="shift-filter" className="block text-sm font-medium text-gray-700">
         Filter by Shift
       </label>

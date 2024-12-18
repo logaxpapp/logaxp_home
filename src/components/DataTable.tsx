@@ -66,10 +66,10 @@ const DataTable = <T extends { _id: string }>({
   }, [sortedData, page, rowsPerPage]);
 
   return (
-    <div className="overflow-x-auto md:overflow-visible">
-      <table className="min-w-full divide-y divide-gray-200">
+    <div className="overflow-x-auto md:overflow-visible dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:text-gray-50">
+      <table className="min-w-full divide-y divide-gray-200 ">
         {/* Table Header */}
-        <thead className="bg-gray-50 font-primary">
+        <thead className="bg-gray-50 font-primary dark:bg-gray-700 dark:text-gray-50">
           <tr>
             {columns.map((column) => (
               <th
@@ -78,7 +78,7 @@ const DataTable = <T extends { _id: string }>({
                 className="px-2 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                 onClick={() => handleRequestSort(column.id)}
               >
-                <div className="flex items-center">
+                <div className="flex items-center dark:text-gray-50">
                   {column.label}
                   <svg
                     className={`ml-1 h-4 w-4 transform transition-transform ${
@@ -103,7 +103,7 @@ const DataTable = <T extends { _id: string }>({
         </thead>
 
         {/* Table Body */}
-        <tbody className="bg-white divide-y divide-gray-200 font-secondary">
+        <tbody className="bg-white divide-y divide-gray-200 font-secondary dark:bg-gray-700 dark:text-gray-50">
           {paginatedData.map((row) => (
             <tr
               key={row._id}
@@ -113,7 +113,7 @@ const DataTable = <T extends { _id: string }>({
               {columns.map((column) => (
                 <td
                   key={column.id}
-                  className="px-2 md:px-6 py-4 whitespace-nowrap text-xs md:text-sm text-gray-700"
+                  className="px-2 md:px-6 py-4 whitespace-nowrap text-xs md:text-sm text-gray-700 dark:text-gray-50"
                 >
                   {column.renderCell ? column.renderCell(row) : (row as any)[column.id] ?? 'N/A'}
                 </td>
@@ -156,13 +156,13 @@ const DataTable = <T extends { _id: string }>({
           </div>
 
           {/* Page Navigation */}
-          <div className="flex space-x-3">
+          <div className="flex space-x-3 dark:text-gray-700">
             <button
               onClick={() => handleChangePage(page - 1)}
               disabled={page === 0}
               className={`px-3 py-2 border border-gray-300 text-xs md:text-sm font-medium rounded-md ${
                 page === 0
-                  ? 'text-gray-300 bg-gray-50 cursor-not-allowed'
+                  ? 'text-gray-300 dark:text-gray-700 bg-gray-50 cursor-not-allowed'
                   : 'text-gray-700 bg-white hover:bg-gray-100'
               }`}
             >

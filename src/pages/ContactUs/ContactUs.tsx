@@ -1,12 +1,12 @@
 import React from 'react';
-import banner from '../../assets/images/contactus.png';
+import banner from '../../assets/images/contact.png';
 import contactUs from '../../assets/images/contact-banner.jpg';
 
 const ContactUs: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex flex-col items-center ">
       {/* Banner Section */}
-      <div className="relative w-full h-96 mb-10">
+      <div className="relative w-full h-40 mb-10">
         <img
           src={banner}
           alt="Contact Banner"

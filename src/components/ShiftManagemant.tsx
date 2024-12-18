@@ -43,7 +43,7 @@ const ShiftManagement: React.FC = () => {
   const [currentView, setCurrentView] = useState<ShiftManagementView>(ShiftManagementView.Shifts);
 
   return (
-    <div className="p-4 sm:p-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
+    <div className="p-4 sm:p-6 bg-gray-100 dark:bg-gray-900 min-h-screen font-secondary">
       {/* Header Section */}
       <header className="flex flex-col md:flex-row justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
@@ -60,7 +60,7 @@ const ShiftManagement: React.FC = () => {
               onClick={() => setCurrentView(view as ShiftManagementView)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
                 currentView === view
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
               }`}
               aria-pressed={currentView === view}

@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     { name: 'Scheduling', path: '/dashboard/scheduling', icon: <FaCalendarAlt /> },
     { name: 'Admin', path: '/dashboard/admin', icon: <FaUserCog /> },
     { name: 'Survey', path: '/dashboard/manage-surveys', icon: <FaSass /> },
-    { name: 'Support', path: '/dashboard/support', icon: <FaBell /> },
+    { name: 'Admin Support', path: '/dashboard/admin/support', icon: <FaBell /> },
     { name: 'Faqs', path: '/dashboard/faqs', icon: <FaBell /> },
   ];
 
@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         key={link.name}
         to={link.path}
         className={({ isActive }) =>
-          `flex items-center p-2 my-1 rounded-md text-[12.5px] font-medium transition-colors duration-150 ${
+          `flex items-center p-2 my-1 rounded-md text-[12px] font-medium transition-colors duration-150 ${
             isActive
               ? 'bg-teal-600 text-white shadow-sm'
               : 'text-gray-100 hover:bg-teal-300 hover:bg-opacity-60'
@@ -129,9 +129,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               <NavLink to="/" className="text-white hover:text-gray-300">
                 <FaHome size={20} />
               </NavLink>
-              <h1 className="text-xl font-bold text-white font-primary tracking-wider">
-                LOGAXP
-              </h1>
+              <div className="text-white tracking-wider">
+                LogaXP
+              </div>
             </div>
             <button
               onClick={toggleSidebar}

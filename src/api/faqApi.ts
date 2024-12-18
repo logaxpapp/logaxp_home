@@ -14,6 +14,7 @@ export interface IFAQ {
   updatedBy?: string;
   createdAt: string;
   updatedAt: string;
+  published: boolean;
 }
 
 export interface IFAQListResponse {
@@ -44,7 +45,7 @@ export const faqApi = createApi({
 
     return result;
   },
-  tagTypes: ['FAQs', 'FAQ'],
+  tagTypes: ['ApplicationFAQs', 'FAQ'],
   endpoints: (builder) => ({
     // Public: Get all FAQs with pagination
     listFAQs: builder.query<IFAQListResponse, { application?: string; page?: number; limit?: number }>({
@@ -56,9 +57,9 @@ export const faqApi = createApi({
         result
           ? [
               ...result.data.map(({ _id }) => ({ type: 'FAQ' as const, id: _id })),
-              { type: 'FAQs', id: 'LIST' },
+              { type: 'ApplicationFAQs', id: 'LIST' },
             ]
-          : [{ type: 'FAQs', id: 'LIST' }],
+          : [{ type: 'ApplicationFAQs', id: 'LIST' }],
     }),
 
     // Admin: Create FAQ
@@ -68,7 +69,7 @@ export const faqApi = createApi({
         method: 'POST',
         body,
       }),
-      invalidatesTags: [{ type: 'FAQs', id: 'LIST' }],
+      invalidatesTags: [{ type: 'ApplicationFAQs', id: 'LIST' }],
     }),
 
     // Admin: Update FAQ
@@ -87,13 +88,45 @@ export const faqApi = createApi({
         url: `faqs/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: [{ type: 'FAQs', id: 'LIST' }],
+      invalidatesTags: [{ type: 'ApplicationFAQs', id: 'LIST' }],
     }),
 
     // Get FAQ by ID
     getFAQById: builder.query<IFAQ, string>({
       query: (id) => `faqs/${id}`,
       providesTags: (result, error, id) => [{ type: 'FAQ', id }],
+    }),
+
+    getPublishedFAQs: builder.query<IFAQListResponse, { application?: string; page?: number; limit?: number }>({
+      query: ({ application, page = 1, limit = 10 }) => ({
+        url: 'faqs/published',
+        params: { application, page, limit },
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ _id }) => ({ type: 'FAQ' as const, id: _id })),
+              { type: 'ApplicationFAQs', id: 'PUBLISHED_LIST' },
+            ]
+          : [{ type: 'ApplicationFAQs', id: 'PUBLISHED_LIST' }],
+    }),
+
+    // New: Publish FAQ
+    publishFAQ: builder.mutation<{ message: string }, string>({
+      query: (id) => ({
+        url: `faqs/${id}/publish`,
+        method: 'PUT',
+      }),
+      invalidatesTags: (result, error, id) => [{ type: 'FAQ', id }],
+    }),
+
+    // New: Unpublish FAQ
+    unpublishFAQ: builder.mutation<{ message: string }, string>({
+      query: (id) => ({
+        url: `faqs/${id}/unpublish`,
+        method: 'PUT',
+      }),
+      invalidatesTags: (result, error, id) => [{ type: 'FAQ', id }],
     }),
   }),
 });
@@ -104,4 +137,7 @@ export const {
   useUpdateFAQMutation,
   useDeleteFAQMutation,
   useGetFAQByIdQuery,
+  useGetPublishedFAQsQuery,
+  usePublishFAQMutation,
+  useUnpublishFAQMutation,
 } = faqApi;

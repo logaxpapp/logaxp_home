@@ -302,8 +302,8 @@ const AdminUser: React.FC = () => {
     <div className="bg-blue-50 p-4">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg">
-        <h1 className="text-2xl font-semibold text-blue-800 font-primary">Admin Users</h1>
-        <div className="flex space-x-4">
+        <h1 className="text-xl font-semibold text-blue-800 font-primary">Admin Users</h1>
+        <div className="flex space-x-4 font-secondary">
           {/* Search Input */}
           <input
             type="text"

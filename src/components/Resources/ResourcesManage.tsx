@@ -3,11 +3,10 @@ import ResourceList from './ResourceList';
 import PolicyAcknowledgement from './PolicyAcknowledgement';
 import UserResources from './UserResources';
 
-
 const ResourcesManage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'resourceList' | 'policyAcknowledgement' | 'userResources'>(
-    'resourceList'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'resourceList' | 'policyAcknowledgement' | 'userResources'
+  >('resourceList');
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -23,61 +22,62 @@ const ResourcesManage: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 min-h-screen">
+    <div className="bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 min-h-screen font-secondary">
       {/* Header */}
-      <div className="bg p-6 text-gray-600 shadow-md">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Resource Management</h1>
-          <p className="text-sm opacity-90">
-            Manage your resources, policies, and user-specific information in one place.
+      <header className="bg-gray-50 text-gray-700 dark:text-white shadow-md p-4 sm:p-6">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl sm:text-3xl font-bold">Resource Management</h1>
+          <p className="text-sm sm:text-base italic mt-2 sm:mt-0">
+            Empowering users with efficient resource handling
           </p>
         </div>
-      </div>
+      </header>
 
       {/* Navigation Tabs */}
-      <div className="max-w-7xl mx-auto mt-4">
-        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
-          <div className="flex justify-between border-b dark:border-gray-700">
-            <button
-              onClick={() => setActiveTab('resourceList')}
-              className={`w-1/3 py-3 text-center font-semibold transition-all ${
-                activeTab === 'resourceList'
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-              }`}
-            >
-              Resource List
-            </button>
-            <button
-              onClick={() => setActiveTab('policyAcknowledgement')}
-              className={`w-1/3 py-3 text-center font-semibold transition-all ${
-                activeTab === 'policyAcknowledgement'
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-              }`}
-            >
-              Policy Acknowledgement
-            </button>
-            <button
-              onClick={() => setActiveTab('userResources')}
-              className={`w-1/3 py-3 text-center font-semibold transition-all ${
-                activeTab === 'userResources'
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-              }`}
-            >
-              User Resources
-            </button>
-          </div>
+      <div className="max-w-7xl mx-auto mt-8 px-4">
+        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+          {/* Sticky Tabs (Optional) */}
+          <nav
+            className="flex overflow-x-auto border-b dark:border-gray-700"
+            role="tablist"
+            aria-label="Resource Management Tabs"
+          >
+            {[
+              { id: 'resourceList', label: 'Resource List' },
+              { id: 'policyAcknowledgement', label: 'Policy Acknowledgement' },
+              { id: 'userResources', label: 'User Resources' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-controls={`tabpanel-${tab.id}`}
+                id={`tab-${tab.id}`}
+                className={`flex-shrink-0 px-6 py-3 text-center font-semibold text-lg transition-all duration-300 focus:outline-none whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white border-b-2 border-teal-800'
+                    : 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-teal-500 hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
       </div>
 
       {/* Active Tab Content */}
-      <div className=" mx-auto mt-6">
-        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+      <main className="max-w-7xl mx-auto mt-8 px-4">
+        <div
+          className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 sm:p-8 transition-all duration-500"
+          role="tabpanel"
+          id={`tabpanel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
+        >
           {renderActiveTab()}
         </div>
-      </div>
+      </main>
     </div>
   );
 };

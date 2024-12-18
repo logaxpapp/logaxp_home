@@ -119,7 +119,7 @@ const MyTicket: React.FC = () => {
   };
 
   return (
-    <div className="p-4 min-h-screen bg-gray-50 dark:bg-gray-700 ">
+    <div className="p-4 min-h-screen bg-gray-50 dark:bg-gray-700 font-secondary">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-semibold text-blue-800 dark:text-blue-500 font-primary flex items-center">

@@ -14,19 +14,19 @@ const MySurveyList: React.FC = () => {
   const [currentView, setCurrentView] = useState<SurveyManagementView>(SurveyManagementView.MySurveys);
 
   return (
-    <div className="mx-auto p-6">
+    <div className="mx-auto p-6 font-secondary">
       <div className="bg-white min-h-screen dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
         
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <h2 className="text-3xl font-semibold text-gray-800 dark:text-gray-200">Survey Management</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Survey Management</h2>
           <div className="text-gray-500 dark:text-gray-400 flex space-x-4">
             {Object.values(SurveyManagementView).map((view) => (
               <button
                 key={view}
                 className={`flex items-center space-x-2 px-3 py-2 rounded-md focus:outline-none transition-colors duration-200 ${
                   currentView === view
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
                     : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
                 onClick={() => setCurrentView(view)}

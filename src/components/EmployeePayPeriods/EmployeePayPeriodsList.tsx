@@ -171,13 +171,14 @@ const EmployeePayPeriodsList: React.FC<EmployeePayPeriodsListProps> = ({ payPeri
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-4 mx-auto">
-        <h2 className="text-2xl font-semibold text-gray-800">Employee Pay Periods</h2>
+        <h2 className="text-xl font-semibold text-gray-800">Employee Pay Periods</h2>
         <Button
           variant="primary"
           size="medium"
           leftIcon={<FaPlus />}
           onClick={() => navigate('/dashboard/employeePayPeriods/create')}
           aria-label="Create Employee Pay Period"
+          className="mr-4 bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900 "
         >
           Create
         </Button>

@@ -160,7 +160,9 @@ const ResourceList: React.FC = () => {
         <p className="text-center text-red-500 font-medium">Error loading resources.</p>
       ) : (
         <>
+        <div className="flex justify-center  overflow-auto">
           <DataTable data={data?.resources || []} columns={columns} />
+          </div>
           <div className="mt-4 flex justify-center">
             <Pagination
               currentPage={page}

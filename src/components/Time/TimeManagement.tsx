@@ -35,15 +35,15 @@ const TimeManagement: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-6 min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold text-blue-800 pb-4 border-b border-gray-300 font-primary">
+    <div className=" mx-auto p-6 min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900">
+      <header className="mb-8">
+        <h1 className="text-2xl font-extrabold text-blue-900 dark:text-white pb-4 border-b border-gray-300 dark:border-gray-700 font-primary">
           Time Management
         </h1>
       </header>
 
       {/* Navigation Buttons */}
-      <nav className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
+      <nav className="grid grid-cols-1 sm:grid-cols-5 gap-6 mb-8 font-secondary">
         {[
           { id: 'TimeEntryList', label: 'Time Entries', icon: FaList },
           { id: 'ShiftTimeEntryList', label: 'Shifts', icon: FaClock },
@@ -54,11 +54,11 @@ const TimeManagement: React.FC = () => {
           <button
             key={id}
             onClick={() => setActiveComponent(id as typeof activeComponent)}
-            className={`flex items-center justify-center p-3 rounded-md text-sm font-medium ${
-              activeComponent === id ? 'bg-blue-100 text-blue-600' : 'bg-white text-gray-600'
-            } border border-gray-200 hover:bg-blue-50`}
+            className={`flex items-center justify-center p-2 rounded-lg text-base font-semibold shadow-md transition-all duration-300 ${
+              activeComponent === id ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white' : 'bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+            } border border-gray-300 dark:border-gray-700 hover:bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  hover:text-white`}
           >
-            <Icon className="mr-2" />
+            <Icon className="mr-2 text-xl" />
             {label}
           </button>
         ))}
@@ -66,7 +66,7 @@ const TimeManagement: React.FC = () => {
 
       {/* Filter Dropdown (Conditionally Rendered) */}
       {activeComponent === 'AbsenceMarker' && (
-        <div className="mb-6">
+        <div className="mb-8">
           <FilterByEmployeeDropdown
             value={selectedEmployee}
             onChange={(id) => setSelectedEmployee(id)}
@@ -75,7 +75,9 @@ const TimeManagement: React.FC = () => {
       )}
 
       {/* Dynamic Content Rendering */}
-      <main className='p-10'>{renderComponent()}</main>
+      <main className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-1 transition-all duration-500">
+        {renderComponent()}
+      </main>
     </div>
   );
 };

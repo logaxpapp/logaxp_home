@@ -54,7 +54,7 @@ const AdminSupportDashboard: React.FC = () => {
   };
 
   return (
-    <div className=" mx-auto p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-lg">
+    <div className=" mx-auto p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-lg font-secondary">
       {/* Notification */}
       {notification && (
         <div
@@ -121,13 +121,13 @@ const AdminSupportDashboard: React.FC = () => {
 
       {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-3xl font-bold text-blue-500 dark:text-gray-100">Admin Support Dashboard</h2>
+        
         <div className="flex space-x-4 mt-4 md:mt-0">
           <Button
             onClick={() => setSelectedTab('tickets')}
             className={`px-4 py-2 rounded-md ${
               selectedTab === 'tickets'
-                ? 'bg-lemonGreen-light text-white'
+                ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
                 : 'bg-gray-300 dark:bg-gray-700 dark:text-gray-200 text-gray-700'
             }`}
           >
@@ -137,7 +137,7 @@ const AdminSupportDashboard: React.FC = () => {
             onClick={() => setSelectedTab('faqs')}
             className={`px-4 py-2 rounded-md ${
               selectedTab === 'faqs'
-                ? 'bg-lemonGreen-light text-white'
+                ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
                 : 'bg-gray-300 dark:bg-gray-700 dark:text-gray-200 text-gray-700'
             }`}
           >

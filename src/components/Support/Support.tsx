@@ -9,10 +9,10 @@ const Support: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'faqs' | 'tickets' | 'newTicket'|'AdminSupportDashboard'  >('tickets');
 
   return (
-    <div className="p-16 mx-auto bg-gray-50 dark:bg-gray-900 rounded-lg shadow-lg">
+    <div className="p-8 mx-auto bg-gray-50 dark:bg-gray-900 rounded-lg shadow-lg">
       {/* Header */}
-      <header className="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-gray-700 shadow-lg p-4">
-        <h2 className="text-3xl font-bold text-blue-700 dark:text-gray-100 font-primary">Support Center</h2>
+      
+       
         <DropdownMenu
           options={[
             { label: 'FAQs', onClick: () => setActiveTab('faqs') },
@@ -21,7 +21,7 @@ const Support: React.FC = () => {
             { label: 'Admin', onClick: () => setActiveTab('AdminSupportDashboard') },
           ]}
         />
-      </header>
+   
 
       {/* Tabs */}
       <div className="mt-6">

@@ -87,7 +87,8 @@ const PayPeriodTimeEntryList: React.FC = () => {
 
   return (
     <div className="p-6 bg-white rounded shadow m-6">
-      <h2 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-yellow-100">
+      <h2 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-gradient-to-t
+           from-teal-600 via-cyan-900 to-gray-900 text-white">
         Pay Period Time Entries
       </h2>
   

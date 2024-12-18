@@ -107,7 +107,7 @@ const SettingsManagement: React.FC = () => {
   if (error) return <div>Error loading settings</div>;
 
   return (
-    <div className="bg-gray-50 shadow-lg rounded-lg p-8 w-full mb-20 mx-auto mt-10">
+    <div className="bg-gray-50 shadow-lg rounded-lg p-8 w-full mb-20 mx-auto mt-10 font-secondary">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-2xl font-semibold font-primary text-blue-800">
           Settings Management

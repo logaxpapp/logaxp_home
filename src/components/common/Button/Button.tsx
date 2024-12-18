@@ -6,7 +6,7 @@ import { FaSpinner } from 'react-icons/fa';
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary: 'bg-lemonGreen-light hover:bg-lemonGreen-dark text-white',
-  secondary: 'bg-gray-500 hover:bg-gray-600 text-white',
+  secondary: 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  hover:bg-gray-600 text-white',
   danger: 'bg-red-500 hover:bg-red-600 text-white',
   link: 'bg-transparent hover:underline text-lemonGreen-light',
   outline: 'bg-transparent border-2 border-lemonGreen-light text-lemonGreen-light hover:bg-lemonGreen-light hover:text-white',

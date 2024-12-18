@@ -72,13 +72,13 @@ const IncidentList: React.FC = () => {
     },
   ];
 
-  const totalPages = data?.total ? Math.ceil(data.total / limit) : 1; // Ensure totalPages defaults to 1 if data.total is undefined
+  const totalPages = data?.total ? Math.ceil(data.total / limit) : 1; 
 
   return (
-    <div className="p-8 bg-gray-50 rounded-lg shadow-lg">
+    <div className="p-8 bg-gray-50 rounded-lg shadow-lg font-secondary">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Incident Management</h2>
-        <Button onClick={() => setIsCreateModalOpen(true)} variant="danger">
+        <Button onClick={() => setIsCreateModalOpen(true)} variant="danger" className='bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900 '>
           + Post Incident
         </Button>
       </div>

@@ -91,15 +91,16 @@ const Appraisal: React.FC = () => {
   };
 
   return (
-    <div className="bg-blue-50 p-4">
+    <div className="bg-blue-50 p-4 font-secondary">
       <div className="justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg">
         {/* Header */}
         <div className="px-6 py-4 border-b border-amber-200 dark:border-gray-700 flex items-center justify-between">
-          <h2 className="text-3xl font-semibold text-gray-800 dark:text-gray-200">Appraisal Management</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Appraisal Management</h2>
           <div className="flex space-x-3">
             <Button
               variant={activeTab === 'Questions' ? 'outline' : 'primary'}
               onClick={() => handleTabChange('Questions')}
+              className='bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900 '
             >
               Questions
             </Button>

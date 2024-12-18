@@ -91,7 +91,7 @@ const ChangeRequestDetail = lazy(() => import('./components/changeRequest/Change
 const ArticleList = lazy(() => import('./components/Article/ArticleList'));
 const ArticleDetail = lazy(() => import('./components/Article/ArticleDetail'));
 const ArticleEditor = lazy(() => import('./components/Article/ArticleEditor'));
-const  AdminArticleList = lazy(() => import('./components/Article/AdminArticleList'));
+const AdminArticleList = lazy(() => import('./components/Article/AdminArticleList'));
 const UserArticleList = lazy(() => import('./components/Article/UserArticleList'));
 const Notifications = lazy(() => import('./components/Notifications/Notifications'));
 const Chat = lazy(() => import('./components/Chat/Chat'));

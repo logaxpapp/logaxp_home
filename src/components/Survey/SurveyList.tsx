@@ -106,17 +106,7 @@ const SurveyList: React.FC = () => {
 
   return (
     <div className="bg-blue-50 p-4">
-      <div className="flex justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg">
-        <h2 className="text-3xl font-bold text-blue-800">Survey List</h2>
-        <Button
-          variant="primary"
-          size="medium"
-          className="flex items-center"
-          onClick={() => navigate('/dashboard/create-survey')}
-        >
-          <FaPlus className="mr-2" /> Create Survey
-        </Button>
-      </div>
+      
 
       <DataTable data={surveys || []} columns={columns} />
 

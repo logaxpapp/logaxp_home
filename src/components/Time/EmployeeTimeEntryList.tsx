@@ -100,8 +100,9 @@ const EmployeeTimeEntryList: React.FC = () => {
   const { data: timeEntries = [], pagination } = timeEntriesResponse || {};
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-yellow-100">Employee Time Entries</h1>
+    <div className="p-6 bg-white rounded-lg shadow-md font-secondary">
+      <h1 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-gradient-to-t
+           from-teal-600 via-cyan-900 to-gray-900 text-white">Employee Time Entries</h1>
   
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
         <FilterByEmployeeDropdown

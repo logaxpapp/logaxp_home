@@ -41,7 +41,7 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
   const selectedOption = options.find((option) => option.value === value) || null;
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 font-secondary">
       {label && (
         <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-50">
           {label}

@@ -104,10 +104,11 @@ const TimeEntryList: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-yellow-100">Time Entries</h2>
+      <h2 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-gradient-to-t
+           from-teal-600 via-cyan-900 to-gray-900 text-white">Time Entries</h2>
       <div className="mb-4">
         <select
-          className="border p-2 rounded"
+          className="border p-1 rounded  font-primary"
           value={selectedEmployee || ''}
           onChange={(e) => setSelectedEmployee(e.target.value || null)}
         >

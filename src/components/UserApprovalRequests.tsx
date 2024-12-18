@@ -6,10 +6,7 @@ import {
   useProcessApprovalRequestMutation,
 } from '../api/approvalsApi';
 import DataTable, { Column } from './DataTable';
-import {
-  IApprovalRequest,
-  IProcessApprovalPayload,
-} from '../types/approval';
+import {IApprovalRequest, IProcessApprovalPayload,} from '../types/approval';
 import ConfirmationDialog from './ConfirmationDialog';
 import Notification from './Notification';
 import AddStepDialog from './AddStepModal';
@@ -225,9 +222,9 @@ const UserApprovalRequests: React.FC = () => {
   }, [approvalRequests, searchTerm, statusFilter]);
 
   return (
-    <div className="bg-blue-50 p-4">
-       <h1 className="text-2xl font-semibold mb-6 text-blue-800 font-primary">My Approval Requests</h1>
-      <div className=" justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg">
+    <div className="bg-blue-50 p-4 dark:bg-gray-700">
+       <h1 className="text-xl font-semibold mb-6 text-gray-800 font-primary dark:text-lemonGreen-light">My Approval Requests</h1>
+      <div className=" justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg dark:bg-gray-700">
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0 font-primary">
           {/* Search and Filter */}
@@ -271,7 +268,7 @@ const UserApprovalRequests: React.FC = () => {
             <Link to="/dashboard/create-approval">
               <button
                 disabled={isLoading || isDeleting}
-                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50"
+                className="flex items-center px-4 py-2 bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50"
                 aria-label="Create new approval request"
               >
                 <FaPlusCircle className="mr-2" /> Create Request
@@ -281,7 +278,7 @@ const UserApprovalRequests: React.FC = () => {
         </div>
 
         {/* Data Table */}
-        <div className="overflow-x-auto mb-20 font-secondary">
+        <div className="overflow-x-auto mb-20 font-secondary ">
           {isLoading ? (
             <div className="flex justify-center items-center h-48">
               <Loader /> {/* Display the Loader component */}

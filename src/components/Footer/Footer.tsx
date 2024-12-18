@@ -10,7 +10,7 @@ import {
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-900 text-gray-400 py-12">
+    <footer className="bg-gray-900 text-gray-400 py-12 font-primary">
       {/* Newsletter Section */}
       <div className="bg-gray-800 py-8 max-w-7xl mx-auto">
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6">

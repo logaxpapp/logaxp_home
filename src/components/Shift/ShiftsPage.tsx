@@ -54,9 +54,9 @@ const ShiftsPage: React.FC = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 bg-white p-6 shadow-lg transform md:relative md:translate-x-0 transition-transform duration-200 ease-in-out ${
+        className={`fixed inset-y-0 left-0 bg-white p-6 shadow-lg transform md:relative md:translate-x-0 transition-transform font-secondary text-[14px] duration-200 ease-in-out ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:w-1/6 z-20`}
+        } md:w-1/7 z-20`}
         aria-label="Sidebar Navigation"
       >
         <h2 className="text-xl font-bold text-gray-800 mb-6">Shift Categories</h2>
@@ -69,7 +69,7 @@ const ShiftsPage: React.FC = () => {
             }}
             className={`flex items-center w-full px-4 py-2 rounded-md font-medium transition-colors ${
               currentView === 'myShifts'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
@@ -85,7 +85,7 @@ const ShiftsPage: React.FC = () => {
             }}
             className={`flex items-center w-full px-4 py-2 rounded-md font-medium transition-colors ${
               currentView === 'openShifts'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
@@ -102,7 +102,7 @@ const ShiftsPage: React.FC = () => {
               }}
               className={`flex items-center w-full px-4 py-2 rounded-md font-medium transition-colors ${
                 currentView === 'pendingApprovalShifts'
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
@@ -119,7 +119,7 @@ const ShiftsPage: React.FC = () => {
             }}
             className={`flex items-center w-full px-4 py-2 rounded-md font-medium transition-colors ${
               currentView === 'calendar'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
@@ -135,7 +135,7 @@ const ShiftsPage: React.FC = () => {
             }}
             className={`flex items-center w-full px-4 py-2 rounded-md font-medium transition-colors ${
               currentView === 'integrateGoogle'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >

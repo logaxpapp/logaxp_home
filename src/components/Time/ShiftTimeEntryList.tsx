@@ -80,7 +80,8 @@ const ShiftTimeEntryList: React.FC = () => {
 
   return (
     <div className="p-6 bg-white rounded shadow">
-      <h2 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-yellow-100">Shift Time Entries</h2>
+      <h2 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-gradient-to-t
+           from-teal-600 via-cyan-900 to-gray-900 text-white">Shift Time Entries</h2>
   
       <FilterByShiftDropdown onChange={(shift) => setSelectedShift(shift?._id || null)} />
   

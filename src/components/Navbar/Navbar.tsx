@@ -40,6 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
           before:animate-twinkle
           before:pointer-events-none
         text-white
+        font-head
       "
     >
      
@@ -64,11 +65,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
       </button>
 
       {/* Center Content */}
-      <div className="flex flex-col text-left">
-        <h2 className="font-semibold text-base items-start">Welcome !</h2>
-        <p className="text-sm text-gray-200 dark:text-gray-300">
+      <div className="flex flex-col text-left font-head">
+        <div className="font-semibold text-base items-start">Welcome !</div>
+        <span className="text-sm text-gray-200 dark:text-gray-300">
           {user?.name || 'User'}
-        </p>
+        </span>
       </div>
 
       {/* Right-side Controls */}

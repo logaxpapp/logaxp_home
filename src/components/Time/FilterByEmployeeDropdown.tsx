@@ -37,6 +37,7 @@ const FilterByEmployeeDropdown: React.FC<FilterByEmployeeDropdownProps> = ({
         onChange={onChange}
         isLoading={isLoading}
         placeholder="Select an Employee"
+
       />
     </div>
   );

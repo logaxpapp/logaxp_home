@@ -38,7 +38,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-gray-50 dark:bg-gray-900 shadow-md py-4">
+    <header className="bg-gray-50 font-primary dark:bg-gray-900 shadow-md py-4">
       <div className="container mx-auto px-4 flex justify-between items-center">
         {/* Logo Section */}
         <div className="flex items-center space-x-2">

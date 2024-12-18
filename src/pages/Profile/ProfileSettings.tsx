@@ -42,7 +42,7 @@ const ProfileSetting: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 px-4 md:px-8">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 px-4 md:px-8 font-secondary">
       <div className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-lg shadow-md">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center justify-between pb-4 mb-6 border-b border-gray-200 dark:border-gray-700">
@@ -73,7 +73,7 @@ const ProfileSetting: React.FC = () => {
               onClick={() => setCurrentTab(tab.key)}
               className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 currentTab === tab.key
-                  ? 'bg-lemonGreen-light text-white shadow-md'
+                  ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white shadow-md'
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-green-700 hover:text-white'
               }`}
             >

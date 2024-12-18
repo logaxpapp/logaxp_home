@@ -50,13 +50,13 @@ const PolicyAcknowledgement: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between">
           <div>
             <h1 className="text-xl font-extrabold mb-2 font-primary text-blue-500">Policy Acknowledgement</h1>
-            <p className="text-lg">
-              Review and acknowledge your company's policies. Ensure you are up-to-date with the latest information.
+            <p className="text-sm">
+              Review and acknowledge your company's policies. Click on a policy to view and acknowledge it.
             </p>
           </div>
           <div className="mt-4 sm:mt-0 text-right">
-            <p className="text-sm font-medium">Welcome,</p>
-            <h2 className="text-2xl font-bold">{currentUser?.name || 'User'}</h2>
+           
+            <h2 className="text-xl font-bold">{currentUser?.name || 'User'}</h2>
             {currentUser?.department && <p className="text-sm italic">{currentUser.department}</p>}
           </div>
         </div>

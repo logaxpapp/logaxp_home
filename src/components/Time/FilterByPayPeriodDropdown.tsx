@@ -18,7 +18,7 @@ const FilterByPayPeriodDropdown: React.FC<Props> = ({ onChange }) => {
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 font-secondary">
       <label htmlFor="pay-period-filter" className="block text-sm font-medium text-gray-700">
         Filter by Pay Period
       </label>

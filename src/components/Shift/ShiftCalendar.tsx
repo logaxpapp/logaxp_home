@@ -244,7 +244,7 @@ const ShiftCalendar: React.FC = () => {
           border: '',
           opacity: 1,
           cursor: 'pointer',
-          fontSize: '13px',
+          fontSize: '11px',
           fontWeight: '600',
         },
       };
@@ -257,7 +257,7 @@ const ShiftCalendar: React.FC = () => {
         borderRadius: '4px',
         opacity: 0.8,
         cursor: 'pointer',
-        fontSize: '13px',
+        fontSize: '11px',
         fontWeight: '600',
 
       },
@@ -306,7 +306,7 @@ const ShiftCalendar: React.FC = () => {
 
       {/* Calendar Component */}
       {!isShiftsLoading && !isGoogleEventsFetching && (
-        <div className="w-full bg-white rounded-lg shadow-md overflow-hidden dark:bg-gray-900">
+        <div className="w-full bg-white rounded-lg shadow-md overflow-hidden dark:bg-gray-900 font-secondary">
           <Calendar
             localizer={localizer}
             events={events}
