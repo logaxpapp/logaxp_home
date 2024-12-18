@@ -17,8 +17,8 @@ import { IFAQ } from '../../types/applicationFAQS';
 import { FaEdit, FaPlus, FaTrash, FaCheckCircle, FaTimesCircle, FaEllipsisV } from 'react-icons/fa';
 import { useToast } from '../../features/Toast/ToastContext';
 import { Link } from 'react-router-dom';
-import { Tooltip } from 'react-tooltip';
 import { Menu, Transition } from '@headlessui/react';
+import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css'; // Ensure CSS is imported
 
 export enum Application {
@@ -132,18 +132,23 @@ const ListFaqs: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">FAQs</h1>
-        <Button onClick={openCreateModal} leftIcon={<FaPlus />} variant="primary" className='bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900 '>
+        <Button
+          onClick={openCreateModal}
+          leftIcon={<FaPlus />}
+          variant="primary"
+          className="bg-gradient-to-t from-teal-600 via-cyan-900 to-gray-900"
+        >
           Add FAQ
         </Button>
       </div>
 
       {/* FAQ Table */}
-      <div className="overflow-x-auto ">
-        <table className="min-w-full divide-y divide-gray-200 dark-bg-gray-700">
-          <thead className="bg-gray-50  dark:bg-gray-700 text-gray-500 dark:text-gray-200">
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 dark:bg-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-200">
             <tr>
-              <th className="px-4 py-2 text-left text-sm font-medium ">SN</th>
-              <th className="px-4 py-2 text-left text-sm font-medium ">Question</th>
+              <th className="px-4 py-2 text-left text-sm font-medium">SN</th>
+              <th className="px-4 py-2 text-left text-sm font-medium">Question</th>
               <th className="px-4 py-2 text-left text-sm font-medium">Application</th>
               <th className="px-4 py-2 text-right text-sm font-medium">Actions</th>
             </tr>
@@ -189,18 +194,13 @@ const ListFaqs: React.FC = () => {
               /* Display FAQs */
               faqs.map((faq, index) => (
                 <tr key={faq._id}>
-                  <td className="px-4 py-2 text-sm ">
-                    {(currentPage - 1) * pageSize + index + 1}
-                  </td>
+                  <td className="px-4 py-2 text-sm">{(currentPage - 1) * pageSize + index + 1}</td>
                   <td className="px-4 py-2 text-sm text-gray-700">
-                    <Link
-                      to={`/dashboard/faqs/${faq._id}`}
-                      className="text-blue-600 hover:underline"
-                    >
+                    <Link to={`/dashboard/faqs/${faq._id}`} className="text-blue-600 hover:underline">
                       {faq.question}
                     </Link>
                   </td>
-                  <td className="px-4 py-2 text-sm ">{faq.application}</td>
+                  <td className="px-4 py-2 text-sm">{faq.application}</td>
                   <td className="px-4 py-2 text-right">
                     <div className="flex justify-end">
                       <Menu as="div" className="relative inline-block text-left">
@@ -208,12 +208,17 @@ const ListFaqs: React.FC = () => {
                           <Menu.Button
                             className="inline-flex justify-center w-full p-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             aria-label="Actions"
-                            data-tooltip-id={`actions-tooltip-${faq._id}`}
-                            data-tooltip-content="View Actions"
+                            onMouseEnter={() => {
+                              // Optionally manage tooltip state here
+                            }}
+                            onMouseLeave={() => {
+                              // Optionally manage tooltip state here
+                            }}
                           >
                             <FaEllipsisV />
                           </Menu.Button>
-                          <Tooltip id={`actions-tooltip-${faq._id}`} place="top" />
+                          {/* Single Tooltip Instance */}
+                          <Tooltip id="actions-tooltip" place="top" content="View Actions" />
                         </div>
 
                         <Transition
@@ -335,29 +340,29 @@ const ListFaqs: React.FC = () => {
           >
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-700">Question</label>
+                <label className="block text-gray-700 dark:text-gray-200">Question</label>
                 <input
                   name="question"
                   defaultValue={selectedFAQ?.question || ''}
-                  className="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                  className="w-full mt-1 border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-blue-200 dark:bg-gray-700 dark:text-white"
                   required
                 />
               </div>
               <div>
-                <label className="block text-gray-700">Answer</label>
+                <label className="block text-gray-700 dark:text-gray-200">Answer</label>
                 <textarea
                   name="answer"
                   defaultValue={selectedFAQ?.answer || ''}
-                  className="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                  className="w-full mt-1 border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-blue-200 dark:bg-gray-700 dark:text-white"
                   required
                 />
               </div>
               <div>
-                <label className="block text-gray-700">Application</label>
+                <label className="block text-gray-700 dark:text-gray-200">Application</label>
                 <select
                   name="application"
                   defaultValue={selectedFAQ?.application || ''}
-                  className="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                  className="w-full mt-1 border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-blue-200 dark:bg-gray-700 dark:text-white"
                   required
                 >
                   <option value="" disabled>
