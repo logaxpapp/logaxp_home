@@ -50,4 +50,15 @@ export interface INewsletterSubscription {
       unsubscribedAt: string;
     };
   }
+
+  // New INewsletter interface
+export interface INewsletter {
+  _id: string;
+  subject: string;
+  content: string;
+  image?: string; // Optional field for image URL
+  sentAt: string; // ISO Date string
+  createdAt: string;
+  updatedAt: string;
+}
   

@@ -23,14 +23,14 @@ const ManageNewsletter: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-semibold mb-6">Manage Newsletter</h1>
+    <div className="mx-auto px-4 py-8">
+      <h1 className="text-2xl font-semibold mb-6 p-2">Manage Newsletter</h1>
 
-      <div className="tabs flex justify-center space-x-4 mb-8">
+      <div className="tabs flex justify-center space-x-4 mb-8 text-sm border max-w-5xl mx-auto bg-white p-2">
         <button
           className={`px-4 py-2 font-medium ${
             activeTab === 'subscriptions'
-              ? 'bg-blue-500 text-white rounded'
+              ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white rounded'
               : 'text-gray-600 hover:bg-gray-200 rounded'
           }`}
           onClick={() => setActiveTab('subscriptions')}
@@ -41,8 +41,8 @@ const ManageNewsletter: React.FC = () => {
         <button
           className={`px-4 py-2 font-medium ${
             activeTab === 'sendNewsletter'
-              ? 'bg-blue-500 text-white rounded'
-              : 'text-gray-600 hover:bg-gray-200 rounded'
+              ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white rounded'
+              : 'text-gray-600 hover:bg-teal-200 rounded'
           }`}
           onClick={() => setActiveTab('sendNewsletter')}
         >
@@ -52,8 +52,8 @@ const ManageNewsletter: React.FC = () => {
         <button
           className={`px-4 py-2 font-medium ${
             activeTab === 'confirmSubscription'
-              ? 'bg-blue-500 text-white rounded'
-              : 'text-gray-600 hover:bg-gray-200 rounded'
+              ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white rounded'
+              : 'text-gray-600 hover:bg-teal-200 rounded'
           }`}
           onClick={() => setActiveTab('confirmSubscription')}
         >
@@ -63,8 +63,8 @@ const ManageNewsletter: React.FC = () => {
         <button
           className={`px-4 py-2 font-medium ${
             activeTab === 'unsubscribe'
-              ? 'bg-blue-500 text-white rounded'
-              : 'text-gray-600 hover:bg-gray-200 rounded'
+              ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white rounded'
+              : 'text-gray-600 hover:bg-teal-200 rounded'
           }`}
           onClick={() => setActiveTab('unsubscribe')}
         >

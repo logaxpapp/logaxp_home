@@ -70,8 +70,8 @@ const AdminSubscriptionList: React.FC = () => {
   const totalPages = data?.total ? Math.ceil(data.total / limit) : 0;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-semibold mb-6">Newsletter Subscriptions</h2>
+    <div className="container mx-auto px-4 py-8 font-secondary">
+      <h2 className="text-xl italic font-semibold mb-6">Newsletter Subscriptions</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
           <thead>

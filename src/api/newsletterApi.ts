@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../app/store';
 import { setSessionExpired } from '../store/slices/sessionSlice';
 import {
-  INewsletterSubscription,
+  INewsletter,
   INewsletterSubscriptionResponse,
   INewsletterSubscriptionListResponse,
   SubscribeRequest,
@@ -85,33 +85,61 @@ export const newsletterApi = createApi({
           : [{ type: 'NewsletterSubscriptions', id: 'LIST' }],
     }),
 
-    // Admin: Delete Subscription (Optional)
-    deleteSubscription: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
-        url: `newsletter/subscriptions/${id}`,
-        method: 'DELETE',
+      // Admin: Delete Subscription (Optional)
+      deleteSubscription: builder.mutation<{ message: string }, string>({
+        query: (id) => ({
+          url: `newsletter/subscriptions/${id}`,
+          method: 'DELETE',
+        }),
+        invalidatesTags: (result, error, id) => [{ type: 'Newsletter', id }],
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Newsletter', id }],
-    }),
 
-     // Admin: Suspend Subscription
-     suspendSubscription: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
-        url: `newsletter/subscriptions/${id}/suspend`,
-        method: 'PATCH',
+      // Admin: Suspend Subscription
+      suspendSubscription: builder.mutation<{ message: string }, string>({
+        query: (id) => ({
+          url: `newsletter/subscriptions/${id}/suspend`,
+          method: 'PATCH',
+        }),
+        invalidatesTags: (result, error, id) => [{ type: 'Newsletter', id }],
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Newsletter', id }],
-    }),
 
-    //Admin : Confirm Subscription
-    confirmSubscriptionById: builder.mutation<{ message: string }, string>({
-      query: (id) => ({
-        url: `newsletter/subscriptions/${id}/confirm`,
-        method: 'PATCH',
+      //Admin : Confirm Subscription
+      confirmSubscriptionById: builder.mutation<{ message: string }, string>({
+        query: (id) => ({
+          url: `newsletter/subscriptions/${id}/confirm`,
+          method: 'PATCH',
+        }),
+        invalidatesTags: (result, error, id) => [{ type: 'Newsletter', id }],
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Newsletter', id }],
+
+      getAllNewsletters: builder.query<INewsletter[], void>({
+            query: () => 'newsletters',
+            providesTags: ['Newsletter'],
+          }),
+          createNewsletter: builder.mutation<INewsletter, { subject: string; content: string; image?: string }>({
+            query: (body) => ({
+              url: 'newsletters',
+              method: 'POST',
+              body,
+            }),
+            invalidatesTags: ['Newsletter'],
+          }),
+          updateNewsletter: builder.mutation<INewsletter, { id: string; updates: Partial<INewsletter> }>({
+            query: ({ id, updates }) => ({
+              url: `newsletters/${id}`,
+              method: 'PATCH',
+              body: updates,
+            }),
+            invalidatesTags: ['Newsletter'],
+          }),
+          deleteNewsletter: builder.mutation<void, string>({
+            query: (id) => ({
+              url: `newsletters/${id}`,
+              method: 'DELETE',
+            }),
+            invalidatesTags: ['Newsletter'],
+          }),
     }),
-  }),
 });
 
 export const {
@@ -123,4 +151,9 @@ export const {
   useDeleteSubscriptionMutation,
   useSuspendSubscriptionMutation,
   useConfirmSubscriptionByIdMutation,
+  // new exports
+  useGetAllNewslettersQuery,
+  useCreateNewsletterMutation,
+  useUpdateNewsletterMutation,
+  useDeleteNewsletterMutation,
 } = newsletterApi;
