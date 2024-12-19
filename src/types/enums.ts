@@ -52,5 +52,11 @@ export enum Application {
     Busy = 'busy',
     Away = 'away',
   }
-  // Export other enums if needed
+
+
+  export enum SubscriptionStatus {
+    Pending = 'Pending',
+    Confirmed = 'Confirmed',
+    Unsubscribed = 'Unsubscribed',
+  }
   

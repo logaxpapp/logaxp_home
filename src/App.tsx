@@ -96,6 +96,8 @@ const UserArticleList = lazy(() => import('./components/Article/UserArticleList'
 const Notifications = lazy(() => import('./components/Notifications/Notifications'));
 const Chat = lazy(() => import('./components/Chat/Chat'));
 const ListFaqs = lazy(() => import('./pages/FAQ/ListFaqs'));
+const ManageNewsletter = lazy(() => import('./components/NewsLetter/ManageNewsletter'));
+
 
 
 
@@ -802,6 +804,14 @@ const App: React.FC = () => {
                       element={
                         <Suspense fallback={<Loader />}>
                           <FAQDetail />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="admin-subscriptions"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ManageNewsletter />
                         </Suspense>
                       }
                     />

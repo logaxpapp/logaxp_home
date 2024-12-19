@@ -1,4 +1,6 @@
-import React from 'react';
+// src/components/Footer.tsx
+
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FaTwitter,
@@ -7,8 +9,29 @@ import {
   FaGithub,
   FaLinkedin,
 } from 'react-icons/fa';
-
+import { useSubscribeMutation } from '../../api/newsletterApi';
+import { useToast } from '../../features/Toast/ToastContext';
 const Footer: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [subscribe, { isLoading }] = useSubscribeMutation();
+
+  const { showToast } = useToast();
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      showToast('Please enter a valid email address.');
+      return;
+    }
+    try {
+      await subscribe({ email }).unwrap();
+      showToast('Subscription successful! Please check your email to confirm.');
+      setEmail('');
+    } catch (err: any) {
+      showToast(err.data?.message || 'Failed to subscribe. Please try again later.');
+    }
+  };
+
   return (
     <footer className="bg-gray-900 text-gray-400 py-12 font-primary">
       {/* Newsletter Section */}
@@ -22,16 +45,28 @@ const Footer: React.FC = () => {
               Stay updated with the latest news, offers, and events.
             </p>
           </div>
-          <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+          <form
+            onSubmit={handleSubscribe}
+            className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto"
+          >
             <input
               type="email"
               placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full md:w-72 px-4 py-2 rounded-lg focus:outline-none text-gray-800"
+              required
             />
-            <button className="bg-lemonGreen text-white px-6 py-2 rounded-lg hover:bg-green-600 transition">
-              Subscribe
+            <button
+              type="submit"
+              className={`bg-lemonGreen text-white px-6 py-2 rounded-lg hover:bg-green-600 transition ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Subscribing...' : 'Subscribe'}
             </button>
-          </div>
+          </form>
         </div>
       </div>
 
@@ -50,11 +85,21 @@ const Footer: React.FC = () => {
               1108 Berry Street, Old Hickory, Tennessee 37138
             </p>
             <div className="flex mt-6 gap-4">
-              <FaFacebookF className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
-              <FaTwitter className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
-              <FaInstagram className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
-              <FaLinkedin className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
-              <FaGithub className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
+              <Link to="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
+                <FaFacebookF className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
+              </Link>
+              <Link to="https://www.twitter.com" target="_blank" rel="noopener noreferrer">
+                <FaTwitter className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
+              </Link>
+              <Link to="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
+                <FaInstagram className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
+              </Link>
+              <Link to="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
+                <FaLinkedin className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
+              </Link>
+              <Link to="https://www.github.com" target="_blank" rel="noopener noreferrer">
+                <FaGithub className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
+              </Link>
             </div>
           </div>
 
@@ -66,7 +111,7 @@ const Footer: React.FC = () => {
                 (product, index) => (
                   <li key={index}>
                     <Link
-                      to="/"
+                      to="/products" // Update with actual product routes
                       className="text-gray-400 hover:text-lemonGreen transition"
                     >
                       {product}
@@ -91,7 +136,7 @@ const Footer: React.FC = () => {
               ].map((type, index) => (
                 <li key={index}>
                   <Link
-                    to="/"
+                    to="/business-types" // Update with actual business type routes
                     className="text-gray-400 hover:text-lemonGreen transition"
                   >
                     {type}
