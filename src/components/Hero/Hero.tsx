@@ -4,6 +4,7 @@ import ScaleOut from '../Slides/ScaleOut';
 import routes from '../../routing/routes';
 import HeroVideo from '../../assets/videos/hero3.mp4';
 import Hero2Video from '../../assets/videos/hero.mp4';
+import Hero3Video from '../../assets/videos/benefits.mp4';
 import InfoSection from './InfoSection';
 import HighlightsSection from './HighlightsSection';
 
@@ -27,7 +28,7 @@ const Hero: React.FC = () => {
         <div className="absolute inset-0 h-full w-full overflow-hidden z-0">
           <video
             className="w-full h-full object-cover"
-            src={showFirstVideo ? HeroVideo : Hero2Video}
+            src={showFirstVideo ? HeroVideo : Hero3Video}
             autoPlay
             loop
             muted

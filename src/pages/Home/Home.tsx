@@ -1,3 +1,5 @@
+// src/pages/Home/Home.tsx
+
 import React from 'react';
 import Hero from '../../components/Hero/Hero';
 import Trusts from '../../components/Trusts/Trusts';
@@ -14,7 +16,7 @@ const Home: React.FC = () => {
       <main className="flex-grow space-y-2">
         {/* Hero Section */}
         <Hero />
-        
+
         {/* Trusts Section */}
         <section id="trusts" className="bg-gray-100 dark:bg-gray-900 py-10">
           <Trusts />
@@ -26,7 +28,7 @@ const Home: React.FC = () => {
         </section>
 
         {/* Our Business Section */}
-        <section id="our-business" className=" dark:bg-gray-900 py-16">
+        <section id="our-business" className="dark:bg-gray-900 py-16">
           <OurBusiness />
         </section>
 
