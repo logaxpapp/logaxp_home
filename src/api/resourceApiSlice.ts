@@ -49,84 +49,85 @@ export const resourceApi = createApi({
       }
     ),
 
-    // Fetch Resource by ID
-    fetchResourceById: builder.query<IResource, string>({
-      query: (id) => `resources/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Resource', id }],
-    }),
-
-    // Fetch Related Resources
-    fetchRelatedResources: builder.query<IResource[], { id: string }>({
-      query: ({ id }) => `resources/${id}/related`,
-      providesTags: (result, error, { id }) => [{ type: 'Resource', id }],
-    }),
-
-    // Create Resource
-    createResource: builder.mutation<IResource, CreateResourcePayload>({
-      query: (payload) => ({
-        url: 'resources',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // Ensure JSON is sent
-        },
-        body: payload,
+      // Fetch Resource by ID
+      fetchResourceById: builder.query<IResource, string>({
+        query: (id) => `resources/${id}`,
+        providesTags: (result, error, id) => [{ type: 'Resource', id }],
       }),
-      invalidatesTags: [{ type: 'Resource', id: 'LIST' }],
-    }),
 
-    // Update Resource
-    updateResource: builder.mutation<IResource, UpdateResourcePayload>({
-      query: (payload) => ({
-        url: `resources/${payload.id}`,
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json', // Ensure JSON is sent
-        },
-        body: payload,
+      // Fetch Related Resources
+      fetchRelatedResources: builder.query<IResource[], { id: string }>({
+        query: ({ id }) => `resources/${id}/related`,
+        providesTags: (result, error, { id }) => [{ type: 'Resource', id }],
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Resource', id }],
-    }),
 
-    // Acknowledge Resource
-    acknowledgeResource: builder.mutation<IResource, { resourceId: string }>({
-      query: ({ resourceId }) => ({
-        url: `resources/${resourceId}/acknowledge`,
-        method: 'PUT',
+      // Create Resource
+      createResource: builder.mutation<IResource, CreateResourcePayload>({
+        query: (payload) => ({
+          url: 'resources',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json', // Ensure JSON is sent
+          },
+          body: payload,
+        }),
+        invalidatesTags: [{ type: 'Resource', id: 'LIST' }],
       }),
-      invalidatesTags: (result, error, { resourceId }) => [{ type: 'Resource', id: resourceId }],
-    }),
 
-    fetchUserResources: builder.query<IResource[], void>({
-      query: () => 'resources/user',
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({ _id }) => ({ type: 'Resource' as const, id: _id })),
-              { type: 'Resource', id: 'USER_LIST' },
-            ]
-          : [{ type: 'Resource', id: 'USER_LIST' }],
-    }),
-
-    // Send Resource to Users
-    sendResourceToUsers: builder.mutation<{ message: string }, { resourceId: string; userIds: string[] }>({
-      query: ({ resourceId, userIds }) => ({
-        url: 'resources/send',
-        method: 'POST',
-        body: { resourceId, userIds },
+      // Update Resource
+      updateResource: builder.mutation<IResource, UpdateResourcePayload>({
+        query: (payload) => ({
+          url: `resources/${payload.id}`,
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json', // Ensure JSON is sent
+          },
+          body: payload,
+        }),
+        invalidatesTags: (result, error, { id }) => [{ type: 'Resource', id }],
       }),
-      invalidatesTags: [{ type: 'Resource', id: 'LIST' }],
-    }),
 
-    // Delete Resource
-    deleteResource: builder.mutation<{ success: boolean }, string>({
-      query: (id) => ({
-        url: `resources/${id}`,
-        method: 'DELETE',
+      // Acknowledge Resource
+      acknowledgeResource: builder.mutation<IResource, { resourceId: string; signature: { text: string; font: string } }>({
+        query: ({ resourceId, signature }) => ({
+          url: `resources/${resourceId}/acknowledge`,
+          method: 'PUT',
+          body: { signature },
+        }),
+        invalidatesTags: (result, error, { resourceId }) => [{ type: 'Resource', id: resourceId }],
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Resource', id }, { type: 'Resource', id: 'LIST' }],
+      
+      fetchUserResources: builder.query<IResource[], void>({
+        query: () => 'resources/user',
+        providesTags: (result) =>
+          result
+            ? [
+                ...result.map(({ _id }) => ({ type: 'Resource' as const, id: _id })),
+                { type: 'Resource', id: 'USER_LIST' },
+              ]
+            : [{ type: 'Resource', id: 'USER_LIST' }],
+      }),
+      
+      // Send Resource to Users
+      sendResourceToUsers: builder.mutation<{ message: string }, { resourceId: string; userIds: string[] }>({
+        query: ({ resourceId, userIds }) => ({
+          url: 'resources/send',
+          method: 'POST',
+          body: { resourceId, userIds },
+        }),
+        invalidatesTags: [{ type: 'Resource', id: 'LIST' }],
+      }),
+
+      // Delete Resource
+      deleteResource: builder.mutation<{ success: boolean }, string>({
+        query: (id) => ({
+          url: `resources/${id}`,
+          method: 'DELETE',
+        }),
+        invalidatesTags: (result, error, id) => [{ type: 'Resource', id }, { type: 'Resource', id: 'LIST' }],
+      }),
     }),
-  }),
-});
+  });
 
 export const {
   useFetchResourcesQuery,

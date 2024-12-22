@@ -68,6 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     { name: 'Admin Support', path: '/dashboard/admin/support', icon: <FaBell /> },
     { name: 'Faqs', path: '/dashboard/faqs', icon: <FaBell /> },
     { name: 'Admin Subscription', path: '/dashboard/admin-subscriptions', icon: <FaBell /> },
+    { name: 'Contracts', path: '/dashboard/admin/contracts', icon: <FaBell /> },
   ];
 
   const userLinks: NavLinkItem[] = [
@@ -78,6 +79,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     { name: 'Support', path: '/dashboard/support', icon: <FaBell /> },
     { name: 'Pay', path: '/dashboard/employeePayPeriods', icon: <FaHome /> },
     { name: 'MyChangeRequest', path: '/dashboard/my-change-requests', icon: <FaBell /> },
+  ];
+
+  const contractorLinks: NavLinkItem[] = [
+    { name: 'Contact', path: '/dashboard/contractor/contracts', icon: <FaUserCircle /> },
+    { name: 'Documents', path: '/dashboard/contractor/documents', icon: <FaFileAlt /> },
+    { name: 'Tickets', path: '/dashboard/contractor/tickets', icon: <FaTicketAlt /> },
+    { name: 'Payments', path: '/dashboard/contractor/payments', icon: <FaHome /> },
+    { name: 'Notifications', path: '/dashboard/contractor/notifications', icon: <FaBell /> },
+    { name: 'Support', path: '/dashboard/contractor/support', icon: <FaBell /> },
+    { name: 'ChangeRequest', path: '/dashboard/contractor/my-change-requests', icon: <FaBell /> },
+    { name: 'Contract Status', path: '/dashboard/contractor/contractor-pay', icon: <FaHome /> },
+    { name: 'Contacts', path: '/dashboard/contractor/support', icon: <FaBell /> },
   ];
 
   const renderNavLinks = (links: NavLinkItem[]) =>
@@ -150,13 +163,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             </button>
           </div>
         
-          {/* Navigation */}
-          <nav className="mt-4 flex-1 overflow-y-auto px-3">
-            <h3 className="text-gray-300 text-xs uppercase font-semibold tracking-wider mb-2">
-              Main
-            </h3>
-            <div className="border-t border-gray-50 mb-4"></div>
-            {renderNavLinks(navLinks)}
+           {/* Navigation */}
+           <nav className="mt-4 flex-1 overflow-y-auto px-3">
+            {/* Conditionally Render Main Section */}
+            {currentUser?.role !== 'contractor' && (
+              <>
+                <h3 className="text-gray-300 text-xs uppercase font-semibold tracking-wider mb-2">Main</h3>
+                <div className="border-t border-gray-50 mb-4"></div>
+                {renderNavLinks(navLinks)}
+              </>
+            )}
 
             {currentUser?.role === 'admin' && (
               <>
@@ -167,7 +183,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                 {renderNavLinks(adminLinks)}
               </>
             )}
-            
+
             {currentUser?.role === 'user' && (
               <>
                 <h3 className="text-gray-300 text-xs uppercase font-semibold tracking-wider mt-4 mb-2">
@@ -177,23 +193,48 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                 {renderNavLinks(userLinks)}
               </>
             )}
+
+            {currentUser?.role === 'contractor' && (
+            <>
+            {/* Contractor Section Header */}
+            <div className="mt-4 px-4 py-3 bg-gray-700  text-white dark:bg-gray-700 rounded-lg shadow-sm">
+              <h3 className="text-white dark:text-teal-300  text-sm font-bold uppercase tracking-wide">
+                Contractor Hub
+              </h3>
+              <div className="border-t border-lemonGreen-light  mt-4 mb-4"></div>
+              <p className="text-gray-50 dark:text-gray-50 text-xs mt-1 leading-relaxed">
+                Manage and oversee all contractor-related activities, agreements, and
+                resources. This section ensures seamless collaboration and compliance.
+              </p>
+            </div>
+          
+            {/* Divider */}
+            <div className="border-t border-gray-300 dark:border-gray-700 mt-4 mb-4"></div>
+          
+            {/* Contractor Links */}
+            <div className="space-y-2">
+              {renderNavLinks(contractorLinks)}
+            </div>
+          </>
+          
+            )}
           </nav>
-        
-          {/* Footer / Logout */}
-          <div className="flex-shrink-0 p-3 border-t border-gray-600 bg-gradient-to-t
-           from-teal-600 via-cyan-900 to-cyan-900  dark:bg-gray-800 bg-opacity-90">
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center p-2 rounded-md text-sm font-medium text-gray-100 hover:bg-red-500 hover:text-white transition-colors duration-150"
-            >
-              <FaSignOutAlt className="mr-3" />
-              <span>Logout</span>
-            </button>
-          </div>
+
+
+        {/* Footer / Logout */}
+        <div className="flex-shrink-0 p-3 border-t border-gray-600 bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900 dark:bg-gray-800">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center p-2 rounded-md text-sm font-medium text-gray-100 hover:bg-red-500 hover:text-white transition-colors duration-150"
+          >
+            <FaSignOutAlt className="mr-3" />
+            <span>Logout</span>
+          </button>
         </div>
       </div>
-    </>
-  );
+    </div>
+  </>
+);
 };
 
 export default Sidebar;

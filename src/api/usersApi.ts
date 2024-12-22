@@ -117,6 +117,27 @@ export const usersApi = createApi({
       invalidatesTags: [{ type: 'User', id: 'LIST' }],
     }),
 
+    // Create Contractors 
+    createContractor: builder.mutation<
+    IUser,
+    {
+      name: string;
+      email: string;
+      password: string;
+      phoneNumber?: string;
+      address: { street: string; city: string; state: string; country: string };
+    }
+  >({
+    query: (contractorData) => ({
+      url: `${ADMIN_USER_API}/contractors`,
+      method: 'POST',
+      body: contractorData,
+    }),
+    invalidatesTags: [{ type: 'User', id: 'LIST' }], // Invalidate the user list cache
+  }),
+  
+    
+
     // Suspend User
     suspendUser: builder.mutation<IUser, string>({
       query: (userId) => ({
@@ -385,16 +406,21 @@ export const usersApi = createApi({
         body: { userId },
       }),
     }),
-
-        acknowledgePolicy: builder.mutation<{ user: IUser }, AcknowledgePolicyInput>({
-          query: ({ resourceId }) => ({
-            url: 'profile/acknowledge-policy',
-            method: 'POST',
-            body: { resourceId },
-          }),
-          invalidatesTags: [{ type: 'User', id: 'CURRENT_USER' }],
+    // Acknowledge Policy Mutation
+    acknowledgePolicy: builder.mutation<
+        { user: IUser },
+        { resourceId: string; signature: { text: string; font: string; size: string; color: string } }
+      >({
+        query: ({ resourceId, signature }) => ({
+          url: 'profile/acknowledge-policy',
+          method: 'POST',
+          body: { resourceId, signature },
         }),
+        invalidatesTags: [{ type: 'User', id: 'CURRENT_USER' }],
+      }),
 
+    
+  
      // Disconnect Google Account
      disconnectGoogleAccount: builder.mutation<{ message: string }, void>({
       query: () => ({
@@ -538,4 +564,7 @@ export const {
   useCreateGoogleCalendarEventMutation,
   useDeleteGoogleCalendarEventMutation,
   useDisconnectGoogleAccountMutation,
+
+  // create Contractors
+  useCreateContractorMutation,
 } = usersApi;

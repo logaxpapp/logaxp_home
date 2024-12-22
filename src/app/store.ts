@@ -34,7 +34,9 @@ import { articleApi } from '../api/articleApi';
 import { notificationApi } from '../api/notificationApi';
 import { messageApi } from '../api/messageApi';
 import { groupApi } from '../api/groupApi';
+import { contractApi } from '../api/contractApi';
 import {newsletterApi} from '../api/newsletterApi';
+import { paymentApi } from '../api/paymentApi';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 
@@ -82,7 +84,9 @@ const rootReducer = combineReducers({
   [messageApi.reducerPath]: messageApi.reducer,
   [groupApi.reducerPath]: groupApi.reducer,
   [faqApi.reducerPath]: faqApi.reducer,
-  [newsletterApi.reducerPath]: newsletterApi.reducer
+  [newsletterApi.reducerPath]: newsletterApi.reducer,
+  [contractApi.reducerPath]: contractApi.reducer,
+  [paymentApi.reducerPath]: paymentApi.reducer,
 
 });
 
@@ -120,7 +124,9 @@ export const store = configureStore({
       messageApi.middleware,
       groupApi.middleware,
       faqApi.middleware,
-      newsletterApi.middleware
+      newsletterApi.middleware,
+      contractApi.middleware,
+      paymentApi.middleware,
       
     ),
 });

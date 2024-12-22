@@ -15,7 +15,7 @@ const WYSIWYGEditor: React.FC<WYSIWYGEditorProps> = ({ value, onChange }) => {
 
   return (
     <Editor
-      apiKey="od64v42wuabpgiqpil89kulpo1p905j53wjd0gkkc5ixo0mr"
+      apiKey="okpdbwlmrrvzsyuegcj2mkpld67uunlifti4v4mxrcggp0pc"
       value={value}
       onEditorChange={handleEditorChange}
       init={{

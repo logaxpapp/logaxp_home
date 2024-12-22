@@ -29,5 +29,9 @@ export enum ResourceType {
     createdAt: string;
     updatedAt: string;
     acknowledgedAt?: Date;
+    signature?: string;
+    font?: string;
+    size?: number;
+    color?: string;
   }
   

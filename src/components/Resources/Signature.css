@@ -1,0 +1,20 @@
+/* Signature.css */
+.playwrite-ar {
+    font-family: "Playwrite AR", serif;
+    font-weight: 100;
+  }
+  
+  .playwrite-at-guides-italic {
+    font-family: "Playwrite AT Guides", serif;
+    font-style: italic;
+  }
+  
+  .playwrite-au-qld {
+    font-family: "Playwrite AU QLD", serif;
+    font-weight: 400;
+  }
+  
+  .cursive {
+    font-family: "Brush Script MT", cursive;
+  }
+  

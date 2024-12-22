@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useAppSelector } from '../../app/hooks';
 import { selectCurrentUser } from '../../store/slices/authSlice';
 import AdminUser from './AdminUser';
+import CreateContractorForm from './CreateContractorForm';
 import UploadInvite from './UploadInvite';
 import AllApprovalRequests from '../../components/AllApprovalRequests';
 import AppraisalList from '../../components/Appraisal/ApprovalRequestList';
@@ -10,7 +11,8 @@ import Reports from '../../components/Appraisal/AdminReports';
 import DeletionRequests from '../../components/UserList/DeletionRequests';
 import AuditLog from '../../components/Audit/AuditLog';
 import Login from '../../components/LoggedInUsersList';
-import { FaUser, FaUsers, FaTrashAlt, FaUpload, FaCheckCircle, FaList, FaCalendarAlt, FaChartBar } from 'react-icons/fa';
+
+import { FaUser, FaUsers, FaTrashAlt, FaUpload, FaCheckCircle, FaList, FaCalendarAlt, FaChartBar, FaPlus } from 'react-icons/fa';
 
 const Admin: React.FC = () => {
   const user = useAppSelector(selectCurrentUser);
@@ -30,6 +32,7 @@ const Admin: React.FC = () => {
       { label: 'Appraisal Periods', id: 'AppraisalPeriods', icon: <FaCalendarAlt />, component: <AdminAppraisalPeriods /> },
       { label: 'Reports', id: 'Reports', icon: <FaChartBar />, component: <Reports /> },
       { label: 'Audit Log', id: 'AuditLog', icon: <FaList />, component: <AuditLog /> },
+      { label: 'Create Contractor', id: 'CreateContractor', icon: <FaPlus />, component: <CreateContractorForm /> },
     ],
     []
   );

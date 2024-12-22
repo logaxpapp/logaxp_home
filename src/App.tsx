@@ -10,6 +10,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Loader from './components/Loader';
 import SessionExpiredModal from './components/SessionExpiredModal';
 import { connectSocket } from './socket';
+import ContractCreate from './components/Contracts/Admin/ContractCreate';
+import ContractorEdit from './components/Contracts/Admin/ContractorEdit';
+import ContractEdit from './components/Contracts/Admin/ContractEdit';
 
 
 // Lazy-loaded components
@@ -97,6 +100,11 @@ const Notifications = lazy(() => import('./components/Notifications/Notification
 const Chat = lazy(() => import('./components/Chat/Chat'));
 const ListFaqs = lazy(() => import('./pages/FAQ/ListFaqs'));
 const ManageNewsletter = lazy(() => import('./components/NewsLetter/ManageNewsletter'));
+const PolicyPage = lazy(() => import('./components/Resources/PolicyPage'));
+const AdminContractPage = lazy(() => import('./components/Contracts/Admin/AdminPage'));
+const ContractorPage = lazy(() => import('./components/Contracts/Contractors/ContractorPage'));
+const ContractorDetails = lazy(() => import('./components/Contracts/Admin/ContractorDetails'));
+import ContractorContractDetails from './components/Contracts/Contractors/ContractorContractDetails';
 
 
 
@@ -808,10 +816,82 @@ const App: React.FC = () => {
                       }
                     />
                     <Route
+                      path="policy/:policyId"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <PolicyPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
                       path="admin-subscriptions"
                       element={
                         <Suspense fallback={<Loader />}>
                           <ManageNewsletter />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="admin/contracts"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <AdminContractPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="contractor/contracts"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ContractorPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="admin/contracts/create"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ContractCreate />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="contractor/contracts/:id"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ContractorDetails />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="admin/contracts/:id"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ContractorEdit />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="admin/contractors/:id/edit"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ContractorEdit />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="admin/contracts/:id/edit"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ContractEdit />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="contractors/contracts/:id"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ContractorContractDetails />
                         </Suspense>
                       }
                     />
