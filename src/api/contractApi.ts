@@ -85,7 +85,8 @@ export const contractApi = createApi({
       providesTags: (result, error, id) => [{ type: 'Contract', id }],
     }),
 
-    createContract: builder.mutation<IContract, CreateContractRequest>({
+     // Create Contract
+     createContract: builder.mutation<IContract, CreateContractRequest>({
       query: (data) => ({
         url: `/contracts/create`,
         method: 'POST',

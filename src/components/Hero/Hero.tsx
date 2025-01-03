@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import ScaleOut from '../Slides/ScaleOut';
 import routes from '../../routing/routes';
 import HeroVideo from '../../assets/videos/hero3.mp4';
-import Hero2Video from '../../assets/videos/hero.mp4';
 import Hero3Video from '../../assets/videos/benefits.mp4';
 import InfoSection from './InfoSection';
 import HighlightsSection from './HighlightsSection';

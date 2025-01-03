@@ -1,4 +1,4 @@
-<!-- Save this as star-pattern.svg in public/images/ or an accessible directory -->
+<!-- Save this as star.svg in public/images/ or an accessible directory -->
 <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <pattern id="starPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
@@ -15,5 +15,31 @@
       <circle cx="17" cy="5" r="0.5" fill="white" opacity="0.8"/>
     </pattern>
   </defs>
+  <rect width="100%" height="100%" fill="url(#starPattern)" />
+</svg>
+<!-- Save this as star.svg in public/images/ or an accessible directory -->
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <pattern id="starPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- Background Rectangle with Gradient for Light Origin Effect -->
+      <rect width="100%" height="100%" fill="#0d1b2a" />
+
+      <!-- Define Star Shapes with Varying Sizes and Opacities -->
+      <!-- Small Stars -->
+      <polygon points="10,1 12,7 18,7 13,11 15,17 10,13 5,17 7,11 2,7 8,7" fill="white" opacity="0.5"/>
+      <polygon points="50,3 52,9 58,9 53,13 55,19 50,15 45,19 47,13 42,9 48,9" fill="white" opacity="0.5"/>
+      <polygon points="80,5 82,11 88,11 83,15 85,21 80,17 75,21 77,15 72,11 78,11" fill="white" opacity="0.5"/>
+
+      <!-- Medium Stars -->
+      <polygon points="25,20 28,28 38,28 31,34 35,44 25,38 15,44 19,34 12,28 22,28" fill="white" opacity="0.7"/>
+      <polygon points="70,25 73,35 83,35 76,43 80,55 70,47 60,55 64,43 57,35 67,35" fill="white" opacity="0.7"/>
+
+      <!-- Large Stars -->
+      <polygon points="40,60 45,75 60,75 48,85 54,100 40,90 26,100 32,85 20,75 35,75" fill="white" opacity="0.9"/>
+      <polygon points="90,70 95,85 110,85 98,95 104,110 90,100 76,110 82,95 70,85 85,85" fill="white" opacity="0.9"/>
+    </pattern>
+  </defs>
+  
+  <!-- Apply the Pattern to a Rectangle Covering the SVG -->
   <rect width="100%" height="100%" fill="url(#starPattern)" />
 </svg>

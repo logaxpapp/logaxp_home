@@ -46,7 +46,7 @@ const ContractorList: React.FC = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Link to="/admin/contractors/create">
+        <Link to="/dashboard/admin/contractors/create">
           <Button variant="primary">Add Contractor</Button>
         </Link>
       </div>
@@ -82,7 +82,7 @@ const ContractorList: React.FC = () => {
                     View
                   </Button>
                 </Link>
-                <Link to={`/admin/contractors/${contractor._id}/edit`}>
+                <Link to={`/dashboard/admin/contractors/${contractor._id}/edit`}>
                   <Button variant="edit" size="small">
                     Edit
                   </Button>

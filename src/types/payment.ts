@@ -10,44 +10,60 @@ interface IContractorBase {
     projectName: string;
     [key: string]: any; // Add additional fields if necessary
   }
-/**
- * Define your IPayment interface or import from a shared types file
- */
-export interface IPayment {
-    _id: string;
-    contract: PaymentContract | string;
-    contractor: IContractorBase | string;       // Contractor ID (User)
-    amount: number;
-    date: string;                  // e.g., '2024-12-25T00:00:00.000Z'
-    status: 'Pending' | 'Confirmed' | 'Declined';
-    acknowledgment: boolean;       // Whether contractor acknowledges
-    notes?: string;                // Reason for decline, etc.
-    createdAt?: string;
-    updatedAt?: string;
-  }
 
-  
-  
-  
-  /**
-   * For creating a payment
-   */
-  export interface CreatePaymentRequest {
-    contract: string;     // Contract ID
-    contractor: string;   // Contractor (User) ID
-    amount: number;
-    date?: string;        // If omitted, defaults to new Date() on the server
-  }
-  
-  /**
-   * For Payment Summary
-   */
-  export interface PaymentSummaryResponse {
-    totalCost: number;
-    totalPaid: number;
-    balance: number;
-  }
-  
-  /**
-   * We'll read the BASE_URL from Vite env (adjust if needed)
-   */
+export interface IPayment {
+  _id: string;
+  contract: string | Contract; // Can be populated with Contract details
+  contractor: string | User; // Can be populated with User details
+  amount: number;
+  currency: string; // Added currency field
+  exchangeRate?: number; // Added exchangeRate field
+  date: string; // ISO string
+  status:
+    | 'Pending'
+    | 'Confirmed'
+    | 'Declined'
+    | 'AcceptedByContractor'
+    | 'DeclinedByContractor'
+    | 'AwaitingAcknowledgment'
+    | 'AwaitingConfirmation';
+  acknowledgment: boolean;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+
+export interface CreatePaymentRequest {
+  contract: string;
+  contractor: string;
+  amount: number;
+  currency: string; // Added currency field
+}
+
+// src/types/payment.ts
+
+export interface PaymentSummaryResponse {
+  projectName: string;
+  description: string;
+  status: string;
+  currency: string;
+  totalCost: number;
+  totalPaid: number;
+  balance: number;
+}
+
+
+// Define Contract and User interfaces as needed
+export interface Contract {
+  projectName: string;
+  description: string;
+  status: string;
+  totalCost: number;
+  // Add other relevant fields
+}
+
+export interface User {
+  name: string;
+  // Add other relevant fields
+}

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { useAppSelector } from '../../app/hooks';
 import { selectCurrentUser } from '../../store/slices/authSlice';
 import AdminUser from './AdminUser';
@@ -11,31 +11,27 @@ import Reports from '../../components/Appraisal/AdminReports';
 import DeletionRequests from '../../components/UserList/DeletionRequests';
 import AuditLog from '../../components/Audit/AuditLog';
 import Login from '../../components/LoggedInUsersList';
-
-import { FaUser, FaUsers, FaTrashAlt, FaUpload, FaCheckCircle, FaList, FaCalendarAlt, FaChartBar, FaPlus } from 'react-icons/fa';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 const Admin: React.FC = () => {
   const user = useAppSelector(selectCurrentUser);
-  const [activeTab, setActiveTab] = useState<string>('AdminList');
 
   const isAdmin = user?.role === 'admin';
 
-  // Tabs configuration with icons and labels
-  const tabs = useMemo(
-    () => [
-      { label: 'Admin List', id: 'AdminList', icon: <FaUsers />, component: <AdminUser /> },
-      { label: 'Login User', id: 'LoginUser', icon: <FaUser />, component: <Login /> },
-      { label: 'Deletion ', id: 'DeletionRequest', icon: <FaTrashAlt />, component: <DeletionRequests /> },
-      { label: 'Upload Users', id: 'UploadUsers', icon: <FaUpload />, component: <UploadInvite /> },
-      { label: 'Approvals', id: 'Approvals', icon: <FaCheckCircle />, component: <AllApprovalRequests /> },
-      { label: 'Appraisal List', id: 'AppraisalList', icon: <FaList />, component: <AppraisalList /> },
-      { label: 'Appraisal Periods', id: 'AppraisalPeriods', icon: <FaCalendarAlt />, component: <AdminAppraisalPeriods /> },
-      { label: 'Reports', id: 'Reports', icon: <FaChartBar />, component: <Reports /> },
-      { label: 'Audit Log', id: 'AuditLog', icon: <FaList />, component: <AuditLog /> },
-      { label: 'Create Contractor', id: 'CreateContractor', icon: <FaPlus />, component: <CreateContractorForm /> },
-    ],
-    []
-  );
+  // Tabs configuration
+  const tabs = [
+    { label: 'Admin List',  component: <AdminUser /> },
+    { label: 'Login User', component: <Login /> },
+    { label: 'Deletion Requests', component: <DeletionRequests /> },
+    { label: 'Upload Users',  component: <UploadInvite /> },
+    { label: 'Approvals',  component: <AllApprovalRequests /> },
+    { label: 'Appraisal List',  component: <AppraisalList /> },
+    { label: 'Appraisal Periods',  component: <AdminAppraisalPeriods /> },
+    { label: 'Reports',  component: <Reports /> },
+    { label: 'Audit Log',  component: <AuditLog /> },
+    { label: 'Create Contractor',  component: <CreateContractorForm /> },
+  ];
 
   if (!isAdmin) {
     return (
@@ -46,39 +42,37 @@ const Admin: React.FC = () => {
   }
 
   return (
-    <div className="mx-auto w-full  p-4">
-      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+    <div className="mx-auto p-6 min-h-screen bg-gray-100">
+      <div className="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
         {/* Header Section */}
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 font-primary">
-            Admin Panel
-          </h2>
-        </div>
+       
 
         {/* Tabs with Icons */}
-        <div className="flex flex-wrap justify-center md:justify-start gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 font-primary">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md focus:outline-none transition-colors duration-200 ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              <span>{tab.icon}</span>
-              <span className="hidden md:inline">{tab.label}</span>
-            </button>
-          ))}
-        </div>
+        <Tabs>
+          <TabList className="flex gap-4 p-4 border-b bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-lg">
+            {tabs.map((tab, index) => (
+              <Tab
+                key={index}
+                className="flex items-center space-x-2 px-4 py-2 rounded-md cursor-pointer font-semibold text-gray-700 hover:text-gray-900 hover:bg-white underline border-gray-300"
+                selectedClassName="bg-gradient-to-t from-teal-500 via-cyan-600 to-gray-700 text-white shadow-lg border-none"
+              >
+               
+                <span className="hidden sm:inline">{tab.label}</span>
+              </Tab>
+            ))}
+          </TabList>
 
-        {/* Content Area */}
-        <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-900">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6">
-            {tabs.find((tab) => tab.id === activeTab)?.component}
-          </div>
-        </div>
+          {/* Tab Panels */}
+          {tabs.map((tab, index) => (
+            <TabPanel key={index}>
+              <div className="p-6 bg-gray-100">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                  {tab.component}
+                </div>
+              </div>
+            </TabPanel>
+          ))}
+        </Tabs>
       </div>
     </div>
   );

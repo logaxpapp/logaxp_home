@@ -70,24 +70,22 @@ export const paymentApi = createApi({
       invalidatesTags: (result, error, { paymentId }) => [{ type: 'Payment', id: paymentId }],
     }),
 
-    // usage: PUT /:paymentId/contractorAccept
-acceptPaymentAsContractor: builder.mutation<IPayment, string>({
-    query: (paymentId) => ({
-      url: `/${paymentId}/contractorAccept`,
-      method: 'PUT',
+    acceptPaymentAsContractor: builder.mutation<IPayment, string>({
+      query: (paymentId) => ({
+        url: `/${paymentId}/contractorAccept`,
+        method: 'PUT',
+      }),
+      invalidatesTags: (result, error, paymentId) => [{ type: 'Payment', id: paymentId }],
     }),
-    invalidatesTags: (result, error, paymentId) => [{ type: 'Payment', id: paymentId }],
-  }),
-  
-  // usage: PUT /:paymentId/contractorDecline
-  declinePaymentAsContractor: builder.mutation<IPayment, { paymentId: string; reason?: string }>({
-    query: ({ paymentId, reason }) => ({
-      url: `/${paymentId}/contractorDecline`,
-      method: 'PUT',
-      body: { reason },
+
+    declinePaymentAsContractor: builder.mutation<IPayment, { paymentId: string; reason?: string }>({
+      query: ({ paymentId, reason }) => ({
+        url: `/${paymentId}/contractorDecline`,
+        method: 'PUT',
+        body: { reason },
+      }),
+      invalidatesTags: (result, error, { paymentId }) => [{ type: 'Payment', id: paymentId }],
     }),
-    invalidatesTags: (result, error, { paymentId }) => [{ type: 'Payment', id: paymentId }],
-  }),
 
     acknowledgePayment: builder.mutation<IPayment, string>({
       query: (paymentId) => ({
@@ -103,6 +101,32 @@ acceptPaymentAsContractor: builder.mutation<IPayment, string>({
         { type: 'Payment', id: `SUMMARY-${contractId}` },
       ],
     }),
+
+    sendPayment: builder.mutation<IPayment, string>({
+      query: (paymentId) => ({
+        url: `/${paymentId}/send`,
+        method: 'PUT',
+      }),
+      invalidatesTags: (result, error, paymentId) => [{ type: 'Payment', id: paymentId }],
+    }),
+
+    // **New Mutations**
+    deletePayment: builder.mutation<{ message: string }, string>({
+      query: (paymentId) => ({
+        url: `/${paymentId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, paymentId) => [{ type: 'Payment', id: paymentId }],
+    }),
+
+    editPayment: builder.mutation<IPayment, { paymentId: string; updateData: Partial<IPayment> }>({
+      query: ({ paymentId, updateData }) => ({
+        url: `/${paymentId}`,
+        method: 'PUT',
+        body: updateData,
+      }),
+      invalidatesTags: (result, error, { paymentId }) => [{ type: 'Payment', id: paymentId }],
+    }),
   }),
 });
 
@@ -113,7 +137,12 @@ export const {
   useDeclinePaymentMutation,
   useAcknowledgePaymentMutation,
   useFetchPaymentSummaryQuery,
+  useSendPaymentMutation,
 
   useAcceptPaymentAsContractorMutation,
   useDeclinePaymentAsContractorMutation,
+
+  // **New Hooks**
+  useDeletePaymentMutation,
+  useEditPaymentMutation,
 } = paymentApi;

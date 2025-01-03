@@ -86,12 +86,12 @@ export interface IUser {
   name: string;
   email: string;
   password_hash: string;
-  role: string;
+  role: UserRole;
   applications_managed: Application[];
-  job_title: string;
-  status: string;
+  job_title: JobTitle;
+  status: UserStatus;
   employee_id: string;
-  department: string;
+  department: Department;
   phone_number: string;
   address: IAddress;
   date_of_birth: string; // ISO string

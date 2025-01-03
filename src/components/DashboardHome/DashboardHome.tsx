@@ -45,7 +45,7 @@ const DashboardHome: React.FC = () => {
           dark:before:bg-[url('../../assets/images/star-pattern-dark.svg')]"
     >
       {/* Header Section */}
-      <div className="p-5 bg-gradient-to-t from-teal-600 via-cyan-900 to-cyan-900  rounded-3xl shadow-2xl max-w-7xl mx-auto mb-16 transform hover:scale-105 transition-transform duration-300">
+      <div className="p-5 bg-gray-100 dark:bg-gray-700  rounded-3xl shadow-2xl max-w-7xl mx-auto mb-16 transform hover:scale-105 transition-transform duration-300">
         <ClockInOutForm />
       </div>
 

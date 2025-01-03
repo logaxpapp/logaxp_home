@@ -1,118 +1,55 @@
 import React, { useState } from 'react';
-import {
-  FaUsers,
-  FaUserPlus,
-  FaUserShield,
-  FaKey,
-  FaCogs,
-  FaNewspaper,
-} from 'react-icons/fa';
 import UserList from './UserList/UserList';
 import SettingsManagement from './Settings/SettingsManagement';
 import RolesManagement from './Roles/RolesManagement';
-import Button from '../components/common/Button/Button';
 import Modal from '../components/common/Feedback/Modal';
 import CreateEditUserForm from './UserList/CreateUserForm';
 import PermissionsManagement from './Permissions/PermissionsManagement';
 import MyChangeRequests from './changeRequest/MyChangeRequest';
 import Articles from '../components/Article/AdminArticleList';
-
-enum UserManagementView {
-  Users = 'Users',
-  Roles = 'Roles',
-  Permissions = 'Permissions',
-  Settings = 'Settings',
-  ChangeRequests = 'MyChange Requests',
-  Articles = 'Articles',
-}
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 const UserManagement: React.FC = () => {
-  const [currentView, setCurrentView] = useState<UserManagementView>(UserManagementView.Users);
   const [isCreateUserModalOpen, setCreateUserModalOpen] = useState(false);
 
-  // Render content based on the selected tab
-  const renderView = () => {
-    switch (currentView) {
-      case UserManagementView.Users:
-        return <UserList />;
-      case UserManagementView.Roles:
-        return <RolesManagement />;
-      case UserManagementView.Permissions:
-        return <PermissionsManagement />;
-      case UserManagementView.Settings:
-        return <SettingsManagement />;
-      case UserManagementView.ChangeRequests:
-        return <MyChangeRequests />;
-      case UserManagementView.Articles:
-        return <Articles />;
-      default:
-        return <UserList />;
-    }
-  };
+  // Tabs configuration
+  const tabs = [
+    { label: 'Users', component: <UserList /> },
+    { label: 'Roles', component: <RolesManagement /> },
+    { label: 'Permissions', component: <PermissionsManagement /> },
+    { label: 'Settings', component: <SettingsManagement /> },
+    { label: 'My Change Requests',  component: <MyChangeRequests /> },
+    { label: 'Articles',  component: <Articles /> },
+  ];
 
   return (
-    <div className="mx-auto p-4 sm:p-6 w-full min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="p-4 min-h-screen bg-gray-50">
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-        {/* Header */}
-        <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-200 font-primary mb-4">
-            User Management
-          </h2>
+        
+        {/* Tabs with Icons */}
+        <Tabs>
+          <TabList className="react-tabs__tab-list flex flex-wrap gap-2 text-lg font-semibold bg-gray-50 dark:bg-gray-900 px-6 py-3 border-b border-gray-300 dark:border-gray-700">
+            {tabs.map((tab, index) => (
+              <Tab
+                key={index}
+                className="cursor-pointer px-4 py-2 text-gray-600 dark:text-gray-200 rounded-t-md hover:text-gray-900 hover:bg-white dark:hover:bg-gray-800 transition"
+                selectedClassName="bg-gradient-to-t from-teal-500 via-cyan-600 to-gray-700 text-white  dark:bg-gray-800 text-black dark:text-white font-bold"
+              >
+                {tab.label}
+              </Tab>
+            ))}
+          </TabList>
 
-          <div className="flex flex-col gap-4">
-            {/* Core Management Buttons */}
-            <div className="flex flex-wrap gap-2">
-              {[
-                { key: UserManagementView.Users, label: 'Users', icon: <FaUsers /> },
-                { key: UserManagementView.Roles, label: 'Roles', icon: <FaUserShield /> },
-                { key: UserManagementView.Permissions, label: 'Permissions', icon: <FaKey /> },
-                { key: UserManagementView.Settings, label: 'Settings', icon: <FaCogs /> },
-              ].map(({ key, label, icon }) => (
-                <button
-                  key={key}
-                  onClick={() => setCurrentView(key)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors duration-200 font-secondary text-sm sm:text-base ${
-                    currentView === key
-                      ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
-                      : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  {icon}
-                  <span>{label}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Special Actions Buttons */}
-            <div className="flex flex-wrap gap-2 border-t pt-4 mt-4 border-gray-300 dark:border-gray-600">
-              <h3 className="w-full text-gray-600 dark:text-gray-400 font-medium text-sm">
-                Special Actions
-              </h3>
-              {[
-                { key: UserManagementView.ChangeRequests, label: 'MyChange Requests', icon: <FaUserPlus /> },
-                { key: UserManagementView.Articles, label: 'Manage Articles', icon: <FaNewspaper /> },
-              ].map(({ key, label, icon }) => (
-                <button
-                  key={key}
-                  onClick={() => setCurrentView(key)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors duration-200 font-secondary text-sm sm:text-base ${
-                    currentView === key
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  {icon}
-                  <span>{label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="p-4 sm:p-6 bg-white dark:bg-gray-800 transition-all duration-300">
-          {renderView()}
-        </div>
+          {/* Tab Panels */}
+          {tabs.map((tab, index) => (
+            <TabPanel key={index}>
+              <div className="p-4 sm:p-6 bg-white dark:bg-gray-800 rounded-b-lg">
+                {tab.component}
+              </div>
+            </TabPanel>
+          ))}
+        </Tabs>
       </div>
 
       {/* Create/Edit User Modal */}

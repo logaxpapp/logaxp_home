@@ -30,6 +30,13 @@ export const setupSocketListeners = (socket: Socket, userId: string) => {
        store.dispatch(addGroupMessage(message));
      }
    });
+
+   // ducumenyt share 
+   socket.on('document_shared', (data) => {
+    // Show toast, or open a modal that a doc was shared with me
+    console.log('Doc shared:', data);
+  });
+  
  
    // Group Invitations
    socket.on('group_invitation', (data) => {

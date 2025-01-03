@@ -88,6 +88,12 @@ const ContractorPage: React.FC = () => {
                          duration-300 ease-in-out outline-none">
             Payments
           </Tab>
+          <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-gradient-to-r from-yellow-100 to-yellow-50
+                         text-yellow-700 rounded-t-md hover:from-yellow-200 hover:to-yellow-100 transition-all 
+                         duration-300 ease-in-out outline-none">
+            Summary
+            {/* Add any additional content/elements below as needed */}
+          </Tab>
         </TabList>
 
         {/* TAB PANELS */}
@@ -103,12 +109,20 @@ const ContractorPage: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-700 mb-4">My Payments</h2>
         {contracts.map((contract) => (
           <div key={contract._id} className="mb-6">
-            <ContractorPaymentSummary contractId={contract._id} />
-            {/* Show your updated PaymentList with accept/decline */}
+        
             <ContractorPaymentList contractId={contract._id} />
           </div>
         ))}
       </TabPanel>
+      <TabPanel className="react-tabs__tab-panel p-4 bg-white rounded-b-md shadow">
+        <h2 className="text-2xl font-bold text-gray-700 mb-4">My Payments</h2>
+        {contracts.map((contract) => (
+          <div key={contract._id} className="mb-6">
+            <ContractorPaymentSummary contractId={contract._id} />
+          </div>
+        ))}
+      </TabPanel>
+
 
       </Tabs>
     </div>

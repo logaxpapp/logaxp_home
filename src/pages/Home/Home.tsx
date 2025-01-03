@@ -7,6 +7,7 @@ import FeaturedProducts from '../../components/FeaturedProducts/FeaturedProducts
 import Blogs from '../../components/Blogs/Blogs';
 import FooterAction from '../../components/FooterAction/FooterAction';
 import OurBusiness from '../../components/OurBusiness/OurBusiness';
+import ProfileCard from './ProfileCard';
 import ScrollToTop from '../../components/common/ScrollToTop';
 
 const Home: React.FC = () => {
@@ -35,6 +36,9 @@ const Home: React.FC = () => {
         {/* Blogs Section */}
         <section id="blogs" className="dark:bg-gray-800 py-16">
           <Blogs />
+        </section>
+        <section id="profile" className="dark:bg-gray-900 py-16">
+          <ProfileCard />
         </section>
 
         {/* Footer Call-to-Action */}

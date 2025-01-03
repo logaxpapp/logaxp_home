@@ -8,17 +8,20 @@ import { store, persistor } from './app/store';
 import { ToastProvider } from './features/Toast/ToastContext';
 import { PersistGate } from 'redux-persist/integration/react';
 import { BrowserRouter as Router } from 'react-router-dom'; // Import BrowserRouter
+import { CurrencyProvider } from './context/CurrencyContext';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
+ 
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
+        <CurrencyProvider> {/* Wrap App in CurrencyProvider */}
         <Router> {/* Wrap App in Router */}
           <ToastProvider>
             <App />
           </ToastProvider>
         </Router>
+        </CurrencyProvider>
       </PersistGate>
     </Provider>
-  </React.StrictMode>
+ 
 );

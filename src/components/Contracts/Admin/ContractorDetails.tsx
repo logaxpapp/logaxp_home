@@ -95,7 +95,13 @@ const ContractorDetails: React.FC = () => {
               <h4 className="text-lg font-semibold mb-2">Employment Details</h4>
               <p><span className="font-medium">Employee ID:</span> {contractor.employee_id}</p>
               <p><span className="font-medium">Joined At:</span> {format(new Date(contractor.createdAt), 'PPP')}</p>
-              <p><span className="font-medium">Last Login:</span> {format(new Date(contractor.lastLoginAt), 'PPP p')}</p>
+              <p>
+                <span className="font-medium">Last Login:</span>{' '}
+                {contractor.lastLoginAt
+                  ? format(new Date(contractor.lastLoginAt), 'PPP p')
+                  : 'Never logged in'}
+              </p>
+
             </div>
           </div>
         </div>

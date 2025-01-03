@@ -13,6 +13,7 @@ import { connectSocket } from './socket';
 import ContractCreate from './components/Contracts/Admin/ContractCreate';
 import ContractorEdit from './components/Contracts/Admin/ContractorEdit';
 import ContractEdit from './components/Contracts/Admin/ContractEdit';
+import CreateBoard from './components/Board/CreateBoard';
 
 
 // Lazy-loaded components
@@ -105,7 +106,21 @@ const AdminContractPage = lazy(() => import('./components/Contracts/Admin/AdminP
 const ContractorPage = lazy(() => import('./components/Contracts/Contractors/ContractorPage'));
 const ContractorDetails = lazy(() => import('./components/Contracts/Admin/ContractorDetails'));
 import ContractorContractDetails from './components/Contracts/Contractors/ContractorContractDetails';
-
+const ContractorPayment = lazy(() => import('./components/Contracts/Payments/ContractorPayment'));
+const ContractDetails = lazy(() => import('./components/Contracts/Admin/ContractDetails'));
+const ListTeams = lazy(() => import('./components/Team/ListTeams'));
+const TeamDetail = lazy(() => import('./components/Team/TeamDetail'));
+const ListSubContractors = lazy(() => import('./components/SubContractor/ListSubContractors'));
+const SubContractorDetail = lazy(() => import('./components/SubContractor/SubContractorDetail'));
+const KanbanBoard = lazy(() => import('./components/Board/KanbanBoard'));
+const BoardList = lazy(() => import('./components/Board/BoardList'));
+const BoardDetail = lazy(() => import('./components/Board/BoardDetails'));
+const ViewList = lazy(() => import('./components/Board/ViewList'));
+const ViewMember = lazy(() => import('./components/Board/ViewMember'));
+const DocumentManager = lazy(() => import('./components/Document/DocumentManager'));
+const ProtectedDocumentManager = lazy(() => import('./components/Document/ProtectedDocumentManager'));
+const DocumentDetails = lazy(() => import('./components/Document/DocumentDetails'));
+const SentDocuments = lazy(() => import('./components/Document/SentDocuments'));
 
 
 
@@ -895,6 +910,127 @@ const App: React.FC = () => {
                         </Suspense>
                       }
                     />
+                    <Route
+                      path="contractor/payments"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ContractorPayment />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="admin/contracts/:id/details"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ContractDetails />
+                        </Suspense>
+                      }
+                      />
+                      <Route
+                      path="contractor/team/list"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ListTeams />
+                        </Suspense>
+                      } 
+                      />
+                      <Route
+                      path="teams/:id"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <TeamDetail />
+                        </Suspense>
+                      }
+                      />
+                      <Route
+                      path="subcontractors"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <ListSubContractors />
+                        </Suspense>
+                      }
+                      />
+                      <Route
+                      path="subcontractors/:id"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <SubContractorDetail />
+                        </Suspense>
+                      }
+                      />
+                      <Route
+                        path="/dashboard/boards/:boardId/kanban"
+                        element={
+                          <Suspense fallback={<Loader />}>
+                            <KanbanBoard />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                    path="board-list"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <BoardList />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="boards/:boardId/detail"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <BoardDetail />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                  path="lists/:listId"
+                  element={
+                    <Suspense fallback={<Loader />}>
+                      <ViewList />
+                    </Suspense>
+                  }
+                />
+                <Route
+                    path="board/users/:userId"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <ViewMember />
+                      </Suspense>
+                    }
+                  />
+
+                  <Route
+                    path="documents"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <DocumentManager />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="documents/:docId/details"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <DocumentDetails />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="documents/protected"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <ProtectedDocumentManager />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="documents/sent"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <SentDocuments />
+                      </Suspense>
+                    }
+                  />
                   </Route>
                  
                   <Route
@@ -905,6 +1041,7 @@ const App: React.FC = () => {
                       </Suspense>
                     }
                   />
+
                 </Route>
                 <Route
                   path="/apparisal-list"

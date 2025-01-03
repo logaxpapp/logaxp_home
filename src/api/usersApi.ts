@@ -2,6 +2,9 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { IUser } from '../types/user';
+import { UserStatus } from '../types/user';
+import { ITeam } from '../types/team';
+import { ISubContractor } from '../types/subContractor';
 import { IGoogleCalendarEvent } from '../types/googleCalendar';
 import { setAuthCredentials } from '../store/slices/authSlice';
 
@@ -54,6 +57,39 @@ interface AcknowledgePolicyInput {
   resourceId: string;
 }
 
+// Define other necessary interfaces
+interface CreateTeamInput {
+  name: string;
+  description?: string;
+}
+
+interface UpdateTeamInput {
+  id: string;
+  updates: Partial<ITeam>;
+}
+
+interface AddMemberInput {
+  teamId: string;
+  memberId: string;
+}
+
+interface RemoveMemberInput {
+  teamId: string;
+  memberId: string;
+}
+
+interface CreateSubContractorInput {
+  name: string;
+  email: string;
+  password_hash: string;
+  // ... other necessary fields
+}
+
+interface UpdateSubContractorInput {
+  id: string;
+  updates: Partial<ISubContractor>;
+}
+
 export const usersApi = createApi({
   reducerPath: 'usersApi',
   baseQuery: async (args, usersApi, extraOptions) => {
@@ -85,6 +121,8 @@ export const usersApi = createApi({
     'Auth',
     'GoogleCalendarEvent',
     'DeletionRequest',
+    'SubContractor',
+    'Team', 
   ],
   endpoints: (builder) => ({
     
@@ -105,7 +143,23 @@ export const usersApi = createApi({
       query: () => `${USER_API}/employees`
 
     }),
-      
+
+    fetchUserById: builder.query<IUser, string>({
+      query: (id) => `/users/details/${id}`, // Updated endpoint
+      providesTags: (result, error, id) => [{ type: 'User', id }],
+    }),
+     /**
+     * Update User
+     */
+     updateUser: builder.mutation<IUser, Partial<IUser> & Pick<IUser, '_id'>>({
+      query: ({ _id, ...patch }) => ({
+        url: `/users/${_id}`,
+        method: 'PUT',
+        body: patch,
+      }),
+      invalidatesTags: (result, error, { _id }) => [{ type: 'User', id: _id }],
+    }),
+
 
     // Create User
     createUser: builder.mutation<IUser, Partial<IUser>>({
@@ -153,7 +207,7 @@ export const usersApi = createApi({
             (draft) => {
               const user = draft.users.find((u) => u._id === userId);
               if (user) {
-                user.status = 'Suspended'; // Update the user's status in the cache
+                user.status = UserStatus.Suspended;
               }
             }
           )
@@ -182,7 +236,7 @@ export const usersApi = createApi({
             (draft) => {
               const user = draft.users.find((u) => u._id === userId);
               if (user) {
-                user.status = 'Active'; // Update the user's status in the cache
+                user.status = UserStatus.Active;
               }
             }
           )
@@ -520,6 +574,159 @@ export const usersApi = createApi({
       }),
 
 
+       /**
+     * Create a Team
+     */
+    createTeam: builder.mutation<ITeam, CreateTeamInput>({
+      query: (data) => ({
+        url: `/teams`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [{ type: 'Team', id: 'LIST' }],
+    }),
+
+    /**
+     * Fetch Team by ID
+     */
+    fetchTeamById: builder.query<ITeam, string>({
+      query: (id) => `/teams/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Team', id }],
+    }),
+
+    /**
+     * Update Team
+     */
+    updateTeam: builder.mutation<ITeam, UpdateTeamInput>({
+      query: ({ id, updates }) => ({
+        url: `/teams/${id}`,
+        method: 'PUT',
+        body: updates,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Team', id }, { type: 'Team', id: 'LIST' }],
+    }),
+
+    /**
+     * Delete Team
+     */
+    deleteTeam: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/teams/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [{ type: 'Team', id }, { type: 'Team', id: 'LIST' }],
+    }),
+
+    /**
+     * Add Member to Team
+     */
+    addMemberToTeam: builder.mutation<ITeam, { teamId: string; memberId: string; role: 'Leader' | 'Member' | 'Viewer' }>({
+      query: ({ teamId, memberId, role }) => ({
+        url: `/teams/${teamId}/members`,
+        method: 'POST',
+        body: { memberId, role },
+      }),
+      invalidatesTags: (result, error, { teamId }) => [{ type: 'Team', id: teamId }],
+    }),
+
+    /**
+     * Remove Member from Team
+     */
+    removeMemberFromTeam: builder.mutation<ITeam, RemoveMemberInput>({
+      query: ({ teamId, memberId }) => ({
+        url: `/teams/${teamId}/members`,
+        method: 'DELETE',
+        body: { memberId },
+      }),
+      invalidatesTags: (result, error, { teamId }) => [{ type: 'Team', id: teamId }, { type: 'Team', id: 'LIST' }],
+    }),
+
+    // NEW: SubContractor Endpoints
+
+    /**
+     * Create a SubContractor
+     */
+    createSubContractor: builder.mutation<IUser, CreateSubContractorInput>({
+      query: (data) => ({
+        url: `/subcontractors`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [{ type: 'SubContractor', id: 'LIST' }],
+    }),
+
+    /**
+     * Fetch all SubContractors
+     */
+    fetchSubContractors: builder.query<IUser[], void>({
+      query: () => `/subcontractors`,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ _id }) => ({ type: 'SubContractor' as const, id: _id })),
+              { type: 'SubContractor', id: 'LIST' },
+            ]
+          : [{ type: 'SubContractor', id: 'LIST' }],
+    }),
+
+    /**
+     * Fetch SubContractor by ID
+     */
+    fetchSubContractorById: builder.query<IUser, string>({
+      query: (id) => `/subcontractors/${id}`,
+      providesTags: (result, error, id) => [{ type: 'SubContractor', id }],
+    }),
+
+    /**
+     * Update SubContractor
+     */
+    updateSubContractor: builder.mutation<IUser, UpdateSubContractorInput>({
+      query: ({ id, updates }) => ({
+        url: `/subcontractors/${id}`,
+        method: 'PUT',
+        body: updates,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'SubContractor', id }, { type: 'SubContractor', id: 'LIST' }],
+    }),
+
+    /**
+     * Delete SubContractor
+     */
+    deleteSubContractor: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/subcontractors/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [{ type: 'SubContractor', id }, { type: 'SubContractor', id: 'LIST' }],
+    }),
+
+     // Fetch Teams with Search, Filter, and Pagination
+     fetchTeams: builder.query<{ teams: ITeam[]; total: number; page: number; pages: number }, { search?: string; role?: string; page: number; limit: number }>({
+      query: ({ search, role, page, limit }) => ({
+        url: '/teams',
+        params: { search, role, page, limit },
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.teams.map(({ _id }) => ({ type: 'Team' as const, id: _id })),
+              { type: 'Team', id: 'LIST' },
+            ]
+          : [{ type: 'Team', id: 'LIST' }],
+    }),
+
+    
+
+    // Update Member Role
+    updateMemberRole: builder.mutation<ITeam, { teamId: string; memberId: string; newRole: 'Leader' | 'Member' | 'Viewer' }>({
+      query: ({ teamId, memberId, newRole }) => ({
+        url: `/teams/${teamId}/members/role`,
+        method: 'PUT',
+        body: { memberId, newRole },
+      }),
+      invalidatesTags: (result, error, { teamId }) => [{ type: 'Team', id: teamId }],
+    }),
+
     // CSRF Token Query
     getCsrfToken: builder.query<CsrfTokenResponse, void>({
       query: () => '/csrf-token',
@@ -547,6 +754,8 @@ export const {
   useApproveDeletionRequestMutation,
   useRejectDeletionRequestMutation,
   useAcknowledgePolicyMutation,
+  useUpdateUserMutation,
+  useFetchUserByIdQuery,
 
   // Auth Hooks
   useLoginMutation,
@@ -567,4 +776,22 @@ export const {
 
   // create Contractors
   useCreateContractorMutation,
+
+   // Team Hooks
+  useCreateTeamMutation,
+  useFetchTeamsQuery,
+  useFetchTeamByIdQuery,
+  useUpdateTeamMutation,
+  useDeleteTeamMutation,
+  useAddMemberToTeamMutation,
+  useRemoveMemberFromTeamMutation,
+
+  // SubContractor Hooks
+  useCreateSubContractorMutation,
+  useFetchSubContractorsQuery,
+  useFetchSubContractorByIdQuery,
+  useUpdateSubContractorMutation,
+  useDeleteSubContractorMutation,
+  useUpdateMemberRoleMutation,
+  
 } = usersApi;
