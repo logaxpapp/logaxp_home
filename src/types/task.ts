@@ -70,8 +70,8 @@ export interface ICard {
   labels: ILabel[]; 
   boardId: string; // Board ID
   dueDate?: string;
-  attachments: string[]; // Attachment IDs
-  comments: string[]; // Comment IDs
+  attachments: IAttachment[]; 
+  comments: IComment[];
   position: number;
   subTasks?: ISubTask[];
   timeLogs?: ITimeLog[];
@@ -105,6 +105,7 @@ export interface IComment extends ICommentInput {
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
   replies?: IComment[]; // Nested Replies (optional, depending on backend implementation)
+  comments: IComment[];
 }
 
 /**
@@ -178,26 +179,7 @@ export interface ICreateCardInput {
   priority?: string; // New Field
 }
 
-export interface ICardWithListName {
-  _id: string;
-  title: string;
-  description?: string;
-  list: string; // List ID
-  assignees: (string | { _id: string; name: string; email: string })[]; // Match ICard
-  labels: ILabel[]; // Match ICard
-  dueDate?: string;
-  attachments: string[]; // Attachment IDs
-  comments: string[]; // Comment IDs
-  position: number;
-  subTasks?: ISubTask[];
-  timeLogs?: ITimeLog[];
-  customFields?: ICustomField[];
-  status: string;
-  priority: string;
-  likes: string[]; // User IDs
-  watchers: string[]; // User IDs
-  createdAt: string;
-  updatedAt: string;
+export interface ICardWithListName extends ICard {
   listName: string;
-  boardId: string; // Ensure this is included
+  
 }

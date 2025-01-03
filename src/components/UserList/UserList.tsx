@@ -7,7 +7,7 @@ import {
   useReactivateUserMutation,
   useDeleteUserMutation,
 } from '../../api/usersApi';
-import { IUser } from '../../types/user';
+import { IUser, UserRole } from '../../types/user';
 import DataTable from '../common/DataTable/DataTable';
 import Modal from '../common/Feedback/Modal';
 import ConfirmModal from '../common/Feedback/ConfirmModal';
@@ -90,7 +90,7 @@ const UserList: React.FC = () => {
         accessor: (user: IUser) => (
           <span
             className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-              user.role === 'Admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+              user.role === UserRole.Admin ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
             }`}
           >
             {user.role.charAt(0).toUpperCase() + user.role.slice(1)}

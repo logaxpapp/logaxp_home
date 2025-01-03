@@ -37,6 +37,7 @@ export enum JobTitle {
   Developer = 'Developer',
   Admin = 'Admin',
   Secretary = 'Secretary',
+  Manager = 'Manager',
   // Add more job titles as needed
 }
 

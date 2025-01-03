@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCreateUserMutation, useAdminEditUserProfileMutation } from '../../api/usersApi';
-import { IUser } from '../../types/user';
+import { IUser, UserRole } from '../../types/user';
 import Button from '../common/Button/Button';
 import { useToast } from '../../features/Toast/ToastContext';
 import MultiSelect from '../common/Input/SelectDropdown/MultiSelect';
@@ -57,17 +57,18 @@ const CreateEditUserForm: React.FC<CreateEditUserFormProps> = ({
     try {
       const payload = {
         ...formData,
+        role: formData.role as UserRole, // Ensure role matches UserRole enum
         applications_managed: formData.applications_managed.map(
           (app) => app as Application // Convert back to Application enum
         ),
       };
-
+  
       if (user) {
-        // If user exists, perform update
+        // Update user
         await editUserProfile({ userId: user._id, updates: payload }).unwrap();
         showToast('User profile updated successfully.', 'success');
       } else {
-        // If no user exists, create a new user
+        // Create new user
         await createUser(payload).unwrap();
         showToast('User created successfully.', 'success');
       }
@@ -77,6 +78,7 @@ const CreateEditUserForm: React.FC<CreateEditUserFormProps> = ({
       showToast(err.data?.message || 'Failed to save user.', 'error');
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

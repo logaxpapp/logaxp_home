@@ -238,19 +238,20 @@ const ViewList: React.FC = () => {
                 {card.comments && card.comments.length > 0 ? (
                     <ul className="mt-2">
                     {card.comments.map((comment, idx) => (
-                        <li key={idx} className="text-sm text-gray-700 space-y-1">
+                      <li key={idx} className="text-sm text-gray-700 space-y-1">
                         <p>
-                            <strong>Author:</strong> {comment.author ? comment.author.email : 'N/A'}
+                          <strong>Author:</strong> {comment.author ? comment.author.email : 'N/A'}
                         </p>
                         <p>
-                            <strong>Content:</strong> {comment.content}
+                          <strong>Content:</strong> {comment.content || 'No content'}
                         </p>
                         <p>
-                            <strong>Likes:</strong> {comment.likes?.length || 0}
+                          <strong>Likes:</strong> {comment.likes?.length || 0}
                         </p>
-                        </li>
+                      </li>
                     ))}
-                    </ul>
+                  </ul>
+                  
                 ) : (
                     <p className="text-gray-500">No comments available.</p>
                 )}

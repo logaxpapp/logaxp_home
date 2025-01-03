@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useEditUserProfileMutation } from '../api/usersApi';
 import { useToast } from '../features/Toast/ToastContext';
+import { IUser, Department } from '../types/user';
 
 interface EditUserProfileFormProps {
   userId: string;
@@ -36,46 +37,44 @@ const EditUserProfileForm: React.FC<EditUserProfileFormProps> = ({
     e.preventDefault();
     let errors: { name?: string; dateOfBirth?: string } = {};
 
-    // Basic Validation
     if (!name.trim()) {
-      errors.name = 'Name is required.';
+        errors.name = 'Name is required.';
     }
 
     if (dateOfBirth) {
-      const parsedDate = new Date(dateOfBirth);
-      if (isNaN(parsedDate.getTime())) {
-        errors.dateOfBirth = 'Invalid date of birth.';
-      }
+        const parsedDate = new Date(dateOfBirth);
+        if (isNaN(parsedDate.getTime())) {
+            errors.dateOfBirth = 'Invalid date of birth.';
+        }
     }
 
     if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
+        setFormErrors(errors);
+        return;
     }
 
     setFormErrors({}); // Clear previous errors
 
     try {
-      // Prepare updates object
-      const updates: Partial<{
-        name: string;
-        department: string;
-        phone_number: string;
-        date_of_birth: string;
-      }> = { name, department, phone_number: phoneNumber };
+        const updates: Partial<IUser> = {
+            name,
+            department: department as Department, // Explicitly cast to Department enum
+            phone_number: phoneNumber,
+        };
 
-      if (dateOfBirth) {
-        const parsedDate = new Date(dateOfBirth);
-        updates.date_of_birth = parsedDate.toISOString();
-      }
+        if (dateOfBirth) {
+            const parsedDate = new Date(dateOfBirth);
+            updates.date_of_birth = parsedDate.toISOString();
+        }
 
-      await editUserProfile({ userId, updates }).unwrap();
-      showToast('Profile updated successfully!');
+        await editUserProfile({ userId, updates }).unwrap();
+        showToast('Profile updated successfully!');
     } catch (err: any) {
-      console.error('Failed to edit user profile:', err);
-      showToast(err?.data?.message || 'Failed to update profile.');
+        console.error('Failed to edit user profile:', err);
+        showToast(err?.data?.message || 'Failed to update profile.');
     }
-  };
+};
+
 
   return (
     <div className="max-w-lg mx-auto bg-white dark:bg-gray-800 shadow-md rounded px-8 py-6">

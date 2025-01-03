@@ -18,7 +18,7 @@ import {
 } from './endpoints';
 
 import type { RootState } from '../app/store';
-import { setSessionExpired } from '../store/slices/sessionSlice'; // Import setSessionExpire
+import { setSessionExpired } from '../store/slices/sessionSlice'; 
 
 interface LoginResponse {
   user: IUser;

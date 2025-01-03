@@ -23,9 +23,12 @@ const BoardListView: React.FC<BoardListViewProps> = ({ board }) => {
   if (!board) return <div>No board data available</div>;
 
   // Flatten all cards from all lists for easy table rendering
-  const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
-    list.cards.map((card) => ({ ...card, listName: list.name }))
-  );
+  // src/components/BoardListView.tsx
+
+const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
+  list.cards.map((card) => ({ ...card, listName: list.name }))
+);
+
 
   const handleEditCard = (card: ICardWithListName) => {
     setEditingCard(card);

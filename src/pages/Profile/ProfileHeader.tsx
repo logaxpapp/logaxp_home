@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaCamera } from 'react-icons/fa';
-import { IUser } from '../../types/user';
+import { IUser, UserStatus } from '../../types/user';
 
 const ProfileHeader: React.FC<{
   user: IUser;
@@ -48,14 +48,15 @@ const ProfileHeader: React.FC<{
               {user.role || 'Unknown Role'}
             </span>
             <span
-              className={`px-3 py-1 rounded-full text-sm font-medium shadow ${
-                user.status === 'active'
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'bg-red-100 text-red-700'
-              }`}
-            >
-              {user.status || 'Unknown Status'}
-            </span>
+          className={`px-3 py-1 rounded-full text-sm font-medium shadow ${
+            user.status === UserStatus.Active
+              ? 'bg-blue-100 text-blue-700'
+              : 'bg-red-100 text-red-700'
+          }`}
+        >
+          {user.status || 'Unknown Status'}
+        </span>
+
           </div>
         </div>
       </div>

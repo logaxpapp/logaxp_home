@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useCreateUserMutation } from '../../api/usersApi';
 import { useNavigate } from 'react-router-dom';
+import { UserRole, IUser } from '../../types/user';
 
 const CreateUserForm: React.FC = () => {
   const [createUser, { isLoading, error }] = useCreateUserMutation();
@@ -24,13 +25,19 @@ const CreateUserForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createUser(formData).unwrap();
-      // Redirect to the user list or show a success message
-      navigate('/users');
+        // Cast or ensure the role value matches the UserRole enum
+        const updates: Partial<IUser> = {
+            name: formData.name,
+            email: formData.email,
+            role: formData.role as UserRole, // Ensure type matches UserRole
+        };
+
+        await createUser(updates).unwrap();
+        navigate('/users'); // Navigate to the users list
     } catch (err) {
-      console.error('Failed to create user:', err);
+        console.error('Failed to create user:', err);
     }
-  };
+};
 
   return (
     <form onSubmit={handleSubmit} className="p-4">
