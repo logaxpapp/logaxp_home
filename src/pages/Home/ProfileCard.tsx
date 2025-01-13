@@ -111,7 +111,7 @@ const TabsWithStyledCard: React.FC = () => {
   }));
 
   return (
-    <div className="bg- min-h-screen relative">
+    <div className="bg-gray-50 relative">
       {/* Dynamic Background Section */}
       <div
         className={`${
@@ -120,14 +120,14 @@ const TabsWithStyledCard: React.FC = () => {
             : activeTab === "scalability"
             ? "bg-slate-50"
             : "bg-green-50"
-        } text-gray-800 dark:bg-gray-700 py-1 px-5 relative overflow-hidden h-scroll-smooth transition-opacity duration-300 h-[520px] md:h-[500px] lg:h-[600px]`}>
+        } text-gray-800 dark:bg-gray-700 py-1 px-5 relative overflow-hidden h-scroll-smooth transition-opacity duration-300 h-[520px] md:h-[500px] lg:h-[580px]`}>
       
         {/* Decorative Stars Spread Across the Top */}
         <Decorations decorations={decorations} />
 
         {/* Header and Main Content Positioned Above Decorations */}
-        <div className="relative z-10 max-w-6xl mx-auto text-center mb-16 pt-4">
-          <h2 className="text-4xl md:text-6xl font-bold mt-2 mb-8 dark:text-white text-center font-primary">
+        <div className="relative z-10 max-w-6xl mx-auto text-center mb-1 pt-4">
+          <h2 className="text-4xl md:text-5xl font-bold mt-2 mb-8 dark:text-white text-center font-primary">
             Everything You Need
           </h2>
 
@@ -223,12 +223,7 @@ const TabsWithStyledCard: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Explore Button */}
-      <div className="text-center mt-16">
-        <button className="bg-lemonGreen text-white font-extrabold border border-lemonGreen px-8 py-4 rounded-lg hover:bg-lemonGreen-light hover:text-white transition-colors duration-200 text-xl">
-          Explore
-        </button>
-      </div>
+     
     </div>
   );
 };

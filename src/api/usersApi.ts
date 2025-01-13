@@ -7,6 +7,7 @@ import { ITeam } from '../types/team';
 import { ISubContractor } from '../types/subContractor';
 import { IGoogleCalendarEvent } from '../types/googleCalendar';
 import { setAuthCredentials } from '../store/slices/authSlice';
+import { customBaseQuery } from './baseQuery';
 
 import {
   USER_API,
@@ -123,6 +124,7 @@ export const usersApi = createApi({
     'DeletionRequest',
     'SubContractor',
     'Team', 
+    
   ],
   endpoints: (builder) => ({
     

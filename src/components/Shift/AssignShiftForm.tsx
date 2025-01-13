@@ -42,10 +42,7 @@ const [limit, setLimit] = useState(10);
   return (
     <div className="p-4">
       <h2 className="text-lg font-semibold mb-4">Assign Shift</h2>
-      {usersError && (
-        <p className="text-red-500 mb-4">Failed to load users. Please try again later.</p>
-      )}
-      
+     
       <form onSubmit={handleSubmit}>
         <SingleSelect
           label="Assign To"

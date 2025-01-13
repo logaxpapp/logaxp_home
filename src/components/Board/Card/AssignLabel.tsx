@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useAddLabelToCardMutation, useRemoveLabelFromCardMutation } from '../../../api/cardApi';
 import { useGetLabelsByBoardQuery } from '../../../api/tasksApi';
 import { ILabel } from '../../../types/task';
+import { useToast } from '../../../features/Toast/ToastContext';
 
 interface AssignLabelProps {
   cardId: string;
@@ -17,13 +18,19 @@ const AssignLabel: React.FC<AssignLabelProps> = ({ cardId, boardId, currentLabel
   const [addLabelToCard, { isLoading: adding }] = useAddLabelToCardMutation();
   const [removeLabelFromCard, { isLoading: removing }] = useRemoveLabelFromCardMutation();
 
+  const { showToast } = useToast();
+    // const labels: ILabel[] | undefined
+    console.log('Current labels:', currentLabels);
+
   const handleLabelChange = async (labelId: string, isChecked: boolean) => {
     if (isChecked) {
       const updatedCard = await addLabelToCard({ cardId, labelId }).unwrap();
       setCurrentLabels(updatedCard.labels);
+      showToast('Label assigned successfully!', 'success');
     } else {
       const updatedCard = await removeLabelFromCard({ cardId, labelId }).unwrap();
       setCurrentLabels(updatedCard.labels);
+      showToast('Label removed successfully!', 'success');
     }
   };
 

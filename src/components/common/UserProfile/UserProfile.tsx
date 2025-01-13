@@ -63,7 +63,7 @@ const UserProfile: React.FC = () => {
       <div className="mt-8">
         <h3 className="text-lg mb-2">All Users</h3>
         {isLoading && <div>Loading users...</div>}
-        {error && <div>Error fetching users.</div>}
+       
         {data && (
           <ul>
             {data.users.map((u) => (

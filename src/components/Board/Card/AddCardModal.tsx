@@ -52,7 +52,7 @@ const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* AddCardForm */}
-                <AddCardForm listId="" status="" onClose={onClose} />
+                <AddCardForm listId="" status="" onClose={onClose} boardId={''} />
                 {/* Note: listId and status will be handled within AddCardForm */}
               </Dialog.Panel>
             </Transition.Child>

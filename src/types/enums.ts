@@ -16,7 +16,8 @@ export enum Application {
     User = 'user',
     Approver = 'approver',
     Contractor = 'contractor',
-    SubContractor = 'sub-contractor',
+    SubContractor = 'subContractor',
+    
   }
 
   export enum TeamMemberRole {

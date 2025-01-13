@@ -1,69 +1,96 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaTasks, FaList, FaChartBar, FaCog, FaPlus } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import { FaTasks } from 'react-icons/fa';
 import SurveyList from './SurveyList'; // Component for managing surveys
 import SurveyAssignments from './AssignSurvey'; // Placeholder for assignments component
 import SurveyResponses from './SurveyResponses'; // Placeholder for responses component
 import SurveyResponsesList from './SurveyResponsesList'; // Placeholder for response list component
 import Button from '../../components/common/Button/Button';
 
-const ManageSurvey: React.FC = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string>('SurveyManagement');
 
-  // Define the tab configuration with icons, labels, and components
-  const tabs = useMemo(
-    () => [
-      { label: 'Survey Management', id: 'SurveyManagement', icon: <FaList />, component: <SurveyList /> },
-      { label: 'Assignments', id: 'Assignments', icon: <FaTasks />, component: <SurveyAssignments /> },
-      { label: 'Responses', id: 'Responses', icon: <FaChartBar />, component: <SurveyResponses /> },
-      { label: 'Response List', id: 'Settings', icon: <FaCog />, component: <SurveyResponsesList /> },
-    ],
-    []
-  );
+const ManageSurvey: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<string>('Overview');
+
+  // Mock Data for Overview Section
+  const mockSurveyData = {
+    totalSurveys: 25,
+    assignedSurveys: 15,
+    completedSurveys: 10,
+    pendingResponses: 5,
+  };
 
   return (
-    <div className="mx-auto font-secondary ">
-      <div className="bg-white min-h-screen dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-        
+    <div className="p-4 min-h-screen bg-gray-50">
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden md:min-h-screen">
+
         {/* Header Section */}
-        <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row items-center justify-between">
-          <h2 className="text-xl md:text-xl font-semibold text-gray-800 dark:text-gray-200 text-center md:text-left font-primary">
-            Survey Management
-          </h2>
+        <div className="px-4 py-4 border-b border-gray-200 flex flex-col md:flex-row items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-800">Survey Management</h2>
           <Button
             variant="success"
-            onClick={() => navigate('/dashboard/surveys/create')}
+            onClick={() => console.log('Navigate to create survey page')}
             className="flex items-center mt-4 md:mt-0"
           >
-            <FaPlus className="mr-2" /> Create Survey
+            <FaTasks className="mr-2" /> Create Survey
           </Button>
         </div>
 
-        {/* Tabs with Icons */}
-        <div className="flex flex-wrap md:flex-nowrap font-primary space-x-2 p-4 bg-blue-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 justify-center md:justify-start">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md focus:outline-none transition-colors duration-200 mb-2 md:mb-0 ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
-            </button>
-          ))}
-        </div>
+        {/* Tabs Section */}
+        <Tabs>
+          <TabList className="react-tabs__tab-list flex flex-wrap gap-2 border-b border-gray-300">
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-amber-50 hover:bg-gray-200 rounded-t-md">
+              Overview
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-blue-50 hover:bg-gray-200 rounded-t-md">
+              Survey Management
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-green-50 hover:bg-gray-200 rounded-t-md">
+              Assignments
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-red-50 hover:bg-gray-200 rounded-t-md">
+              Responses
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-gray-100 hover:bg-gray-200 rounded-t-md">
+              Response List
+            </Tab>
+          </TabList>
 
-        {/* Content Area */}
-        <div className="p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 md:p-6">
-            {tabs.find((tab) => tab.id === activeTab)?.component}
-          </div>
-        </div>
+          {/* Tab Panels */}
+          <TabPanel className="react-tabs__tab-panel p-4">
+            {/* Overview Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <div className="p-6 bg-blue-50 rounded-lg shadow-md">
+                <h2 className="text-lg font-medium text-blue-700">Total Surveys</h2>
+                <p className="text-3xl font-bold text-blue-900">{mockSurveyData.totalSurveys}</p>
+              </div>
+              <div className="p-6 bg-green-50 rounded-lg shadow-md">
+                <h2 className="text-lg font-medium text-green-700">Assigned Surveys</h2>
+                <p className="text-3xl font-bold text-green-900">{mockSurveyData.assignedSurveys}</p>
+              </div>
+              <div className="p-6 bg-yellow-50 rounded-lg shadow-md">
+                <h2 className="text-lg font-medium text-yellow-700">Completed Surveys</h2>
+                <p className="text-3xl font-bold text-yellow-900">{mockSurveyData.completedSurveys}</p>
+              </div>
+              <div className="p-6 bg-red-50 rounded-lg shadow-md">
+                <h2 className="text-lg font-medium text-red-700">Pending Responses</h2>
+                <p className="text-3xl font-bold text-red-900">{mockSurveyData.pendingResponses}</p>
+              </div>
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <SurveyList />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <SurveyAssignments />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <SurveyResponses />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <SurveyResponsesList />
+          </TabPanel>
+        </Tabs>
       </div>
     </div>
   );

@@ -1,9 +1,11 @@
+// src/components/Auth/Login.tsx (or wherever your login is)
+
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLoginMutation } from '../../api/usersApi';
 import { useAppDispatch } from '../../app/hooks';
 import { setAuthCredentials } from '../../store/slices/authSlice';
-import { RootState } from '../../app/store'; // Import RootState type
+import { RootState } from '../../app/store';
 import { useNavigate, Link } from 'react-router-dom';
 import Logo from '../../assets/images/sec.png';
 import DarkModeToggle from '../../components/DarkModeToggle';
@@ -14,13 +16,14 @@ import Checkbox from '../../components/common/Input/Checkbox';
 import Form from '../../components/common/Form/Form';
 import { PasswordInput } from '../../components/common/Input/PasswordInput';
 import { useToast } from '../../features/Toast/ToastContext';
+import { UserRole } from '../../types/enums';
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { showToast } = useToast();
 
-  const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken); // Access CSRF token
+  const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken);
 
   const [login, { isLoading }] = useLoginMutation();
   const [credentials, setCredentialsState] = useState({ email: '', password: '' });
@@ -41,32 +44,43 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
       if (!csrfToken) {
         showToast('Failed to fetch CSRF token. Please refresh the page.', 'error');
         return;
       }
-  
+
       const userData = await login(credentials).unwrap();
       dispatch(setAuthCredentials({ user: userData.user }));
-  
+
       if (rememberMe) {
         localStorage.setItem('user', JSON.stringify(userData.user));
       }
-  
+
       showToast('Logged in successfully!', 'success');
-  
+
       if (userData.user.passwordExpiryNotice) {
         showToast(userData.user.passwordExpiryNotice, 'info');
       }
-  
-      navigate('/dashboard');
+
+      // === Minimal changes: role-based redirect ===
+      if (userData.user.role === UserRole.Admin) {
+        navigate('/dashboard');
+      } else if (userData.user.role === UserRole.Contractor) {
+        navigate('/dashboard');
+      } else if (userData.user.role === UserRole.SubContractor) {
+        navigate('/dashboard');
+      } else {
+        navigate('/dashboard');
+      }
+      // === End changes ===
+
     } catch (err: any) {
       const status = err?.status;
       const errorMessage =
         err?.data?.message || 'Failed to login. Please check your credentials.';
-  
+
       if (status === 403) {
         showToast('Session expired or invalid CSRF token. Please refresh the page.', 'error');
       } else if (status === 401) {
@@ -77,7 +91,6 @@ const Login: React.FC = () => {
       console.error('Failed to login:', err);
     }
   };
-  
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
@@ -95,7 +108,9 @@ const Login: React.FC = () => {
           >
             Connect with every LogaXP application
           </h2>
-          <p className="text-gray-800">Everything you need in an easily accessible dashboard.</p>
+          <p className="text-gray-800">
+            Everything you need in an easily accessible dashboard.
+          </p>
         </div>
       </div>
 
@@ -106,7 +121,10 @@ const Login: React.FC = () => {
       >
         {/* Logo at the Top-Left */}
         <div className="absolute top-6 left-6 flex items-center">
-          <Link to="/" className="inline-flex items-center font-bold text-2xl text-black dark:text-gray-100">
+          <Link
+            to="/"
+            className="inline-flex items-center font-bold text-2xl text-black dark:text-gray-100"
+          >
             <img src={Logo} alt="LogaXP Logo" className="h-6" />
           </Link>
         </div>
@@ -117,7 +135,9 @@ const Login: React.FC = () => {
         </div>
 
         <div className="mx-auto w-full max-w-md mt-16">
-          <h2 className="text-[48px] text-gray-800 font-semibold dark:text-white font-primary">Login</h2>
+          <h2 className="text-[48px] text-gray-800 font-semibold dark:text-white font-primary">
+            Login
+          </h2>
           <p
             className="text-gray-600 dark:text-gray-300 text-sm mb-8"
             style={{ fontFamily: 'Plus Jakarta Sans' }}
@@ -159,7 +179,10 @@ const Login: React.FC = () => {
                 checked={rememberMe}
                 onChange={() => setRememberMe((prev) => !prev)}
               />
-              <Link to="/password-reset" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 text-sm">
+              <Link
+                to="/password-reset"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 text-sm"
+              >
                 Forgot Password?
               </Link>
             </div>

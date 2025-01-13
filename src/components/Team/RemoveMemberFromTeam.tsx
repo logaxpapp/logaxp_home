@@ -46,7 +46,7 @@ const RemoveMemberFromTeam: React.FC<RemoveMemberFromTeamProps> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 text-gray-800">
       <p>
         Are you sure you want to remove <strong>{memberName}</strong> (
         {memberRole}) from the team?

@@ -1,6 +1,7 @@
 import React from 'react';
-import { useAppSelector } from '../../app/hooks';
-import { selectCurrentUser } from '../../store/slices/authSlice';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import { FaUsers, FaLock, FaUpload, FaClipboardCheck, FaFileAlt, FaChartBar, FaTrashAlt, FaUserShield } from 'react-icons/fa';
 import AdminUser from './AdminUser';
 import CreateContractorForm from './CreateContractorForm';
 import UploadInvite from './UploadInvite';
@@ -11,67 +12,104 @@ import Reports from '../../components/Appraisal/AdminReports';
 import DeletionRequests from '../../components/UserList/DeletionRequests';
 import AuditLog from '../../components/Audit/AuditLog';
 import Login from '../../components/LoggedInUsersList';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
 
 const Admin: React.FC = () => {
-  const user = useAppSelector(selectCurrentUser);
-
-  const isAdmin = user?.role === 'admin';
-
-  // Tabs configuration
-  const tabs = [
-    { label: 'Admin List',  component: <AdminUser /> },
-    { label: 'Login User', component: <Login /> },
-    { label: 'Deletion Requests', component: <DeletionRequests /> },
-    { label: 'Upload Users',  component: <UploadInvite /> },
-    { label: 'Approvals',  component: <AllApprovalRequests /> },
-    { label: 'Appraisal List',  component: <AppraisalList /> },
-    { label: 'Appraisal Periods',  component: <AdminAppraisalPeriods /> },
-    { label: 'Reports',  component: <Reports /> },
-    { label: 'Audit Log',  component: <AuditLog /> },
-    { label: 'Create Contractor',  component: <CreateContractorForm /> },
-  ];
-
-  if (!isAdmin) {
-    return (
-      <div className="text-center mt-10 text-red-500">
-        You do not have permission to access this page.
-      </div>
-    );
-  }
-
   return (
-    <div className="mx-auto p-6 min-h-screen bg-gray-100">
-      <div className="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+    <div className="p-4 min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden md:min-h-screen">
         {/* Header Section */}
-       
+        <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+            Admin Management
+          </h2>
+        </div>
 
-        {/* Tabs with Icons */}
+        {/* Tabs Section */}
         <Tabs>
-          <TabList className="flex gap-4 p-4 border-b bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-lg">
-            {tabs.map((tab, index) => (
-              <Tab
-                key={index}
-                className="flex items-center space-x-2 px-4 py-2 rounded-md cursor-pointer font-semibold text-gray-700 hover:text-gray-900 hover:bg-white underline border-gray-300"
-                selectedClassName="bg-gradient-to-t from-teal-500 via-cyan-600 to-gray-700 text-white shadow-lg border-none"
-              >
-               
-                <span className="hidden sm:inline">{tab.label}</span>
-              </Tab>
-            ))}
+          <TabList className="react-tabs__tab-list flex flex-wrap gap-2 border-b border-gray-300 dark:border-gray-700">
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-blue-50 hover:bg-gray-200 rounded-t-md text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+              Admin List
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-yellow-50 hover:bg-gray-200 rounded-t-md text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+             Login User
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-red-100 hover:bg-gray-200 rounded-t-md text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+              Deletion Requests
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-purple-100 hover:bg-gray-200 rounded-t-md text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+               Upload Users
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-teal-50 hover:bg-gray-200 rounded-t-md text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+               Approvals
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-pink-100 hover:bg-gray-200 rounded-t-md text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+               Appraisal List
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-pink-50 hover:bg-gray-200 rounded-t-md text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+               Appraisal Periods
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-indigo-50 hover:bg-gray-200 rounded-t-md text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+               Reports
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-red-50 hover:bg-gray-200 rounded-t-md text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+             Audit Log
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-orange-50 hover:bg-gray-200 rounded-t-md text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+              Contractor
+            </Tab>
           </TabList>
 
           {/* Tab Panels */}
-          {tabs.map((tab, index) => (
-            <TabPanel key={index}>
-              <div className="p-6 bg-gray-100">
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                  {tab.component}
-                </div>
-              </div>
-            </TabPanel>
-          ))}
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <AdminUser />
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <Login />
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <DeletionRequests />
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <UploadInvite />
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <AllApprovalRequests />
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <AppraisalList />
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <AdminAppraisalPeriods />
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <Reports />
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <AuditLog />
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <CreateContractorForm />
+            </div>
+          </TabPanel>
         </Tabs>
       </div>
     </div>

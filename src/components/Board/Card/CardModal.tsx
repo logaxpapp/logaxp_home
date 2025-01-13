@@ -68,7 +68,7 @@ const CardModal: React.FC<CardModalProps> = ({ isOpen, onRequestClose, card }) =
 
       {/* TAB CONTENT */}
       <div>
-        {activeTab === 'edit' && <EditCardForm card={card} onClose={onRequestClose} />}
+        {activeTab === 'edit' && <EditCardForm card={card} onClose={onRequestClose} boardId='' />}
         {activeTab === 'subtasks' && <SubTaskSection card={card} />}
         {activeTab === 'timelogs' && <TimeLogSection card={card} />}
         {activeTab === 'customfields' && <CustomFieldSection card={card} />}

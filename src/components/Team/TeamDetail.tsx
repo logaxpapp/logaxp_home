@@ -75,7 +75,7 @@ const permissions: Permissions = user ? getPermissions(user.role as UserRole) : 
   if (!team) return <div>Team not found.</div>;
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 text-gray-800">
       <h2 className="text-2xl font-semibold mb-4">{team.name}</h2>
       <p className="mb-6">{team.description}</p>
 

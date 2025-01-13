@@ -54,7 +54,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, listId, st
                 </div>
 
                 {/* AddCardForm */}
-                <AddCardForm listId={listId} status={status} onClose={onClose} />
+                <AddCardForm listId={listId} status={status} onClose={onClose} boardId='' />
               </Dialog.Panel>
             </Transition.Child>
           </div>

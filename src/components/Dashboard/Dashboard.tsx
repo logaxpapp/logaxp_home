@@ -19,7 +19,7 @@ const Dashboard: React.FC = () => {
   const user = useAppSelector((state) => state.auth.user);
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-800">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-800 text-gray-900">
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 

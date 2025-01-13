@@ -69,7 +69,7 @@ const AdminPage: React.FC = () => {
         </TabPanel>
 
         <TabPanel className="react-tabs__tab-panel p-4 bg-white rounded-b-md shadow">
-          <h2 className="text-2xl font-bold text-gray-700 mb-4">All Contractors</h2>
+      
           <ContractorList />
         </TabPanel>
 

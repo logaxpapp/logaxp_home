@@ -103,9 +103,8 @@ const TimeEntryList: React.FC = () => {
   const { data: timeEntries = [], pagination } = timeEntriesResponse || {};
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-gradient-to-t
-           from-teal-600 via-cyan-900 to-gray-900 text-white">Time Entries</h2>
+    <div className="p-4 text-gray-800 dark:text-gray-100">
+      <h2 className="text-2xl border p-2 text-center font-bold mb-4 font-primary bg-gray-100 text-gray-700">Time Entries</h2>
       <div className="mb-4">
         <select
           className="border p-1 rounded  font-primary"

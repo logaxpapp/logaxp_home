@@ -45,6 +45,7 @@ const SubTaskSection: React.FC<SubTaskSectionProps> = ({ card }) => {
         subTaskId,
         updates: { completed: !completed },
       }).unwrap();
+      console.log(subTaskId)
       showToast('Sub-task updated successfully!', 'success');
     } catch (error) {
       console.error('Update sub-task error:', error);
@@ -67,7 +68,7 @@ const SubTaskSection: React.FC<SubTaskSectionProps> = ({ card }) => {
   };
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-lg">
+    <div className="p-4 text-gray-800 bg-white shadow-md rounded-lg">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <FiCheckSquare className="text-green-600" size={24} />

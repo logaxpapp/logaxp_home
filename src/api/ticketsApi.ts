@@ -292,6 +292,39 @@ export const ticketsApi = createApi({
             ? result.results.map((r) => ({ type: 'Ticket' as const, id: r.ticketId }))
             : [],
       }),
+
+      fetchCreatedTickets: builder.query<TicketsResponse, { skip?: number; limit?: number }>({
+        query: ({ skip = 0, limit = 10 }) => `${TICKET_API}/created?skip=${skip}&limit=${limit}`,
+        providesTags: (result) =>
+          result
+            ? [
+                ...result.tickets.map(({ _id }) => ({ type: 'Ticket' as const, id: _id })),
+                { type: 'Ticket', id: 'CREATED_LIST' },
+              ]
+            : [{ type: 'Ticket', id: 'CREATED_LIST' }],
+      }),
+      fetchAssignedTickets: builder.query<TicketsResponse, { skip?: number; limit?: number }>({
+        query: ({ skip = 0, limit = 10 }) => `${TICKET_API}/assigned?skip=${skip}&limit=${limit}`,
+        providesTags: (result) =>
+          result
+            ? [
+                ...result.tickets.map(({ _id }) => ({ type: 'Ticket' as const, id: _id })),
+                { type: 'Ticket', id: 'ASSIGNED_LIST' },
+              ]
+            : [{ type: 'Ticket', id: 'ASSIGNED_LIST' }],
+      }),
+      fetchTicketsByStatus: builder.query<TicketsResponse, { status: string; skip?: number; limit?: number }>({
+        query: ({ status, skip = 0, limit = 10 }) =>
+          `${TICKET_API}/status/${status}?skip=${skip}&limit=${limit}`,
+        providesTags: (result) =>
+          result
+            ? [
+                ...result.tickets.map(({ _id }) => ({ type: 'Ticket' as const, id: _id })),
+                { type: 'Ticket', id: 'LIST' },
+              ]
+            : [{ type: 'Ticket', id: 'LIST' }],
+      }),
+      
   }),
 });
 
@@ -312,4 +345,7 @@ export const {
   useFetchAdvancedTicketsQuery,
   useFetchTicketWatchersQuery,
   useAddWatcherToMultipleTicketsMutation,
+  useFetchCreatedTicketsQuery,
+  useFetchAssignedTicketsQuery,
+  useFetchTicketsByStatusQuery,
 } = ticketsApi;

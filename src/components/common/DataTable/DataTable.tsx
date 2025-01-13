@@ -53,7 +53,7 @@ function DataTable<T extends { _id: string }>({
   };
 
   return (
-    <table className="min-w-full bg-white dark:bg-gray-800 dark:text-gray-50 mb-10 text-xs font-primary">
+    <table className="min-w-full bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-50 mb-10 text-xs font-primary">
       <thead>
         <tr>
           {selectable && (

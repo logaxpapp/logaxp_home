@@ -19,6 +19,8 @@ const AttachmentSection: React.FC<AttachmentSectionProps> = ({ cardId }) => {
   const [files, setFiles] = useState<File[]>([]);
   const { showToast } = useToast();
 
+  console.log('Attachments:', attachments);
+
   const [uploadSingleAttachment, { isLoading: singleUploading }] =
     useUploadSingleAttachmentMutation();
   const [uploadMultipleAttachments, { isLoading: multipleUploading }] =

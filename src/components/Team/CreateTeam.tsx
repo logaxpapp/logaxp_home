@@ -69,7 +69,7 @@ const CreateTeam: React.FC<CreateTeamProps> = ({ onClose }) => {
   
 
   return (
-    <div>
+    <div className='p-4 bg-white rounded text-gray-800 shadow'>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Team Name */}
         <div>

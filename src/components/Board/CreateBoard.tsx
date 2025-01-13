@@ -83,7 +83,7 @@ const CreateBoard: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <form onSubmit={handleSubmitBoard} className="space-y-4">
+    <form onSubmit={handleSubmitBoard} className="space-y-4 text-gray-800">
       {/* Board Name */}
       <div>
         <label className="block text-sm font-medium text-gray-700">

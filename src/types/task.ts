@@ -1,6 +1,16 @@
 // src/types/task.ts
 
+import { ITeam } from './team';
 import { IUser } from './user';
+
+/**
+ * Assignee interface
+ */
+export interface IAssignee {
+  _id: string;
+  name: string;
+  email: string;
+}
 
 /**
  * SubTask, TimeLog, and CustomField interfaces
@@ -10,7 +20,7 @@ export interface ISubTask {
   id: string,
   title: string;
   completed: boolean;
-  dueDate?: string;    // ISO date string
+  dueDate?: string | Date;  // either a string or a Date
   assignee?: string;   // userId as string
 }
 
@@ -19,7 +29,7 @@ export interface ITimeLog {
   user: string;       // userId as string
   start: string;      // ISO date string
   end?: string;       // ISO date string
-  duration?: number;  // e.g., total minutes or hours
+  duration: number;  // e.g., total minutes or hours
 }
 
 export interface ICustomField {
@@ -42,6 +52,9 @@ export interface IBoard {
   createdAt: string;
   updatedAt: string;
   headers?: string[];   // array of column headers
+  teamId: string;
+  team?: ITeam
+  dueDate?: Date | null;
 }
 
 /**
@@ -50,27 +63,29 @@ export interface IBoard {
 export interface IList {
   _id: string;
   name: string;
-  board: string;        // boardId
+  board: IBoard | string;  // Allow either IBoard or string
   position: number;
-  cards: ICard[];       // populated data
+  cards: ICard[]; // populated data
   createdAt: string;
   updatedAt: string;
-  header: string;       
+  header: string;
 }
 
+
 /**
- * Card interface (EXTENDED to have subTasks, timeLogs, customFields)
+ * Card interface
  */
 export interface ICard {
   _id: string;
   title: string;
   description?: string;
-  list: string; // List ID
+  list: IList | string;
   assignees: (string | { _id: string; name: string; email: string })[];
-  labels: ILabel[]; 
+  labels: ILabel[];
   boardId: string; // Board ID
-  dueDate?: string;
-  attachments: IAttachment[]; 
+  startDate?: string | null; 
+  dueDate?: string | null;
+  attachments: IAttachment[];
   comments: IComment[];
   position: number;
   subTasks?: ISubTask[];
@@ -83,7 +98,11 @@ export interface ICard {
   createdAt: string;
   updatedAt: string;
   listName?: string; // Added for table view
+  progress?: number; // Added for Gantt chart
+  dependencies?: string[]; // Added for Gantt chart
+  
 }
+
 
 /**
  * ICommentInput interface for sending data to backend
@@ -115,10 +134,11 @@ export interface ILabel {
   _id: string;
   name: string;
   color: string;
-  boardId: string;       // boardId
+  boardId: string; // Frontend uses boardId
   createdAt: string;
   updatedAt: string;
 }
+
 
 /**
  * Attachment interface
@@ -173,13 +193,77 @@ export interface ICreateCardInput {
   list: string; // List ID
   assignees?: string[]; // User IDs
   labels?: string[]; // Label IDs
-  dueDate?: string; // ISO string
+  dueDate?: string
   position?: number;
   status?: string; // New Field
   priority?: string; // New Field
+  startDate?: string; // New Field
+  dependencies?: string[]; // New Field
+  boardId?: string; // New Field
 }
 
 export interface ICardWithListName extends ICard {
-  listName: string;
+  listName?: string
   
+}
+
+
+export interface CreateLabelInput {
+  name: string;
+  color: string;
+  boardId: string; // Frontend sends boardId
+}
+
+export interface UpdateLabelInput {
+  _id: string;
+  name?: string;
+  color?: string;
+}
+export interface ILabelResponse {
+  _id: string;
+  name: string;
+  color: string;
+  boardId: string; // Reference to the board as a string
+  createdAt: string; // ISO string representation
+  updatedAt: string; // ISO string representation
+}
+
+// src/types/task.ts
+
+export interface IUpdateCardInput {
+  _id: string;
+  title?: string;
+  description?: string;
+  startDate?: string | null;
+  dueDate?: string | null;
+  priority?: string;
+  status?: string;
+  progress?: number;
+  dependencies?: string[];
+  boardId?: string; // Frontend sends boardId
+}
+
+
+/**
+ * Label interface for frontend (extends the response interface)
+ */
+export interface ILabel extends ILabelResponse {}
+
+
+
+
+export interface IListData {
+  list: string; // List Name
+  tasks: ICard[];
+}
+
+
+export interface IBoardGroup {
+  _id: string; // Board Name
+  totalTasks: number;
+  tasks: IListData[];
+}
+
+export interface TasksByBoardViewProps {
+  data: IBoardGroup[];
 }

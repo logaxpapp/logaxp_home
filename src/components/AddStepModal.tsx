@@ -70,9 +70,7 @@ const AddStepDialog: React.FC<AddStepDialogProps> = ({ isOpen, onClose, onSubmit
             {errors.newApproverId && (
               <p className="text-red-500 text-sm mt-1">{errors.newApproverId}</p>
             )}
-            {approversError && (
-              <p className="text-red-500 text-sm mt-1">Failed to load approvers.</p>
-            )}
+         
           </div>
 
           {/* Step Name Input */}

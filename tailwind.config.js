@@ -2,6 +2,7 @@
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  // mode: 'jit',
   darkMode: 'class',
   content: [
     "./index.html",
@@ -121,6 +122,7 @@ module.exports = {
       fontFamily: {
         primary: ['Menseal', 'sans-serif'],
         secondary: ['Plus Jakarta Sans', 'sans-serif'],
+        signature: ['"Dancing Script"', 'cursive'],
       },
 
     },

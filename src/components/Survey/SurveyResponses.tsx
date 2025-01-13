@@ -21,7 +21,7 @@ const SurveyResponses: React.FC = () => {
   if (error) return <p className="text-red-500 text-center">Error loading survey responses.</p>;
 
   return (
-    <div className="bg-blue-50 p-4">
+    <div className="bg-blue-50 p-4 sidebar">
       <div className="flex justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg">
       <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Survey Responses</h2>
       </div>
@@ -31,7 +31,7 @@ const SurveyResponses: React.FC = () => {
           <ul className="space-y-4">
             {data.responses.map((response: ISurveyResponse) => (
               <li key={response._id} className="p-4 bg-white rounded-lg shadow-md">
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-xl font-semibold text-blue-800">
                   Survey: {response.survey_assignment.survey.title || 'Untitled Survey'}
                 </h3>
                 <ul className="mt-2">

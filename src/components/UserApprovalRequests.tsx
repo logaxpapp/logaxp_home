@@ -223,7 +223,7 @@ const UserApprovalRequests: React.FC = () => {
 
   return (
     <div className="bg-blue-50 p-4 dark:bg-gray-700">
-       <h1 className="text-xl font-semibold mb-6 text-gray-800 font-primary dark:text-lemonGreen-light">My Approval Requests</h1>
+       <h1 className="text-xl font-semibold mb-6 text-gray-800 font-primary dark:text-lemonGreen-light">My Approval Requests...</h1>
       <div className=" justify-between items-center mb-4 bg-gray-50 p-4 rounded-lg dark:bg-gray-700">
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0 font-primary">

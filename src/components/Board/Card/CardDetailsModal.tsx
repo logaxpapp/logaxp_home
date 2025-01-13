@@ -20,6 +20,7 @@ interface CardDetailsModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
   card: ICard;
+  boardId:string;
 }
 
 type CardTab = 'Assign' | 'Comments' | 'Attachments' | 'SubTasks' | 'TimeLogs';
@@ -28,8 +29,9 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
   isOpen,
   onRequestClose,
   card,
+  boardId,
 }) => {
-  const [activeTab, setActiveTab] = useState<CardTab>('Assign');
+ console.log('Card Details Modal props:', card);
 
   // Retrieve the current user from the Redux store
   const user = useAppSelector(selectCurrentUser);
@@ -39,7 +41,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
   const { data, error, isLoading } = useFetchAllUsersQuery({ page: 1, limit: 1000 });
 
   // Fetch labels for the board associated with the card
-  const boardId = card.boardId; // Ensure that ICard includes boardId
+  
   const { data: labelsData, isLoading: labelsLoading, error: labelsError } = useGetLabelsByBoardQuery(boardId);
 
   // Process assignees with enriched data
@@ -61,8 +63,6 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
 
   // Update local state when `card` prop changes
   useEffect(() => {
-    console.log('Card Details:', card);
-    console.log('Board ID:', card.boardId);
     setCardDetails(card);
   }, [card]);
 
@@ -76,6 +76,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
 
   if (!currentUserId) {
     return (
+     
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={onRequestClose}>
           <Transition.Child
@@ -89,7 +90,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
           >
             <div className="fixed inset-0 bg-black" />
           </Transition.Child>
-          <div className="fixed inset-0 overflow-y-auto">
+          <div className="fixed inset-0 overflow-y-auto text-gray-900">
             <div className="flex min-h-full items-center justify-center p-4 text-center">
               <Transition.Child
                 as={Fragment}
@@ -118,10 +119,12 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
           </div>
         </Dialog>
       </Transition>
+     
     );
   }
 
   return (
+    
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onRequestClose}>
         <Transition.Child
@@ -133,7 +136,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
           leaveFrom="opacity-30"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-900 opacity-75" />
+          <div className="fixed inset-0 bg-gray-900 opacity-75 text-gray-800" />
         </Transition.Child>
         <div className="fixed inset-0 overflow-y-auto sidebar">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
@@ -146,7 +149,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
               leaveFrom="opacity-100 scale-100 translate-y-0"
               leaveTo="opacity-0 scale-95 translate-y-4"
             >
-              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white text-gray-800 p-6 text-left align-middle shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <Dialog.Title as="h3" className="text-2xl font-bold">
                     {card.title}
@@ -188,8 +191,10 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
                       {/* Assign Label Section */}
                       {labelsLoading ? (
                         <p>Loading label data...</p>
-                      ) : labelsError || !labelsData?.length ? (
-                        <p className="text-red-500">Error fetching label data.</p>
+                      ) : labelsError ? (
+                        <p className="text-red-500">Error fetching label data. Please try again later.</p>
+                      ) : labelsData?.length === 0 ? (
+                        <p className="text-gray-500">No labels found for this board. You can create new labels in the board settings.</p>
                       ) : (
                         <AssignLabel
                           cardId={cardDetails._id}
@@ -198,6 +203,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
                           setCurrentLabels={setLabels} // Pass the compatible setter
                         />
                       )}
+
                     </Tab.Panel>
                     <Tab.Panel className="rounded-xl bg-white p-3">
                       <CommentSection cardId={cardDetails._id} currentUserId={currentUserId} />
@@ -219,6 +225,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
         </div>
       </Dialog>
     </Transition>
+    
   );
 };
 

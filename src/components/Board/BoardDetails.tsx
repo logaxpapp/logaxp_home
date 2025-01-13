@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import { useFetchBoardByIdQuery } from '../../api/tasksApi';
 import { useParams, Link } from 'react-router-dom';
+import TeamMembersSection from './TeamMembersSection';
 import BoardMembersSection from './BoardMembersSection'; 
+import InvitationForm from './InvitationForm';
 import LabelManager from './LabelManager';
 import Pagination from '../common/Pagination/Pagination';
 
@@ -12,7 +14,7 @@ const BoardDetails: React.FC = () => {
   const { data: board, error, isLoading } = useFetchBoardByIdQuery(boardId!);
 
   // State to track active tab: 'lists', 'members', or 'membership'
-  const [activeTab, setActiveTab] = useState<'lists' | 'members' | 'membership' |'labels'>('lists');
+  const [activeTab, setActiveTab] = useState<'lists' | 'members' | 'membership' |'labels'| 'Invitation'>('lists');
 
   // Pagination states for Lists
   const [currentListPage, setCurrentListPage] = useState(1);
@@ -39,12 +41,12 @@ const BoardDetails: React.FC = () => {
   const totalMemberPages = Math.ceil(board.members.length / membersPerPage);
 
   return (
-    <div className="p-8 bg-white shadow-md rounded-md mx-auto">
+    <div className="p-8 bg-white shadow-md rounded-md mx-auto md:min-h-screen my-1 text-gray-800">
       <h1 className="text-3xl font-bold mb-4">{board.name}</h1>
       <p className="text-gray-700 mb-6">{board.description}</p>
 
       {/* Tab Navigation */}
-      <div className="mb-6">
+      <div className="mb-6 ">
         <nav className="flex space-x-4 border-b">
           <button
             className={`py-2 px-4 -mb-px font-semibold text-sm ${
@@ -86,6 +88,17 @@ const BoardDetails: React.FC = () => {
             >
                 Labels ({board.labels.length})
           </button>
+          <button
+          className={`py-2 px-4 -mb-px font-semibold text-sm ${
+              activeTab === 'Invitation'
+                ? 'border-b-2 border-blue-500 text-blue-600'
+                : 'text-gray-600 hover:text-blue-600'
+            }`}
+            onClick={() => setActiveTab('Invitation')}
+            >
+                Team Invitation
+          </button>
+
         </nav>
       </div>
 
@@ -189,6 +202,13 @@ const BoardDetails: React.FC = () => {
         <div className="mt-8">
           <h3 className="text-xl font-semibold mb-2">Manage Labels</h3>
           <LabelManager boardId={boardId!} />
+        </div>
+      )}
+
+      {activeTab === 'Invitation' && (
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold mb-2">Send Board Invitation</h3>
+          <InvitationForm boardId={boardId!} />
         </div>
       )}
     </div>

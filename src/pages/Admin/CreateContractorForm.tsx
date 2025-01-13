@@ -54,7 +54,7 @@ const CreateContractorForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8">
+    <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8 sidebar">
       <h2 className="text-3xl font-semibold mb-6 text-center text-blue-600">Create Contractor</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-4">

@@ -37,7 +37,7 @@ const DashboardHome: React.FC = () => {
 
   return (
     <div
-      className="p-8 min-h-screen bg-gradient-to-br
+      className="p-8 text-gray-800 min-h-screen bg-gradient-to-br
      from-gray-100  via-gray-200 to-gray-300 dark:from-gray-900 dark:to-gray-800
      before:content-[''] before:absolute before:inset-0
           before:bg-[url('../../assets/images/star.svg')] before:bg-repeat before:bg-[length:20px_20px]
@@ -45,7 +45,7 @@ const DashboardHome: React.FC = () => {
           dark:before:bg-[url('../../assets/images/star-pattern-dark.svg')]"
     >
       {/* Header Section */}
-      <div className="p-5 bg-gray-100 dark:bg-gray-700  rounded-3xl shadow-2xl max-w-7xl mx-auto mb-16 transform hover:scale-105 transition-transform duration-300">
+      <div className="p-5 bg-deepBlue-new dark:bg-gray-700 text-gray-900 rounded-3xl shadow-2xl max-w-7xl mx-auto mb-16 transform hover:scale-105 transition-transform duration-300">
         <ClockInOutForm />
       </div>
 

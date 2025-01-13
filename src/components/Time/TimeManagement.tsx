@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FaClock, FaUser, FaCalendarAlt, FaList } from 'react-icons/fa';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 import TimeEntryList from './TimeEntryList';
 import ShiftTimeEntryList from './ShiftTimeEntryList';
 import PayPeriodTimeEntryList from './PayPeriodTimeEntryList';
@@ -8,76 +9,66 @@ import AbsenceMarker from './AbsenceMarker';
 import FilterByEmployeeDropdown from './FilterByEmployeeDropdown';
 
 const TimeManagement: React.FC = () => {
-  const [activeComponent, setActiveComponent] = useState<
-    'TimeEntryList' | 'ShiftTimeEntryList' | 'PayPeriodTimeEntryList' | 'EmployeeTimeEntryList' | 'AbsenceMarker'
-  >('TimeEntryList');
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
 
-  const renderComponent = () => {
-    switch (activeComponent) {
-      case 'TimeEntryList':
-        return <TimeEntryList />;
-      case 'ShiftTimeEntryList':
-        return <ShiftTimeEntryList />;
-      case 'PayPeriodTimeEntryList':
-        return <PayPeriodTimeEntryList />;
-      case 'EmployeeTimeEntryList':
-        return <EmployeeTimeEntryList />;
-      case 'AbsenceMarker':
-        return selectedEmployee ? (
-          <AbsenceMarker employeeId={selectedEmployee} />
-        ) : (
-          <p className="text-red-500">Please select an employee to mark absence.</p>
-        );
-      default:
-        return <TimeEntryList />;
-    }
-  };
-
   return (
-    <div className=" mx-auto p-6 min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-900">
-      <header className="mb-8">
-        <h1 className="text-2xl font-extrabold text-blue-900 dark:text-white pb-4 border-b border-gray-300 dark:border-gray-700 font-primary">
-          Time Management
-        </h1>
-      </header>
+    <div className="p-4 min-h-screen bg-gray-50">
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden md:min-h-screen">
 
-      {/* Navigation Buttons */}
-      <nav className="grid grid-cols-1 sm:grid-cols-5 gap-6 mb-8 font-secondary">
-        {[
-          { id: 'TimeEntryList', label: 'Time Entries', icon: FaList },
-          { id: 'ShiftTimeEntryList', label: 'Shifts', icon: FaClock },
-          { id: 'PayPeriodTimeEntryList', label: 'Pay Periods', icon: FaCalendarAlt },
-          { id: 'EmployeeTimeEntryList', label: 'Employee Time Entries', icon: FaUser },
-          { id: 'AbsenceMarker', label: 'Mark Absence', icon: FaUser },
-        ].map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setActiveComponent(id as typeof activeComponent)}
-            className={`flex items-center justify-center p-2 rounded-lg text-base font-semibold shadow-md transition-all duration-300 ${
-              activeComponent === id ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white' : 'bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-            } border border-gray-300 dark:border-gray-700 hover:bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  hover:text-white`}
-          >
-            <Icon className="mr-2 text-xl" />
-            {label}
-          </button>
-        ))}
-      </nav>
-
-      {/* Filter Dropdown (Conditionally Rendered) */}
-      {activeComponent === 'AbsenceMarker' && (
-        <div className="mb-8">
-          <FilterByEmployeeDropdown
-            value={selectedEmployee}
-            onChange={(id) => setSelectedEmployee(id)}
-          />
+        {/* Header Section */}
+        <div className="px-4 py-4 border-b border-gray-200 flex flex-col md:flex-row items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-800">Time Management</h2>
         </div>
-      )}
 
-      {/* Dynamic Content Rendering */}
-      <main className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-1 transition-all duration-500">
-        {renderComponent()}
-      </main>
+        {/* Tabs Section */}
+        <Tabs>
+          <TabList className="react-tabs__tab-list flex flex-wrap gap-2 border-b border-gray-300">
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-amber-50 hover:bg-gray-200 rounded-t-md flex items-center">
+             Time Entries
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-blue-50 hover:bg-gray-200 rounded-t-md flex items-center">
+             Shifts
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-green-50 hover:bg-gray-200 rounded-t-md flex items-center">
+              Pay Periods
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-red-50 hover:bg-gray-200 rounded-t-md flex items-center">
+             Employee Time Entries
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-yellow-50 hover:bg-gray-200 rounded-t-md flex items-center">
+             Mark Absence
+            </Tab>
+          </TabList>
+
+          {/* Tab Panels */}
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <TimeEntryList />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <ShiftTimeEntryList />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <PayPeriodTimeEntryList />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <EmployeeTimeEntryList />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            {/* Conditional Absence Marker with Dropdown */}
+            <div className="mb-4">
+              <FilterByEmployeeDropdown
+                value={selectedEmployee}
+                onChange={(id) => setSelectedEmployee(id)}
+              />
+            </div>
+            {selectedEmployee ? (
+              <AbsenceMarker employeeId={selectedEmployee} />
+            ) : (
+              <p className="text-red-500">Please select an employee to mark absence.</p>
+            )}
+          </TabPanel>
+        </Tabs>
+      </div>
     </div>
   );
 };

@@ -48,7 +48,7 @@ const ListSubContractors: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="flex justify-center items-center h-64 text-gray-600">
         <svg
           className="animate-spin h-8 w-8 text-blue-600"
           xmlns="http://www.w3.org/2000/svg"
@@ -84,7 +84,7 @@ const ListSubContractors: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 text-gray-800 sidebar">
       {/* Header with Create Button */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">My Teams</h2>

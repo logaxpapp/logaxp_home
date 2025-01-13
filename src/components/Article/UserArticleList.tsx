@@ -146,16 +146,16 @@ const UserArticleList: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 mt-2">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-8xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 
         bg-gradient-to-t
-           from-teal-600 via-cyan-900 to-gray-900 p-1 rounded-lg shadow-md">
+           from-teal-50 via-cyan-50 to-gray-50 p-1 rounded-lg shadow-md">
             {/* Header Section */}
             <div className="text-center md:text-left">
-                <h1 className="text-3xl font-bold text-white mb-2">My Articles</h1>
-                <p className="text-gray-50 text-sm">
+                <h1 className="text-3xl font-bold text-gray-700 mb-2">My Articles</h1>
+                <p className="text-gray-400 text-sm">
                 Manage your articles and create new content to share with your audience.
                 </p>
             </div>

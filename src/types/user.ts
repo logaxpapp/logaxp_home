@@ -55,6 +55,7 @@ export enum UserRole {
   User = 'user',
   Approver = 'approver',
   Contractor = 'contractor',
+  SubContractor = 'subContractor',
 }
 
 export enum UserStatus {

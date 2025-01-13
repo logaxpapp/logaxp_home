@@ -11,7 +11,10 @@ import {
   IActivity,
   IUpdateListInput,
   IUpdateBoardListsInput,
+  CreateLabelInput,
+  UpdateLabelInput,
 } from '../types/task';
+import { IInvitation } from '../types/invitation'; 
 import { customBaseQuery } from './baseQuery';
 import { IUser } from '../types/user';
 
@@ -27,6 +30,7 @@ export const tasksApi = createApi({
     'Attachment',
     'Activity',
     'BoardMembership',
+    'Invitation',
   ],
   endpoints: (builder) => ({
     /**
@@ -52,6 +56,8 @@ export const tasksApi = createApi({
             ]
           : [{ type: 'Board', id: 'LIST' }],
     }),
+
+    // src/api/tasksApi.ts
 
     // Fetch a Board by ID
     fetchBoardById: builder.query<IBoard, string>({
@@ -100,6 +106,7 @@ export const tasksApi = createApi({
       }),
       invalidatesTags: (result, error, { listId }) => [{ type: 'List', id: listId }],
     }),
+    
     
     updateHeader: builder.mutation<IList, { listId: string; header: string }>({
       query: ({ listId, header }) => ({
@@ -214,47 +221,59 @@ export const tasksApi = createApi({
             : [{ type: 'Comment', id: 'LIST' }],
       }),
   
-    /**
- * #### Label Endpoints
- */
-
-// Create a new Label
-createLabel: builder.mutation<ILabel, Partial<ILabel>>({
-    query: (body) => ({
-      url: '/labels',
-      method: 'POST',
-      body,
+    // Create a new Label
+    createLabel: builder.mutation<ILabel, CreateLabelInput>({
+      query: (body) => ({
+        url: '/labels',
+        method: 'POST',
+        body: {
+          name: body.name,
+          color: body.color,
+          boardId: body.boardId, // Correctly sending 'boardId'
+        },
+      }),
+      invalidatesTags: [{ type: 'Label', id: 'LIST' }],
     }),
-    invalidatesTags: [{ type: 'Label', id: 'LIST' }],
-  }),
-  
-  // Delete a Label
-  deleteLabel: builder.mutation<{ message: string }, string>({
-    query: (id) => ({
-      url: `/labels/${id}`,
-      method: 'DELETE',
+
+    // Delete a Label
+    deleteLabel: builder.mutation<{ message: string }, string>({
+      query: (id) => ({
+        url: `/labels/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [{ type: 'Label', id: 'LIST' }],
     }),
-    invalidatesTags: [{ type: 'Label', id: 'LIST' }],
-  }),
+
+    // Get a single Label by ID
+    getLabelById: builder.query<ILabel, string>({
+      query: (id) => `/labels/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Label', id }],
+    }),
+
+    // Get Labels by Board
+    getLabelsByBoard: builder.query<ILabel[], string>({
+      query: (boardId) => `/labels/board/${boardId}`,
+      providesTags: (result, error, boardId) =>
+        result
+          ? [
+              ...result.map(({ _id }) => ({ type: 'Label' as const, id: _id })),
+              { type: 'Label', id: 'LIST' },
+            ]
+          : [{ type: 'Label', id: 'LIST' }],
+    }),
+
+    // Update a Label
+ 
+        updateLabel: builder.mutation<ILabel, UpdateLabelInput>({
+          query: ({ _id, ...patch }) => ({
+            url: `/labels/${_id}`, // Use _id instead of labelId
+            method: 'PUT',
+            body: patch,
+          }),
+          invalidatesTags: (result, error, { _id }) => [{ type: 'Label', id: _id }], // Use _id
+        }),
 
   
-  // Get a single Label by ID
-  getLabelById: builder.query<ILabel, string>({
-    query: (id) => `/labels/${id}`,
-    providesTags: (result, error, id) => [{ type: 'Label', id }],
-  }),
-  
-   // Get Labels by Board
-   getLabelsByBoard: builder.query<ILabel[], string>({
-    query: (boardId) => `/labels/board/${boardId}`,
-    providesTags: (result, error, boardId) =>
-      result
-        ? [
-            ...result.map(({ _id }) => ({ type: 'Label' as const, id: _id })),
-            { type: 'Label', id: 'LIST' },
-          ]
-        : [{ type: 'Label', id: 'LIST' }],
-  }),
         /**
      * #### Attachment Endpoints
      */
@@ -432,6 +451,97 @@ createLabel: builder.mutation<ILabel, Partial<ILabel>>({
           { type: 'BoardMembership', id: `BOARD-${boardId}` },
         ],
       }),
+
+       // 1) Set Board Team
+    setBoardTeam: builder.mutation<IBoard, { boardId: string; teamId: string; syncMembers?: boolean }>({
+      query: ({ boardId, teamId, syncMembers }) => ({
+        url: `/board-memberships/${boardId}/team`,
+        method: 'POST',
+        body: {
+          teamId,
+          syncMembers: typeof syncMembers === 'boolean' ? syncMembers : true,
+        },
+      }),
+      invalidatesTags: (result, error, { boardId }) => [
+        { type: 'Board', id: boardId },
+      ],
+    }),
+
+    // 2) Remove Board Team
+    removeBoardTeam: builder.mutation<IBoard, { boardId: string; clearMembers?: boolean }>({
+      query: ({ boardId, clearMembers }) => ({
+        url: `/board-memberships/${boardId}/team`,
+        method: 'DELETE',
+        body: {
+          clearMembers: typeof clearMembers === 'boolean' ? clearMembers : true,
+        },
+      }),
+      invalidatesTags: (result, error, { boardId }) => [
+        { type: 'Board', id: boardId },
+      ],
+    }),
+
+     /** Create a new Invitation */
+     createInvitation: builder.mutation<
+     // Response shape from the backend
+     {
+       message: string;
+       invitation: IInvitation;
+       inviteLink: string;
+     },
+     // What we send in the request
+     {
+       boardId: string;
+       invitedEmail: string;
+       role: string; // e.g. "subContractor" or whatever your role might be
+     }
+   >({
+     query: (body) => ({
+       url: '/invitations',
+       method: 'POST',
+       body,
+     }),
+     invalidatesTags: ['Invitation'],
+   }),
+
+   /** Accept an Invitation */
+   acceptInvitation: builder.mutation<
+     // Response shape
+     {
+       message: string;
+       boardId: string;
+       userId: string;
+     },
+     // What the frontend sends
+     {
+       token: string;
+       name?: string;     // if new user
+       password?: string; // if new user
+     }
+   >({
+     query: (body) => ({
+       url: '/invitations/accept',
+       method: 'POST',
+       body,
+     }),
+     // For many apps, you might not need to invalidate an “Invitation” here
+     invalidatesTags: [],
+   }),
+
+   /** Decline an Invitation */
+   declineInvitation: builder.mutation<
+   { message: string; invitationId?: string },
+   { token: string; reason?: string }
+ >({
+   query: (body) => ({
+     url: '/invitations/decline',
+     method: 'POST',
+     body,
+   }),
+   invalidatesTags: [],
+ }),
+ 
+
   }),
 });
 
@@ -450,6 +560,7 @@ export const {
   useFetchListByIdQuery,
   useUpdateListMutation,
   useDeleteListMutation,
+  useUpdateListHeaderMutation,
 
 
   // Comment Hooks
@@ -465,6 +576,7 @@ export const {
   useDeleteLabelMutation,
   useGetLabelByIdQuery,
   useGetLabelsByBoardQuery,
+  useUpdateLabelMutation,
 
   // Attachment Hooks
  
@@ -486,5 +598,12 @@ export const {
   useFetchBoardMembersQuery,
   useAddMemberToBoardMutation,
   useRemoveMemberFromBoardMutation,
+  useSetBoardTeamMutation,
+  useRemoveBoardTeamMutation,
+
+  // Invitation Hooks
+  useCreateInvitationMutation,
+  useAcceptInvitationMutation,
+  useDeclineInvitationMutation,
 
 } = tasksApi;

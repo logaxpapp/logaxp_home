@@ -1,4 +1,4 @@
-// src/components/AddList.tsx
+// src/components/Board/AddList.tsx
 
 import React, { useState } from 'react';
 import { useCreateListMutation } from '../../api/tasksApi';

@@ -66,10 +66,10 @@ const DataTable = <T extends { _id: string }>({
   }, [sortedData, page, rowsPerPage]);
 
   return (
-    <div className="overflow-x-auto md:overflow-visible dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:text-gray-50">
+    <div className="overflow-x-auto md:overflow-visible text-gray-700 dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:text-gray-50">
       <table className="min-w-full divide-y divide-gray-200 ">
         {/* Table Header */}
-        <thead className="bg-gray-50 font-primary dark:bg-gray-700 dark:text-gray-50">
+        <thead className="bg-gray-50 text-gray-700 font-primary dark:bg-gray-700 dark:text-gray-50">
           <tr>
             {columns.map((column) => (
               <th

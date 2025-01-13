@@ -7,6 +7,8 @@ import CardDetailsModal from './Card/CardDetailsModal';
 import EditCardModal from './Card/EditCardModal'; // Use EditCardModal component
 import { useDeleteCardMutation } from '../../api/cardApi';
 import { useToast } from '../../features/Toast/ToastContext';
+import TruncatedTitle from '../../utils/TruncatedTitle';
+import BoardListDetail from './BoardListDetail';
 
 interface BoardListViewProps {
   board: IBoard | undefined;
@@ -15,7 +17,12 @@ interface BoardListViewProps {
 const BoardListView: React.FC<BoardListViewProps> = ({ board }) => {
   // For opening the card details modal
   const [selectedCard, setSelectedCard] = useState<ICardWithListName | null>(null);
+  // For editing the card 
   const [editingCard, setEditingCard] = useState<ICardWithListName | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
+
+  // for viewing the card
+  const [viewSelectedCard, setViewSelectedCard] = useState<ICardWithListName | null>(null);
 
   const [deleteCard] = useDeleteCardMutation();
   const { showToast } = useToast();
@@ -23,12 +30,14 @@ const BoardListView: React.FC<BoardListViewProps> = ({ board }) => {
   if (!board) return <div>No board data available</div>;
 
   // Flatten all cards from all lists for easy table rendering
-  // src/components/BoardListView.tsx
+  const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
+    list.cards.map((card) => ({ ...card, listName: list.header })) // Use list.header instead of list.name
+  );
 
-const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
-  list.cards.map((card) => ({ ...card, listName: list.name }))
-);
-
+  const handleViewCard = (card: ICardWithListName) => {
+    setViewSelectedCard(card); // Set the selected card
+    setIsDetailOpen(true); // Open the modal
+  };
 
   const handleEditCard = (card: ICardWithListName) => {
     setEditingCard(card);
@@ -56,7 +65,7 @@ const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
         <AddList />
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto text-gray-900">
         <table className="min-w-full bg-white rounded-md shadow-sm">
           <thead>
             <tr>
@@ -67,7 +76,7 @@ const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
                 Description
               </th>
               <th className="py-3 px-6 bg-gray-200 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
-                List
+                Due Date
               </th>
               <th className="py-3 px-6 bg-gray-200 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
                 Status
@@ -95,16 +104,16 @@ const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
                 <tr
                   key={card._id}
                   className="hover:bg-gray-100 cursor-pointer"
-                  onClick={() => setSelectedCard(card)}
+                  // Removed row's onClick to prevent conflicts
                 >
                   <td className="py-4 px-6 border-b border-gray-200">
-                    {card.title}
+                    <TruncatedTitle text={card.title} wordLimit={5} />
                   </td>
                   <td className="py-4 px-6 border-b border-gray-200">
-                    {card.description || '-'}
+                    <TruncatedTitle text={card.description || '-'} wordLimit={5} />
                   </td>
                   <td className="py-4 px-6 border-b border-gray-200">
-                    {card.listName}
+                    {card.dueDate ? new Date(card.dueDate).toLocaleDateString() : '-'}
                   </td>
                   <td className="py-4 px-6 border-b border-gray-200">
                     {card.status}
@@ -113,18 +122,31 @@ const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
                     {card.priority}
                   </td>
                   <td className="py-4 px-6 border-b border-gray-200">
-                  {card.assignees.length > 0
-                    ? card.assignees
-                        .map((assignee) =>
-                          typeof assignee === 'string' ? 'Unknown Assignee' : assignee.name
-                        )
-                        .join(', ')
-                    : '-'}
-                </td>
+                    {card.assignees.length > 0
+                      ? card.assignees
+                          .map((assignee) =>
+                            typeof assignee === 'string' ? 'Unknown Assignee' : assignee.name
+                          )
+                          .join(', ')
+                      : '-'}
+                  </td>
                   <td className="py-4 px-6 border-b border-gray-200 text-center">
+                    {/* Buttons: View, Edit, Delete */}
                     <button
+                      type="button" // Explicitly set type to "button"
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering the row click
+                        e.stopPropagation(); // Prevent any unintended event bubbling
+                        handleViewCard(card);
+                      }}
+                      className="text-green-500 hover:text-green-700 mr-2"
+                      aria-label={`View ${card.title}`}
+                    >
+                      👁️
+                    </button>
+                    <button
+                      type="button" // Explicitly set type to "button"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent row's onClick
                         handleEditCard(card);
                       }}
                       className="text-blue-500 hover:text-blue-700 mr-2"
@@ -133,8 +155,9 @@ const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
                       ✎
                     </button>
                     <button
+                      type="button" // Explicitly set type to "button"
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering the row click
+                        e.stopPropagation(); // Prevent row's onClick
                         handleDeleteCard(card._id);
                       }}
                       className="text-red-500 hover:text-red-700"
@@ -156,6 +179,7 @@ const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
           isOpen={!!selectedCard}
           onRequestClose={() => setSelectedCard(null)}
           card={selectedCard}
+          boardId={board._id}
         />
       )}
 
@@ -165,6 +189,18 @@ const allCards: ICardWithListName[] = board.lists.flatMap((list) =>
           isOpen={!!editingCard}
           onRequestClose={() => setEditingCard(null)}
           card={editingCard}
+          boardId={board._id}
+        />
+      )}
+
+      {/* BoardListDetail Modal */}
+      {isDetailOpen && viewSelectedCard && (
+        <BoardListDetail
+          card={viewSelectedCard}
+          onClose={() => {
+            setIsDetailOpen(false);
+            setViewSelectedCard(null);
+          }}
         />
       )}
     </div>

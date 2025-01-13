@@ -1,10 +1,13 @@
 // src/features/Toast/ToastContext.tsx
 
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import Toast from '../../components/common/Feedback/Toast';
 import { ToastProps } from '../../components/common/Feedback/Toast.types';
 import { v4 as uuidv4 } from 'uuid';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// 1) Import the registerGlobalToast
+import { registerGlobalToast } from './globalToast';
 
 interface ToastContextProps {
   showToast: (message: string, type?: 'success' | 'error' | 'info', duration?: number) => void;
@@ -28,9 +31,9 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastProps[]>([]);
 
   const showToast = useCallback(
-    (message: string, type: 'success' | 'error' | 'info' = 'info', duration: number = 3000) => {
+    (message: string, type: 'success' | 'error' | 'info' = 'info', duration = 3000) => {
       const id = uuidv4();
-      setToasts((prevToasts) => [...prevToasts, { id, message, type, duration, onClose }]);
+      setToasts((prev) => [...prev, { id, message, type, duration, onClose }]);
     },
     []
   );
@@ -39,9 +42,15 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
     setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
   };
 
+  // 2) Register the global toast inside a useEffect
+  useEffect(() => {
+    registerGlobalToast(showToast);
+  }, [showToast]);
+
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
+
       {/* Toast Container */}
       <div className="fixed top-4 right-4 z-50 flex flex-col items-end space-y-2">
         <AnimatePresence>

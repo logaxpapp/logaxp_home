@@ -38,7 +38,7 @@ function DataTable<T>({
   return (
     <table
       className={classNames(
-        'min-w-full bg-white dark:bg-gray-800 font-secondary overflow-auto mb-6',
+        'min-w-full bg-white text-gray-700 dark:text-gray-50 dark:bg-gray-800 font-secondary overflow-auto mb-6',
         className
       )}
     >

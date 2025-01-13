@@ -1,0 +1,58 @@
+/* src/styles/gantt-overrides.css */
+
+/* Existing styles */
+rect {
+  fill: var(--color-lemonGreen);
+  stroke: var(--color-lemonGreen-dark);
+  stroke-width: 1;
+  transition: fill 0.2s ease, stroke 0.2s ease;
+  padding: 10px;
+  cursor: pointer;
+  filter: drop-shadow(0 0 0.05rem var(--color-lemonGreen-dark));
+
+}
+
+/* New styles for progress bar */
+rect:hover {
+  fill: var(--color-lemonGreen-light);
+  cursor: pointer;
+  filter: drop-shadow(0 0 0.25rem var(--color-lemonGreen-dark));
+}
+
+
+text {
+  fill: var(--color-deepBlue);
+  font-size: 0.875rem;
+  font-weight: 100;
+  text-anchor: middle;
+  font-family: var(--font-primary);
+  transition: fill 0.2s ease;
+  cursor: pointer;
+
+}
+
+
+
+/* New Styles for Progress Arrow */
+
+/* Assuming the progress arrow has a class 'progress-arrow' */
+.progress-arrow {
+  fill: var(--color-accent);
+  stroke: var(--color-accent-dark);
+  stroke-width: 1.5;
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+/* Hover effect on progress arrow */
+.progress-arrow:hover {
+  fill: var(--color-accent-light);
+  cursor: pointer;
+}
+
+/* Specific styles based on progress data attribute, if any */
+.progress-arrow[data-progress="100"] {
+  fill: var(--color-accent);
+  stroke: var(--color-accent-dark);
+  filter: drop-shadow(0 0 0.25rem var(--color-accent-dark));
+}
+

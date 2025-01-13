@@ -10,11 +10,26 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Loader from './components/Loader';
 import SessionExpiredModal from './components/SessionExpiredModal';
 import { connectSocket } from './socket';
+import { useParams } from 'react-router-dom';
+
+
+
+
+import ThankYou from './pages/ThankYou';
 import ContractCreate from './components/Contracts/Admin/ContractCreate';
 import ContractorEdit from './components/Contracts/Admin/ContractorEdit';
 import ContractEdit from './components/Contracts/Admin/ContractEdit';
-import CreateBoard from './components/Board/CreateBoard';
 
+const CreateReferenceForm = lazy(() => import('./components/Reference/CreateReferenceForm'));
+const ReferencesManagement = lazy(() => import('./components/Reference/ReferencesManagement'));
+const  AddRefereeForm = lazy(() => import('./components/Reference/AddRefereeForm'));
+const  RefereeDetailPage = lazy(() => import('./components/Reference/RefereeDetailPage'));
+import EditRefereeForm from './components/Reference/EditRefereeForm';
+const  AuditReference = lazy(() => import('./components/Reference/AuditReference'));
+const ReferenceDetail = lazy(() => import('./components/Reference/ReferenceDetail'));
+const PublicReferenceForm = lazy(() => import('./components/Reference/PublicReferenceForm'));
+import SendInvitation from './components/Board/InvitationForm';
+const AcceptInvitation = lazy(() => import('./components/Board/AcceptInvitationPage'));
 
 // Lazy-loaded components
 const Home = lazy(() => import('./pages/Home/Home'));
@@ -35,16 +50,16 @@ const Dashboard = lazy(() => import('./components/Dashboard/Dashboard'));
 const DashboardHome = lazy(() => import('./components/DashboardHome/DashboardHome'));
 const UserList = lazy(() => import('./components/UserList/UserList'));
 const CreateUserForm = lazy(() => import('./components/CreateUserForm/CreateUserForm'));
-const UserApprovalRequests = lazy(() => import('./components/UserApprovalRequests'));
+const UserApprovalRequests = lazy(() => import('./components/ManageApprovals'));
 const SurveyList = lazy(() => import('./components/Survey/SurveyList'));
 
 const CreateApprovalRequest = lazy(() => import('./components/CreateApprovalRequest'));
 const ApprovalRequestDetails = lazy(() => import('./components/ApprovalRequestDetails'));
-const Appraisal = lazy(() => import('./components/Appraisal/Appraisal'));
+const Appraisal = lazy(() => import('./components/Appraisal/AppraisalManagement'));
 const Admin = lazy(() => import('./pages/Admin/Admin'));
 const AdminAppraisalPeriods = lazy(() => import('./components/Appraisal/AdminAppraisalPeriods'));
 const TicketDetails = lazy(() => import('./pages/Tickets/TicketDetails'));
-const MyTickets = lazy(() => import('./pages/Tickets/MyTicket'));
+const MyTickets = lazy(() => import('./pages/Tickets/TicketManagement'));
 const AllTicket = lazy(() => import('./pages/Tickets/AllTicket'));
 const Profile = lazy(() => import('./pages/Profile/Profile'));
 const ApprovalRequestList = lazy(() => import('./components/Appraisal/ApprovalRequestList'));
@@ -75,7 +90,7 @@ const IntegrateCalendar = lazy(() => import('./components/Shift/IntegrateGoogle'
 const TimeManagement = lazy(() => import('./components/Time/TimeManagement'));
 const ClockInOutPage = lazy(() => import('./components/Time/ClockInOutPage'));
 const ResourceList = lazy(() => import('./components/Resources/ResourceList'));
-const IncidentList = lazy(() => import('./components/Incidents/IncidentList'));
+const IncidentList = lazy(() => import('./components/Incidents/IncidentManagement'));
 const ResourceDetails = lazy(() => import('./components/Resources/ResourceDetail'));
 const  UserResourceList = lazy(() => import('./components/Resources/UserResources'));
 const PolicyAcknowledgement = lazy(() => import('./components/Resources/PolicyAcknowledgement'));
@@ -83,7 +98,7 @@ const ResourcesManage = lazy(() => import('./components/Resources/ResourcesManag
 const Support = lazy(() => import('./components/Support/Support'));
 const AdminSupportDashboard = lazy(() => import('./components/Support/AdminSupportDashboard'));
 const TicketDetailPage = lazy(() => import('./components/Support/TicketDetailPage'));
-const EmployeePayPeriodsList = lazy(() => import('./components/EmployeePayPeriods/EmployeePayPeriodsList'));
+const EmployeePayPeriodsList = lazy(() => import('./components/EmployeePayPeriods/PayPeriodsManagement'));
 const EmployeePayPeriodDetails = lazy(() => import('./components/EmployeePayPeriods/EmployeePayPeriodDetail'));
 const EmployeePayPeriodCreate  = lazy(() => import('./components/EmployeePayPeriods/EmployeePayPeriodCreate'));
 const EditUserForm = lazy(() => import('./components/UserList/EditUserForm'));
@@ -96,7 +111,7 @@ const ArticleList = lazy(() => import('./components/Article/ArticleList'));
 const ArticleDetail = lazy(() => import('./components/Article/ArticleDetail'));
 const ArticleEditor = lazy(() => import('./components/Article/ArticleEditor'));
 const AdminArticleList = lazy(() => import('./components/Article/AdminArticleList'));
-const UserArticleList = lazy(() => import('./components/Article/UserArticleList'));
+const UserArticleList = lazy(() => import('./components/Article/ArticleManagement'));
 const Notifications = lazy(() => import('./components/Notifications/Notifications'));
 const Chat = lazy(() => import('./components/Chat/Chat'));
 const ListFaqs = lazy(() => import('./pages/FAQ/ListFaqs'));
@@ -117,11 +132,12 @@ const BoardList = lazy(() => import('./components/Board/BoardList'));
 const BoardDetail = lazy(() => import('./components/Board/BoardDetails'));
 const ViewList = lazy(() => import('./components/Board/ViewList'));
 const ViewMember = lazy(() => import('./components/Board/ViewMember'));
-const DocumentManager = lazy(() => import('./components/Document/DocumentManager'));
+const DocumentManager = lazy(() => import('./components/Document/DocumentParent'));
 const ProtectedDocumentManager = lazy(() => import('./components/Document/ProtectedDocumentManager'));
 const DocumentDetails = lazy(() => import('./components/Document/DocumentDetails'));
 const SentDocuments = lazy(() => import('./components/Document/SentDocuments'));
-
+const ReportManagement = lazy(() => import('./components/Report/ReportManagement'));
+const ReportPage = lazy(() => import('./components/Report/ReportPage'));
 
 
 
@@ -140,6 +156,11 @@ const App: React.FC = () => {
    // Select session expiration state
    const isSessionExpired = useSelector((state: RootState) => state.session.isSessionExpired);
 
+   function SendInvitationWrapper() {
+    const { boardId } = useParams();
+    if (!boardId) return <p>No boardId in URL</p>;
+    return <SendInvitation boardId={boardId} />;
+  }
 
    useEffect(() => {
     if (csrfData?.csrfToken) {
@@ -1031,6 +1052,87 @@ const App: React.FC = () => {
                       </Suspense>
                     }
                   />
+                  <Route
+                    path="board-reports"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <ReportManagement />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="board-reports/:reportId"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <ReportPage />
+                      </Suspense>
+                    }
+                    />
+                    <Route
+                    path="references/:referenceId"
+                    element={
+                    <Suspense fallback={<Loader />}>
+                      <ReferenceDetail />
+                    </Suspense>
+                    }
+                    />
+                    <Route
+                    path="references"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <ReferencesManagement />
+                      </Suspense>
+                    }
+                    />
+                    <Route
+                    path="references/create"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <CreateReferenceForm />
+                      </Suspense>
+                    }
+                    />
+                    <Route
+                    path="referees/add"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        < AddRefereeForm />
+                      </Suspense>
+                    }
+                    />
+                    <Route
+                    path="referees/edit/:id"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <EditRefereeForm />
+                      </Suspense>
+                    }
+                    />
+                     <Route
+                    path="references/audit/:referenceId"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <AuditReference />
+                      </Suspense>
+                    }
+                    />
+                    
+                    <Route
+                    path="referees/:id"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <RefereeDetailPage />
+                      </Suspense>
+                    }
+                    />
+                    <Route
+                      path="boards/:boardId/send-invitation"
+                      element={
+                        <Suspense fallback={<Loader />}>
+                          <SendInvitationWrapper />
+                        </Suspense>
+                      }
+                    />
                   </Route>
                  
                   <Route
@@ -1043,6 +1145,7 @@ const App: React.FC = () => {
                   />
 
                 </Route>
+               
                 <Route
                   path="/apparisal-list"
                   element={
@@ -1053,6 +1156,25 @@ const App: React.FC = () => {
                 />
                 {/* Fallback Route */}
                 <Route path="*" element={<Navigate to="/" replace />} />
+                <Route
+                  path="/fill-reference"
+                  element={<PublicReferenceForm />}
+                />
+                <Route
+                    path="/invite/accept"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <AcceptInvitation />
+                      </Suspense>
+                    }
+                  />
+                <Route
+                  path="/thank-you"
+                  element={<Suspense fallback={<Loader />}>
+                    <ThankYou />
+                  </Suspense>
+                    }
+                />    
               </Routes>
             </Layout>
           </Suspense>

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 import {
   FaList,
   FaLayerGroup,
@@ -17,72 +19,108 @@ import ShiftCalendar from './Shift/ShiftCalendar';
 import IntegrateGoogle from './Shift/IntegrateGoogle';
 import PayPeriodList from '../components/PayPeriod/PayPeriodList';
 
-enum ShiftManagementView {
-  Shifts = 'Shifts',
-  ShiftTypes = 'Shift Types',
-  OpenShifts = 'Open Shifts',
-  PendingApprovals = 'Pending Approvals',
-  MyShifts = 'My Shifts',
-  ShiftCalendar = 'Shift Calendar',
-  IntegrateGoogle = 'Integrate Google',
-  PayPeriods = 'Pay Periods',
-}
-
-const viewIcons: Record<ShiftManagementView, JSX.Element> = {
-  [ShiftManagementView.Shifts]: <FaList />,
-  [ShiftManagementView.ShiftTypes]: <FaLayerGroup />,
-  [ShiftManagementView.OpenShifts]: <FaCalendarAlt />,
-  [ShiftManagementView.PendingApprovals]: <FaCheckCircle />,
-  [ShiftManagementView.MyShifts]: <FaUser />,
-  [ShiftManagementView.ShiftCalendar]: <FaCalendarAlt />,
-  [ShiftManagementView.IntegrateGoogle]: <FaGoogle />,
-  [ShiftManagementView.PayPeriods]: <FaCalendarAlt />,
-};
-
 const ShiftManagement: React.FC = () => {
-  const [currentView, setCurrentView] = useState<ShiftManagementView>(ShiftManagementView.Shifts);
+  // Mock Data for Overview Section
+  const mockShiftData = {
+    totalShifts: 50,
+    openShifts: 20,
+    pendingApprovals: 10,
+    myShifts: 15,
+    shiftTypes: 5,
+  };
 
   return (
-    <div className="p-4 sm:p-6 bg-gray-100 dark:bg-gray-900 min-h-screen font-secondary">
-      {/* Header Section */}
-      <header className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-          Shift Management
-        </h2>
-      </header>
+    <div className="p-4 min-h-screen bg-gray-50">
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden md:min-h-screen">
 
-      {/* Tabs Section */}
-      <div className="relative overflow-x-auto mb-4 text-sm">
-        <div className="flex space-x-2 whitespace-nowrap overflow-x-scroll scrollbar-hide">
-          {Object.values(ShiftManagementView).map((view) => (
-            <button
-              key={view}
-              onClick={() => setCurrentView(view as ShiftManagementView)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                currentView === view
-                  ? 'bg-gradient-to-t  from-teal-600 via-cyan-900 to-gray-900  text-white'
-                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-              }`}
-              aria-pressed={currentView === view}
-              aria-label={`Navigate to ${view}`}
-            >
-              {viewIcons[view as ShiftManagementView]}
-              <span>{view}</span>
-            </button>
-          ))}
+        {/* Header Section */}
+        <div className="px-4 py-4 border-b border-gray-200 flex flex-col md:flex-row items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-800">Shift Management</h2>
         </div>
-      </div>
 
-      {/* Content Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6">
-        {currentView === ShiftManagementView.Shifts && <ShiftList />}
-        {currentView === ShiftManagementView.ShiftTypes && <ShiftTypeList />}
-        {currentView === ShiftManagementView.OpenShifts && <OpenShifts />}
-        {currentView === ShiftManagementView.PendingApprovals && <PendingApprovalShifts />}
-        {currentView === ShiftManagementView.MyShifts && <MyShifts />}
-        {currentView === ShiftManagementView.ShiftCalendar && <ShiftCalendar />}
-        {currentView === ShiftManagementView.IntegrateGoogle && <IntegrateGoogle />}
-        {currentView === ShiftManagementView.PayPeriods && <PayPeriodList />}
+        {/* Tabs Section */}
+        <Tabs>
+          <TabList className="react-tabs__tab-list flex flex-wrap gap-2 border-b border-gray-300">
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-blue-50 hover:bg-gray-200 rounded-t-md">
+              Overview
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-green-50 hover:bg-gray-200 rounded-t-md">
+              Shifts
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-yellow-50 hover:bg-gray-200 rounded-t-md">
+              Shift Types
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-red-50 hover:bg-gray-200 rounded-t-md">
+              Open Shifts
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-purple-50 hover:bg-gray-200 rounded-t-md">
+              Pending Approvals
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-teal-50 hover:bg-gray-200 rounded-t-md">
+              My Shifts
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-indigo-50 hover:bg-gray-200 rounded-t-md">
+              Shift Calendar
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-cyan-50 hover:bg-gray-200 rounded-t-md">
+              Integrate Google
+            </Tab>
+            <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-amber-50 hover:bg-gray-200 rounded-t-md">
+              Pay Periods
+            </Tab>
+          </TabList>
+
+          {/* Tab Panels */}
+          <TabPanel className="react-tabs__tab-panel p-4">
+            {/* Overview Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <div className="p-6 bg-blue-50 rounded-lg shadow-md">
+                <h2 className="text-lg font-medium text-blue-700">Total Shifts</h2>
+                <p className="text-3xl font-bold text-blue-900">{mockShiftData.totalShifts}</p>
+              </div>
+              <div className="p-6 bg-green-50 rounded-lg shadow-md">
+                <h2 className="text-lg font-medium text-green-700">Open Shifts</h2>
+                <p className="text-3xl font-bold text-green-900">{mockShiftData.openShifts}</p>
+              </div>
+              <div className="p-6 bg-yellow-50 rounded-lg shadow-md">
+                <h2 className="text-lg font-medium text-yellow-700">Pending Approvals</h2>
+                <p className="text-3xl font-bold text-yellow-900">{mockShiftData.pendingApprovals}</p>
+              </div>
+              <div className="p-6 bg-purple-50 rounded-lg shadow-md">
+                <h2 className="text-lg font-medium text-purple-700">My Shifts</h2>
+                <p className="text-3xl font-bold text-purple-900">{mockShiftData.myShifts}</p>
+              </div>
+              <div className="p-6 bg-teal-50 rounded-lg shadow-md">
+                <h2 className="text-lg font-medium text-teal-700">Shift Types</h2>
+                <p className="text-3xl font-bold text-teal-900">{mockShiftData.shiftTypes}</p>
+              </div>
+            </div>
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <ShiftList />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <ShiftTypeList />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <OpenShifts />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <PendingApprovalShifts />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <MyShifts />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <ShiftCalendar />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <IntegrateGoogle />
+          </TabPanel>
+          <TabPanel className="react-tabs__tab-panel p-4">
+            <PayPeriodList />
+          </TabPanel>
+        </Tabs>
       </div>
     </div>
   );

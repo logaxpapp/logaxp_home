@@ -1,56 +1,96 @@
 // src/components/KanbanBoard.tsx
 
 import React, { useState, useEffect, Fragment } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import Logo from '../../assets/images/green.svg'; // Added Logo import
 import {
   useFetchBoardByIdQuery,
   useUpdateListMutation,
   useUpdateBoardListsMutation,
   useUpdateBoardMutation,
+  useUpdateListHeaderMutation,
+  useDeleteBoardMutation, // Added for deleting board
 } from '../../api/tasksApi';
 import { useUpdateCardMutation } from '../../api/cardApi';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   DragDropContext,
   Droppable,
   Draggable,
   DropResult,
 } from '@hello-pangea/dnd';
+import { useAppSelector } from '../../app/hooks';
+import { selectCurrentUser } from '../../store/slices/authSlice'; // Removed unused import
 import { IBoard, IList, ICard } from '../../types/task';
 import { useToast } from '../../features/Toast/ToastContext';
 import BoardListView from './BoardListView';
+import LabelsModal from './LabelsModal';
+import LikesModal from './LikesModal';
+import WatchersModal from './WatchersModal';
+
+import TeamsDropdown from './TeamsDropdown';
 
 import AddCardForm from './Card/AddCardForm';
 import CardDetailsModal from './Card/CardDetailsModal';
-import Modal from './Modal'; // Ensure the path is correct
+import EditBoardForm from './EditBoardForm';
+import GanttChartView from './GanttChartView';
+import Modal from './Modal'; // To be moved to the modal component 
 
-import useWindowWidth from '../../hooks/useWindowWidth'; // Adjust the import path as needed
-import { useAppDispatch } from '../../app/hooks'; // Import the typed dispatch hook
-import { tasksApi } from '../../api/tasksApi'; // Adjust the import path based on your setup
+import useWindowWidth from '../../hooks/useWindowWidth'; 
+import { useAppDispatch } from '../../app/hooks'; 
+import { tasksApi } from '../../api/tasksApi'; 
 
-import BoardActivities from './BoardActivities'; // Import BoardActivities component
+import BoardActivities from './BoardActivities'; 
 
-import { FiChevronRight, FiChevronLeft, FiActivity, FiPlus } from 'react-icons/fi';
+import { FiChevronRight, FiChevronLeft, FiActivity, FiPlus, FiSave, FiTrash2, FiEdit2 } from 'react-icons/fi'; // Added FiTrash2 and FiEdit2
+import { FaList, FaEllipsisV } from 'react-icons/fa';
+import { FiPaperclip } from 'react-icons/fi'; 
 
-import { Transition, Dialog } from '@headlessui/react';
+import { Transition, Dialog, Menu } from '@headlessui/react';
 import { FiX } from 'react-icons/fi';
 
+import TruncatedTitle from '../../utils/TruncatedTitle';
 
-type ViewMode = 'kanban' | 'list';
+type ViewMode = 'kanban' | 'list' | 'gantt'; 
 
 const KanbanBoard: React.FC = () => {
-  const dispatch = useAppDispatch(); // Use the typed dispatch
+  const currentUser = useAppSelector(selectCurrentUser);
+  const dispatch = useAppDispatch(); 
+  const navigate = useNavigate();
   const { boardId } = useParams<{ boardId: string }>();
   const { data: board, error, isLoading } = useFetchBoardByIdQuery(boardId!);
   const [updateList] = useUpdateListMutation();
   const [updateCard] = useUpdateCardMutation();
   const [updateBoardLists] = useUpdateBoardListsMutation();
   const [updateBoard] = useUpdateBoardMutation();
+  const [updateListHeader] = useUpdateListHeaderMutation();
+  const [deleteBoard] = useDeleteBoardMutation(); // Initialize deleteBoard mutation
+
   const { showToast } = useToast();
 
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
 
   const [headers, setHeaders] = useState<{ id: string; name: string }[]>([]);
   const [collapsedColumns, setCollapsedColumns] = useState<{ [key: string]: boolean }>({});
+
+  const [isLabelsModalOpen, setIsLabelsModalOpen] = useState(false);
+  const [isLikesModalOpen, setIsLikesModalOpen] = useState(false);
+  const [isWatchersModalOpen, setIsWatchersModalOpen] = useState(false);
+
+  // Track which headers have been edited
+  const [editedHeaders, setEditedHeaders] = useState<{ [key: string]: string }>({});
+
+  const currentUserRole = currentUser?.role || 'user';
+
+  const isAdminOrOwner = currentUserRole === 'admin' || (board && board.owner === currentUser?._id);
+
+  console.log('currentUser role:', currentUserRole)
+
+  const handleTeamSelect = (teamId: string) => {
+    console.log('Selected Team ID:', teamId);
+    showToast(`Selected team ID: ${teamId}`, 'info');
+    // You can implement logic to filter the Kanban board based on the selected team
+  };
 
   const width = useWindowWidth();
   let maxOpenColumns = 1; // Default for smallest screens
@@ -77,11 +117,17 @@ const KanbanBoard: React.FC = () => {
   // State for Sidebar
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  // State for Edit Board Modal
+  const [isEditBoardModalOpen, setIsEditBoardModalOpen] = useState(false);
+
+  // State for Delete Board Confirmation
+  const [isDeleteBoardModalOpen, setIsDeleteBoardModalOpen] = useState(false);
+
   useEffect(() => {
     if (board?.lists) {
       const mapped = board.lists.map((list: IList) => ({
         id: list._id,
-        name: list.name,
+        name: list.header, // Use list.header instead of list.name
       }));
       setHeaders(mapped);
 
@@ -127,23 +173,89 @@ const KanbanBoard: React.FC = () => {
   };
 
   const handleHeaderChange = (id: string, value: string) => {
+    // Update headers array in the frontend
     setHeaders(headers.map((header) => (header.id === id ? { ...header, name: value } : header)));
+
+    // Track edited headers
+    setEditedHeaders((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
   };
 
   const saveHeadersToBackend = async () => {
     if (!boardId) return;
+
+    // Extract all edited headers
+    const headersToUpdate = Object.entries(editedHeaders);
+
+    if (headersToUpdate.length === 0) {
+      showToast('No changes to save.', 'info');
+      return;
+    }
+
     try {
+      // Update the Board's headers array
       const headerNames = headers.map((h) => h.name);
       await updateBoard({ _id: boardId, headers: headerNames }).unwrap();
-      showToast('Headers updated successfully!');
+
+      // Update each List's header field
+      const updatePromises = headersToUpdate.map(([listId, newHeader]) =>
+        updateListHeader({ listId, header: newHeader }).unwrap()
+      );
+
+      await Promise.all(updatePromises);
+
+      showToast('Headers updated successfully!', 'success');
+
+      // Clear edited headers tracking
+      setEditedHeaders({});
+    } catch (err: any) {
+      console.error('Failed to update headers:', err);
+      showToast('Error updating headers.', 'error');
+    }
+  };
+
+  // Handler to delete the board
+  const handleDeleteBoard = async () => {
+    if (!boardId) return;
+
+    try {
+      await deleteBoard(boardId).unwrap();
+      showToast('Board deleted successfully!', 'success');
+      navigate('/dashboard/board-list');
+    } catch (err: any) {
+      console.error('Failed to delete board:', err);
+      showToast('Error deleting board.', 'error');
+    }
+  };
+
+  const handleDeleteList = async (listId: string) => {
+    if (!window.confirm('Are you sure you want to delete this list?')) return;
+  
+    const dispatch = useAppDispatch(); // Access the Redux store dispatch
+  
+    try {
+      const result = await dispatch(tasksApi.endpoints.deleteList.initiate(listId));
+  
+      if (tasksApi.endpoints.deleteList.matchFulfilled(result)) {
+        showToast('List deleted successfully!', 'success');
+      } else if (tasksApi.endpoints.deleteList.matchRejected(result)) {
+        console.error('Error deleting list:', result.error);
+        showToast('Error deleting list.', 'error');
+      }
     } catch (err) {
-      showToast('Failed to update headers.');
+      console.error('Unexpected error:', err);
+      showToast('Unexpected error while deleting list.', 'error');
     }
   };
 
   if (isLoading) return <p className="text-gray-500">Loading Kanban Board...</p>;
   if (error) return <p className="text-red-500">Error loading board.</p>;
   if (!boardId) return <p className="text-red-500">Invalid board ID.</p>;
+
+ 
+  
 
   const handleDragEnd = async (result: DropResult) => {
     const { source, destination, type } = result;
@@ -179,8 +291,8 @@ const KanbanBoard: React.FC = () => {
 
         await updateCard({
           _id: movedCard._id,
-          list: destinationList._id,
-          status: destinationList.name,
+          list: destinationList._id, // This is a string (List ID)
+          status: destinationList.header,
           position: destination.index,
         }).unwrap();
 
@@ -217,16 +329,45 @@ const KanbanBoard: React.FC = () => {
     setSelectedList(null);
   };
 
+  // Handler to Open Edit Board Modal
+  const openEditBoardModal = () => {
+    setIsEditBoardModalOpen(true);
+  };
+
+  // Handler to Close Edit Board Modal
+  const closeEditBoardModal = () => {
+    setIsEditBoardModalOpen(false);
+  };
+
+  // Handler to Confirm Delete Board
+  const confirmDeleteBoard = () => {
+    setIsDeleteBoardModalOpen(true);
+  };
+
+  // Handler to Cancel Delete Board
+  const cancelDeleteBoard = () => {
+    setIsDeleteBoardModalOpen(false);
+  };
+  if (isLoading) return <p className="text-gray-500">Loading Kanban Board...</p>;
+  if (error) return <p className="text-red-500">Error loading board.</p>;
+  if (!boardId) return <p className="text-red-500">Invalid board ID.</p>;
+  if (!board) return <p className="text-gray-500">Loading Board Data...</p>; //
+
   return (
-    <div className="flex">
+    <div className="flex flex-col md:flex-row text-gray-800 dark:text-gray-200">
       {/* Main Kanban Board */}
-      <div className="flex-1 p-4 bg-gray-100 min-h-screen font-serif">
+      <div className="flex-1 p-4 bg-gray-100 min-h-screen font-serif dark:bg-gray-800">
         {/* Board Header */}
-        <header className="p-4 bg-gray-300 text-gray-800 rounded mb-4">
+        <header className="p-4 bg-gray-300 text-gray-800 rounded mb-4 dark:bg-gray-700 dark:text-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-4 mb-4 md:mb-0">
               <div className="bg-white text-blue-600 p-2 rounded-full">
-                <span className="font-bold">JD</span>
+                <span className="font-bold">
+                  
+                  <img src={Logo} alt="Securify" className="h-8 w-8" />
+
+             
+                </span>
               </div>
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold">{board?.name || 'Board Name'}</h1>
@@ -235,15 +376,44 @@ const KanbanBoard: React.FC = () => {
             </div>
 
             <nav className="hidden md:flex space-x-4">
-              <Link to="/team" className="hover:text-gray-600">
-                Team
-              </Link>
-              <Link to="/reports" className="hover:text-gray-600">
+              {/* Replace Team link with TeamsDropdown */}
+              <TeamsDropdown />
+              <Link
+                to={`/dashboard/board-reports?boardId=${boardId}&userId=${currentUser?._id}&priority=Low`}
+                className="relative px-4 py-2 text-sm font-medium text-gray-700 
+                          bg-gray-200 rounded-lg shadow hover:bg-gray-300 hover:text-gray-900 
+                          focus:outline-none focus:ring-2 focus:ring-gray-400 
+                          focus:ring-offset-2 transition duration-150"
+              >
                 Reports
               </Link>
-              <Link to="/settings" className="hover:text-gray-600">
+              <a
+                href="/settings"
+                className="relative px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg shadow hover:bg-gray-300 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-150"
+              >
                 Settings
-              </Link>
+              </a>
+              {/* Conditionally Render Edit and Delete Buttons */}
+              {(isAdminOrOwner) && (
+                <>
+                  <button
+                    onClick={openEditBoardModal}
+                    className="relative px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg shadow hover:bg-gray-300 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-150 flex items-center"
+                    aria-label="Edit Board"
+                  >
+                    <FiEdit2 className="mr-1" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={confirmDeleteBoard}
+                    className="relative px-4 py-2 text-sm font-medium text-red-700 bg-red-200 rounded-lg shadow hover:bg-red-300 hover:text-red-900 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition duration-150 flex items-center"
+                    aria-label="Delete Board"
+                  >
+                    <FiTrash2 className="mr-1" />
+                    Delete
+                  </button>
+                </>
+              )}
             </nav>
           </div>
 
@@ -252,43 +422,63 @@ const KanbanBoard: React.FC = () => {
             <button
               onClick={() => setViewMode('kanban')}
               className={`px-3 py-1 rounded ${
-                viewMode === 'kanban' ? 'bg-white text-blue-600' : 'bg-blue-500 text-white'
+                viewMode === 'kanban' ? 'bg-white text-blue-600' : 'bg-lemonGreen text-white font-bold'
               }`}
             >
-              Kanban View
+              Kanban
             </button>
             <button
               onClick={() => setViewMode('list')}
               className={`px-3 py-1 rounded ${
-                viewMode === 'list' ? 'bg-white text-blue-600' : 'bg-blue-500 text-white'
+                viewMode === 'list' ? 'bg-white text-blue-600' : 'bg-lemonGreen text-white font-bold'
               }`}
             >
-              List View
+              List
+            </button>
+            <button
+              onClick={() => setViewMode('gantt')}
+              className={`px-3 py-1 rounded ${
+                viewMode === 'gantt' ? 'bg-white text-blue-600' : 'bg-lemonGreen text-white font-bold'
+              }`}
+            >
+              Gantt Chart
             </button>
           </div>
         </header>
 
         {/* Conditionally Render Common Actions Only in Kanban View */}
         {viewMode === 'kanban' && (
-          <div className="my-4 flex flex-col sm:flex-row justify-between flex-wrap gap-2 font-secondary">
-            <button onClick={handleAddHeader} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center space-x-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              <span>Add Header</span>
-            </button>
-            <button onClick={saveHeadersToBackend} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 flex items-center space-x-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Save Headers</span>
-            </button>
+          <div className="my-4 flex flex-col sm:flex-row justify-between flex-wrap gap-3 font-secondary">
+            {/* Add Header Button */}
+            {(isAdminOrOwner) && (
+              <button
+                onClick={handleAddHeader}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center justify-center hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
+                aria-label="Add Header"
+              >
+                <FiPlus className="text-xl" />
+                <span className="ml-2 hidden sm:inline text-sm font-medium">Add Header</span>
+              </button>
+            )}
+
+            {/* Save Headers Button */}
+            {(isAdminOrOwner) && (
+              <button
+                onClick={saveHeadersToBackend}
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center justify-center hover:from-green-600 hover:to-green-700 transition-all duration-200"
+                aria-label="Save Headers"
+              >
+                <FiSave className="text-xl" />
+                <span className="ml-2 hidden sm:inline text-sm font-medium">Save Headers</span>
+              </button>
+            )}
           </div>
         )}
-
-        {viewMode === 'list' ? (
-          <BoardListView board={board} />
-        ) : (
+      {viewMode === 'list' ? (
+        <BoardListView board={board} />
+      ) : viewMode === 'gantt' ? (
+        <GanttChartView board={board} />
+              ) : (
           <>
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="kanban" type="list" direction="horizontal">
@@ -296,14 +486,14 @@ const KanbanBoard: React.FC = () => {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="flex space-x-4 overflow-x-auto"
+                    className="flex space-x-2 overflow-x-auto"
                   >
                     {headers.map((header, index) => {
                       const isCollapsed = collapsedColumns[header.id];
                       const columnWidth = isCollapsed ? 'w-12' : 'w-80';
 
                       return (
-                        <div key={header.id} className={`flex flex-col bg-white rounded shadow-md ${columnWidth}`}>
+                        <div key={header.id} className={`flex flex-col bg-white dark:bg-gray-700 rounded shadow-md ${columnWidth}`}>
                           {isCollapsed ? (
                             <div className="flex justify-center items-center h-full">
                               <button
@@ -317,53 +507,147 @@ const KanbanBoard: React.FC = () => {
                           ) : (
                             <>
                               {/* Column header */}
-                              <div className="bg-gray-200 px-4 py-2 flex justify-between items-center">
+                              <div className="bg-gray-300 px-4 py-2 flex justify-between items-center shadow-sm dark:bg-gray-600">
                                 <input
                                   type="text"
                                   value={header.name}
                                   onChange={(e) => handleHeaderChange(header.id, e.target.value)}
-                                  className="bg-transparent border-none w-full text-sm md:text-base font-medium"
+                                  placeholder="Enter column name"
+                                  className="bg-transparent border-none w-full text-sm md:text-base font-medium text-gray-800 dark:text-lemonGreen-light focus:outline-none focus:ring focus:ring-blue-300"
                                 />
-                                <div className="flex items-center space-x-2">
-                                     {/* Add Card Button with Icon */}
-                                  <button
-                                    onClick={() => {
-                                      const list: IList | undefined = board?.lists.find((l) => l._id === header.id);
-                                      console.log('Add Card Button clicked for list:', list);
-                                      if (list) {
-                                        openAddCardModal(list);
-                                      } else {
-                                        console.warn('List not found for header ID:', header.id);
-                                      }
-                                    }}
-                                    className="text-blue-500 hover:text-blue-700"
-                                    aria-label="Add Card"
-                                  >
-                                    <FiPlus /> Task
-                                  </button>
+                                <div className="flex items-center space-x-4">
+                                  {/* Conditionally Render Edit and Delete List Buttons */}
+                                  {(isAdminOrOwner) && (
+                                    <>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation(); // Prevent parent click
+                                          const listToDelete = board?.lists.find((l) => l._id === header.id);
+                                          if (listToDelete) {
+                                            handleDeleteList(listToDelete._id);
+                                          }
+                                        }}
+                                        className="text-red-500 hover:text-red-700 text-sm font-medium"
+                                        aria-label="Delete List"
+                                      >
+                                        <FiTrash2 />
+                                      </button>
+                                    </>
+                                  )}
+                                  {/* Add Card Button with Icon */}
+                                  {(isAdminOrOwner) && (
+                                    <button
+                                      onClick={() => {
+                                        const list: IList | undefined = board?.lists.find((l) => l._id === header.id);
+                                        console.log('Add Card Button clicked for list:', list);
+                                        if (list) {
+                                          openAddCardModal(list);
+                                        } else {
+                                          console.warn('List not found for header ID:', header.id);
+                                        }
+                                      }}
+                                      className="flex items-center text-blue-500 hover:text-blue-700 text-sm font-medium"
+                                      aria-label="Add Card"
+                                    >
+                                      <FiPlus className="mr-1" /> <span className="hidden sm:inline text-gray-800">Task</span>
+                                    </button>
+                                  )}
+
+                                  {/* Collapse Button */}
                                   <button
                                     onClick={() => toggleCollapseColumn(header.id)}
-                                    className="text-xs bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500"
+                                    className="text-xs bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 focus:outline-none focus:ring focus:ring-gray-500"
                                     aria-label="Collapse Column"
                                   >
                                     <FiChevronLeft />
                                   </button>
-                                 
+
+                                  {/* Ellipsis Button */}
+                                  <Menu as="div" className="relative inline-block text-left">
+                                    <Transition
+                                      as={Fragment}
+                                      enter="transition ease-out duration-100"
+                                      enterFrom="transform opacity-0 scale-95"
+                                      enterTo="transform opacity-100 scale-100"
+                                      leave="transition ease-in duration-75"
+                                      leaveFrom="transform opacity-100 scale-100"
+                                      leaveTo="transform opacity-0 scale-95"
+                                    >
+                                      <Menu.Items className="absolute right-0 mt-2 w-40 origin-top-right bg-white dark:bg-gray-800 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                                        <div className="py-1">
+                                          <Menu.Item>
+                                            {({ active }) => (
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setIsLabelsModalOpen(true);
+                                                  // Optionally, setSelectedCard if this dropdown corresponds to a specific card
+                                                }}
+                                                className={`${
+                                                  active ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-200'
+                                                } group flex items-center px-4 py-2 text-sm w-full text-left`}
+                                              >
+                                                Labels
+                                              </button>
+                                            )}
+                                          </Menu.Item>
+                                          <Menu.Item>
+                                            {({ active }) => (
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setIsLikesModalOpen(true);
+                                                  // Optionally, setSelectedCard if this dropdown corresponds to a specific card
+                                                }}
+                                                className={`${
+                                                  active ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-200'
+                                                } group flex items-center px-4 py-2 text-sm w-full text-left`}
+                                              >
+                                                Likes
+                                              </button>
+                                            )}
+                                          </Menu.Item>
+                                          <Menu.Item>
+                                            {({ active }) => (
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setIsWatchersModalOpen(true);
+                                                  // Optionally, setSelectedCard if this dropdown corresponds to a specific card
+                                                }}
+                                                className={`${
+                                                  active ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-200'
+                                                } group flex items-center px-4 py-2 text-sm w-full text-left`}
+                                              >
+                                                Watchers
+                                              </button>
+                                            )}
+                                          </Menu.Item>
+                                        </div>
+                                      </Menu.Items>
+                                    </Transition>
+                                  </Menu>
                                 </div>
                               </div>
 
                               <Droppable droppableId={header.id} type="card">
-                                {(provided) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.droppableProps}
-                                    className="p-2 min-h-[250px] flex-1 flex flex-col"
-                                  >
-                                    {board?.lists
-                                      .filter((list) => list._id === header.id) // Match by ID
-                                      .map((list) => (
-                                        <div key={list._id} className="flex-1">
-                                          {list.cards.map((card, cardIndex) => (
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.droppableProps}
+                                  className="p-2 min-h-[250px] flex-1 flex flex-col"
+                                >
+                                  {board?.lists
+                                    .filter((list) => list._id === header.id) // Match by ID
+                                    .map((list) => (
+                                      <div key={list._id} className="flex-1">
+                                        {list.cards.map((card, cardIndex) => {
+                                          // Safely derive dueDateVal for each card:
+                                          const dueDateVal = card.dueDate
+                                            ? new Date(card.dueDate) // either a string or date-like
+                                            : null;
+
+                                          return (
                                             <Draggable
                                               key={card._id}
                                               draggableId={card._id}
@@ -374,26 +658,141 @@ const KanbanBoard: React.FC = () => {
                                                   ref={provided.innerRef}
                                                   {...provided.draggableProps}
                                                   {...provided.dragHandleProps}
-                                                  className="bg-white p-2 rounded mb-2 shadow cursor-pointer hover:bg-gray-50 transition-colors"
-                                                  onClick={() => setSelectedCard(card)}
+                                                  className="relative bg-gray-50 dark:bg-gray-800 p-3 rounded mb-2 shadow cursor-pointer hover:bg-gray-50 transition-colors"
+                                                  onClick={(e) => {
+                                                    // Only open modal if not prevented by dropdown, etc.
+                                                    if (!e.defaultPrevented) {
+                                                      setSelectedCard(card); 
+                                                    }
+                                                  }}
                                                 >
-                                                  <strong className="text-sm md:text-base">{card.title}</strong>
-                                                  {card.description && (
-                                                    <p className="text-xs md:text-sm text-gray-600">
-                                                      {card.description}
-                                                    </p>
+                                                  {/* Card Title */}
+                                                  <p className="text-sm md:text-sm text-gray-700 dark:text-gray-50 font-semibold">
+                                                    <TruncatedTitle text={card.title} wordLimit={5} />
+                                                  </p>
+
+                                                  {/* Due Date */}
+                                                  <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1 flex items-center">
+                                                    <FaList className="inline mr-1 text-gray-500 dark:text-white" />
+                                                    <span className="text-xs">
+                                                      {dueDateVal
+                                                        ? new Intl.DateTimeFormat('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                          }).format(dueDateVal)
+                                                        : 'No due date'}
+                                                    </span>
+                                                  </p>
+
+                                                  {/* Status & Priority */}
+                                                  <span className="text-xs text-blue-900">
+                                                    {card.status} - {card.priority}
+                                                  </span>
+
+                                                  {/* Optional attachments badge */}
+                                                  {card.attachments && card.attachments.length > 0 && (
+                                                    <div className="absolute bottom-2 right-2 flex items-center space-x-1">
+                                                      <FiPaperclip
+                                                        className="text-sm text-gray-500 dark:text-gray-300"
+                                                        title="Attachments"
+                                                        aria-label="Attachment"
+                                                      />
+                                                      <span className="text-xs text-gray-500 dark:text-gray-300">
+                                                        {card.attachments.length}
+                                                      </span>
+                                                    </div>
                                                   )}
+
+                                                  {/* Dropdown Menu inside Card */}
+                                                  <Menu as="div" className="absolute top-2 right-2">
+                                                    <div>
+                                                      <Menu.Button
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="inline-flex justify-center w-full p-1 text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none"
+                                                      >
+                                                        <FaEllipsisV className="dark:text-gray-400 dark:hover:text-white" />
+                                                      </Menu.Button>
+                                                    </div>
+                                                    <Transition
+                                                      as={Fragment}
+                                                      enter="transition ease-out duration-100"
+                                                      enterFrom="transform opacity-0 scale-95"
+                                                      enterTo="transform opacity-100 scale-100"
+                                                      leave="transition ease-in duration-75"
+                                                      leaveFrom="opacity-100 scale-100"
+                                                      leaveTo="opacity-0 scale-95"
+                                                    >
+                                                      <Menu.Items className="absolute right-0 mt-2 w-40 origin-top-right bg-white dark:bg-gray-800 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                                                        <div className="py-1">
+                                                          <Menu.Item>
+                                                            {({ active }) => (
+                                                              <button
+                                                                onClick={(e) => {
+                                                                  e.stopPropagation();
+                                                                  setIsLabelsModalOpen(true);
+                                                                  // or setSelectedCard(card) if needed
+                                                                }}
+                                                                className={`${
+                                                                  active
+                                                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                                                                    : 'text-gray-700 dark:text-gray-200'
+                                                                } group flex items-center px-4 py-2 text-sm w-full text-left`}
+                                                              >
+                                                                Labels
+                                                              </button>
+                                                            )}
+                                                          </Menu.Item>
+                                                          <Menu.Item>
+                                                            {({ active }) => (
+                                                              <button
+                                                                onClick={(e) => {
+                                                                  e.stopPropagation();
+                                                                  setIsLikesModalOpen(true);
+                                                                }}
+                                                                className={`${
+                                                                  active
+                                                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                                                                    : 'text-gray-700 dark:text-gray-200'
+                                                                } group flex items-center px-4 py-2 text-sm w-full text-left`}
+                                                              >
+                                                                Likes
+                                                              </button>
+                                                            )}
+                                                          </Menu.Item>
+                                                          <Menu.Item>
+                                                            {({ active }) => (
+                                                              <button
+                                                                onClick={(e) => {
+                                                                  e.stopPropagation();
+                                                                  setIsWatchersModalOpen(true);
+                                                                }}
+                                                                className={`${
+                                                                  active
+                                                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                                                                    : 'text-gray-700 dark:text-gray-200'
+                                                                } group flex items-center px-4 py-2 text-sm w-full text-left`}
+                                                              >
+                                                                Watchers
+                                                              </button>
+                                                            )}
+                                                          </Menu.Item>
+                                                        </div>
+                                                      </Menu.Items>
+                                                    </Transition>
+                                                  </Menu>
                                                 </div>
                                               )}
                                             </Draggable>
-                                          ))}
-                                        </div>
-                                      ))}
+                                          );
+                                        })}
+                                      </div>
+                                    ))}
+                                  {provided.placeholder}
+                                </div>
+                              )}
+                            </Droppable>
 
-                                    {provided.placeholder}
-                                  </div>
-                                )}
-                              </Droppable>
                             </>
                           )}
                         </div>
@@ -463,7 +862,7 @@ const KanbanBoard: React.FC = () => {
             {/* Toggle Sidebar Button */}
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="fixed bottom-4 right-4 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none"
+              className="fixed bottom-4 right-20 text-red-500 bg-teal-200 p-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none"
               aria-label="Open Activities Sidebar"
             >
               <FiActivity size={24} />
@@ -477,6 +876,7 @@ const KanbanBoard: React.FC = () => {
             isOpen={!!selectedCard}
             onRequestClose={() => setSelectedCard(null)}
             card={selectedCard}
+            boardId={boardId}
           />
         )}
 
@@ -485,11 +885,60 @@ const KanbanBoard: React.FC = () => {
           <Modal onClose={closeAddCardModal}>
             <AddCardForm
               listId={selectedList._id}
-              status={selectedList.name}
+              status={selectedList.header} // Use header instead of name
               onClose={closeAddCardModal} // Passing the close function
+              boardId={boardId} // Pass the boardId to AddCardForm
             />
           </Modal>
         )}
+
+        {/* Edit Board Modal */}
+        {isEditBoardModalOpen && board && (
+          <Modal onClose={closeEditBoardModal}>
+            {/* Implement your EditBoardForm component here */}
+            {/* For demonstration, we'll create a simple form */}
+            <div className="p-4">
+              <h2 className="text-xl font-bold mb-4">Edit Board</h2>
+              <EditBoardForm board={board} onClose={closeEditBoardModal} />
+            </div>
+          </Modal>
+        )}
+
+        {/* Delete Board Confirmation Modal */}
+        {isDeleteBoardModalOpen && (
+          <Modal onClose={cancelDeleteBoard}>
+            <div className="p-4">
+              <h2 className="text-xl font-bold mb-4">Delete Board</h2>
+              <p className="mb-4">Are you sure you want to delete this board? This action cannot be undone.</p>
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={cancelDeleteBoard}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    handleDeleteBoard();
+                    setIsDeleteBoardModalOpen(false);
+                  }}
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </Modal>
+        )}
+
+        {/* Labels Modal */}
+        <LabelsModal
+          isOpen={isLabelsModalOpen}
+          onClose={() => setIsLabelsModalOpen(false)}
+          labels={selectedCard ? selectedCard.labels : []}
+        />
+
+       
       </div>
     </div>
   );

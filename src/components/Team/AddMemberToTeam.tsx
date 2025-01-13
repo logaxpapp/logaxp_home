@@ -33,7 +33,7 @@ const AddMemberToTeam: React.FC<AddMemberToTeamProps> = ({ teamId, onClose }) =>
   };
 
   return (
-    <form onSubmit={handleAdd} className="space-y-4">
+    <form onSubmit={handleAdd} className="space-y-4 text-gray-800">
       {/* Select SubContractor */}
       <div>
         <label htmlFor="memberId" className="block text-sm font-medium text-gray-700">Select SubContractor<span className="text-red-500">*</span></label>
@@ -53,7 +53,7 @@ const AddMemberToTeam: React.FC<AddMemberToTeamProps> = ({ teamId, onClose }) =>
           ))}
         </select>
         {isSubLoading && <p>Loading SubContractors...</p>}
-        {error && <p className="text-red-500">Failed to load SubContractors.</p>}
+      
       </div>
 
       {/* Select Role */}

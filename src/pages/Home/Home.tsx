@@ -12,7 +12,7 @@ import ScrollToTop from '../../components/common/ScrollToTop';
 
 const Home: React.FC = () => {
   return (
-    <div className="flex flex-col min-h-screen w-full">
+    <div className="flex flex-col min-h-screen w-full text-gray-800">
       {/* Page Content */}
       <main className="flex-grow space-y-2">
         {/* Hero Section */}

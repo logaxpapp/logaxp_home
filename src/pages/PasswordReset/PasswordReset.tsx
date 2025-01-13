@@ -67,11 +67,7 @@ const PasswordReset: React.FC = () => {
               {formError && (
                 <p className="text-red-500 text-sm mt-1">{formError}</p>
               )}
-              {error && (
-                <p className="text-red-500 text-sm mt-1">
-                  An error occurred. Please try again.
-                </p>
-              )}
+             
             </div>
 
             <button

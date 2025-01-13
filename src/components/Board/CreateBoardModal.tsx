@@ -12,7 +12,7 @@ interface CreateBoardModalProps {
 
 const CreateBoardModal: React.FC<CreateBoardModalProps> = ({ isOpen, onClose }) => {
   return (
-    <Dialog open={isOpen} onClose={onClose} className="fixed z-10 inset-0 overflow-y-auto">
+    <Dialog open={isOpen} onClose={onClose} className="fixed z-10 inset-0 overflow-y-auto text-gray-800">
       <div className="flex items-center justify-center min-h-screen">
         <CustomOverlay />
         <div className="bg-white rounded max-w-md mx-auto p-6 z-20 relative shadow-lg">

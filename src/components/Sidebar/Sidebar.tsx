@@ -6,8 +6,11 @@ import { logout } from '../../store/slices/authSlice';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../app/hooks';
 import { selectCurrentUser } from '../../store/slices/authSlice';
+
 import Logo from '../../assets/images/sec.png';
 import GreenLogo from '../../assets/images/green.svg';
+import { UserRole } from '../../types/enums';
+
 import {
   FaTachometerAlt,
   FaTicketAlt,
@@ -27,6 +30,7 @@ import {
   FaFileAlt,
   FaHome,
   FaTimes,
+  FaSkyatlas,
 } from 'react-icons/fa';
 
 interface SidebarProps {
@@ -45,15 +49,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   const navigate = useNavigate();
   const currentUser = useAppSelector(selectCurrentUser);
 
+  console.log('User:', currentUser);
+
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
   };
 
+  // Common links for normal users
   const navLinks: NavLinkItem[] = [
     { name: 'Dashboard', path: '/dashboard', icon: <FaTachometerAlt /> },
     { name: 'Tickets', path: '/dashboard/tickets', icon: <FaTicketAlt /> },
-    { name: 'My Surveys', path: '/dashboard/manage-my-surveys', icon: <FaSass /> },
+    { name: 'MySurveys', path: '/dashboard/manage-my-surveys', icon: <FaSass /> },
     { name: 'Approvals', path: '/dashboard/manage-shifts', icon: <FaClipboardCheck /> },
     { name: 'BoardList', path: '/dashboard/board-list', icon: <FaBell /> },
     { name: 'Requests', path: '/dashboard/user-approvals', icon: <FaClipboardList /> },
@@ -61,50 +68,50 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     { name: 'Incidents', path: '/dashboard/incidents', icon: <FaExclamationTriangle /> },
     { name: 'Attendance', path: '/dashboard/time-management', icon: <FaClock /> },
     { name: 'Pay', path: '/dashboard/employeePayPeriods', icon: <FaHome /> },
-    { name: 'User Articles', path: '/dashboard/user-articles', icon: <FaBell /> },
+    { name: 'Articles', path: '/dashboard/user-articles', icon: <FaBell /> },
+    { name: 'Reference', path: '/dashboard/references', icon: <FaClock /> },
   ];
 
+  // Admin links
   const adminLinks: NavLinkItem[] = [
-    { name: 'Manage Users', path: '/dashboard/user-management', icon: <FaUsers /> },
+    { name: 'Users', path: '/dashboard/user-management', icon: <FaUsers /> },
     { name: 'Workflow', path: '/dashboard/appraisal', icon: <FaClipboardCheck /> },
     { name: 'Settings', path: '/dashboard/profile-settings', icon: <FaCog /> },
     { name: 'Scheduling', path: '/dashboard/scheduling', icon: <FaCalendarAlt /> },
-    { name: 'Admin Panel', path: '/dashboard/admin', icon: <FaUserCog /> },
-    { name: 'Survey Management', path: '/dashboard/manage-surveys', icon: <FaSass /> },
-    { name: 'Admin Support', path: '/dashboard/admin/support', icon: <FaBell /> },
+    { name: 'Admin', path: '/dashboard/admin', icon: <FaUserCog /> },
+    { name: 'Survey', path: '/dashboard/manage-surveys', icon: <FaSass /> },
+    { name: 'Support', path: '/dashboard/admin/support', icon: <FaBell /> },
     { name: 'Faqs', path: '/dashboard/faqs', icon: <FaBell /> },
-    { name: 'Admin Subscriptions', path: '/dashboard/admin-subscriptions', icon: <FaBell /> },
+    { name: 'Subscriptions', path: '/dashboard/admin-subscriptions', icon: <FaBell /> },
     { name: 'Contracts', path: '/dashboard/admin/contracts', icon: <FaFileAlt /> },
     { name: 'Documents', path: '/dashboard/documents', icon: <FaFileAlt /> },
-    { name: 'Documents', path: '/dashboard/documents/sent', icon: <FaFileAlt /> },
-    
   ];
 
+  // Basic user links
   const userLinks: NavLinkItem[] = [
     { name: 'Profile', path: '/dashboard/profile', icon: <FaUserCircle /> },
     { name: 'Documents', path: '/dashboard/documents', icon: <FaFileAlt /> },
     { name: 'Sent Docs', path: '/dashboard/documents/sent', icon: <FaCog /> },
     { name: 'Settings', path: '/dashboard/profile-settings', icon: <FaCog /> },
-    { name: 'Shift Management', path: '/dashboard/manage-shifts', icon: <FaClipboardCheck /> },
+    { name: 'Shift', path: '/dashboard/manage-shifts', icon: <FaClipboardCheck /> },
     { name: 'Support', path: '/dashboard/support', icon: <FaBell /> },
     { name: 'Pay', path: '/dashboard/employeePayPeriods', icon: <FaHome /> },
     { name: 'Change Requests', path: '/dashboard/my-change-requests', icon: <FaBell /> },
   ];
 
+  // Contractor or SubContractor links
   const contractorLinks: NavLinkItem[] = [
     { name: 'Contracts', path: '/dashboard/contractor/contracts', icon: <FaFileAlt /> },
     { name: 'Documents', path: '/dashboard/documents', icon: <FaFileAlt /> },
-    { name: 'Tickets', path: '/dashboard/contractor/tickets', icon: <FaTicketAlt /> },
+    { name: 'Tickets', path: '/dashboard/tickets', icon: <FaTicketAlt /> },
     { name: 'Payments', path: '/dashboard/contractor/payments', icon: <FaHome /> },
-    { name: 'Board', path: '/dashboard/kanban-board', icon: <FaBell /> },
     { name: 'Support', path: '/dashboard/contractor/support', icon: <FaBell /> },
-    { name: 'New Board', path: '/dashboard/create-board', icon: <FaBell /> },
     { name: 'BoardList', path: '/dashboard/board-list', icon: <FaBell /> },
     { name: 'SubContractors', path: '/dashboard/subcontractors', icon: <FaClock /> },
     { name: 'Team', path: '/dashboard/contractor/team/list', icon: <FaUsers /> },
   ];
 
-  // Custom Hook to get window width
+  // Hook to detect window width
   const useWindowWidth = () => {
     const [width, setWidth] = useState<number>(window.innerWidth);
 
@@ -119,35 +126,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
   const windowWidth = useWindowWidth();
 
-  // Determine slice count based on screen size
+  // Decide how many links to show at once based on screen size
   const getSliceCount = () => {
     if (windowWidth >= 1024) {
-      // Desktop
-      return 7;
+      return 5; // Desktop
     } else if (windowWidth >= 768) {
-      // Tablet
-      return 6;
-    } else {
-      // Mobile
-      return 3;
+      return 4; // Tablet
     }
+    return 3; // Mobile
   };
 
   const sliceCount = getSliceCount();
 
-  // States to manage "Show More" for Admin and User sections
+  // States for "Show More" toggles
   const [showAllAdminLinks, setShowAllAdminLinks] = useState(false);
   const [showAllUserLinks, setShowAllUserLinks] = useState(false);
 
-  const toggleShowMoreAdmin = () => {
-    setShowAllAdminLinks((prev) => !prev);
-  };
+  const toggleShowMoreAdmin = () => setShowAllAdminLinks((prev) => !prev);
+  const toggleShowMoreUser = () => setShowAllUserLinks((prev) => !prev);
 
-  const toggleShowMoreUser = () => {
-    setShowAllUserLinks((prev) => !prev);
-  };
-
-  // Function to render links with optional "Show More" functionality
+  // Helper to render a set of links with optional "show more"
   const renderLinks = (
     links: NavLinkItem[],
     showAll: boolean,
@@ -169,17 +167,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                   : 'text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-600'
               }`
             }
-            onClick={toggleSidebar} // Close sidebar on link click (for mobile)
+            onClick={toggleSidebar} // Close sidebar after clicking a link (mobile)
           >
             <span className="mr-3">{link.icon}</span>
             <span>{link.name}</span>
           </NavLink>
         ))}
+
         {showToggle && (
           <button
-            className="mt-2 text-xs text-teal-600 hover:underline"
+            className="mt-2 text-xs text-teal-600 hover:underline focus:outline-none flex items-center"
             onClick={toggleShowMore}
           >
+            <FaSkyatlas className=" text-gray-800 mr-3 font-bold ml-2" />
             {showAll ? 'Show Less' : 'Show More'}
           </button>
         )}
@@ -189,7 +189,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
   return (
     <>
-      {/* Overlay for mobile */}
+      {/* Overlay for mobile viewport */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
@@ -198,7 +198,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         ></div>
       )}
 
-      {/* Sidebar */}
+      {/* Actual Sidebar */}
       <div
         className={`
           fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800
@@ -208,24 +208,23 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         `}
         aria-label="Sidebar"
       >
-        {/* Sidebar Content */}
+        {/* Sidebar Inner Content */}
         <div className="relative flex flex-col h-full">
-          {/* Header */}
+          {/* Header / Logo */}
           <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 py-4">
             <NavLink to="/" className="flex items-center text-teal-500 hover:text-teal-400 sidebar">
               {/* Light Mode Logo */}
               <img src={Logo} alt="Logo" className="ml-2 h-6 block dark:hidden" />
 
-              {/* Dark Mode GreenLogo */}
+              {/* Dark Mode Logo */}
               <img src={GreenLogo} alt="Logo Dark Mode" className="hidden ml-2 h-6 dark:block" />
 
-              {/* Text Only Visible in Dark Mode */}
               <span className="hidden dark:inline-block text-gray-700 dark:text-gray-300 font-semibold text-lg ml-4">
                 Loga<span className="text-lemonGreen-light">XP</span>
               </span>
             </NavLink>
 
-            {/* Close button for mobile */}
+            {/* Close button (mobile) */}
             <button
               className="md:hidden focus:outline-none"
               onClick={toggleSidebar}
@@ -235,10 +234,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             </button>
           </div>
 
-          {/* Navigation */}
+          {/* Scrollable Navigation Area */}
           <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-3">
-            {/* Main Links */}
-            {currentUser?.role !== 'contractor' && (
+            {/* Normal user (non-contractor) main links */}
+            {currentUser?.role !== UserRole.Contractor &&
+             currentUser?.role !== UserRole.SubContractor && (
               <>
                 <h3 className="text-gray-500 dark:text-gray-400 uppercase text-xs font-semibold tracking-wide mb-2">
                   Main
@@ -255,7 +255,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                             : 'text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-600'
                         }`
                       }
-                      onClick={toggleSidebar} // Close sidebar on link click (for mobile)
+                      onClick={toggleSidebar}
                     >
                       <span className="mr-3">{link.icon}</span>
                       <span>{link.name}</span>
@@ -265,8 +265,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               </>
             )}
 
-            {/* Admin Links */}
-            {currentUser?.role === 'admin' && (
+            {/* Admin Panel Links */}
+            {currentUser?.role === UserRole.Admin && (
               <>
                 <h3 className="text-gray-500 dark:text-gray-400 uppercase text-xs font-semibold tracking-wide mt-6 mb-2">
                   Admin Panel
@@ -275,8 +275,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               </>
             )}
 
-            {/* User Links */}
-            {currentUser?.role === 'user' && (
+            {/* Normal user (role = 'user') */}
+            {currentUser?.role === UserRole.User && (
               <>
                 <h3 className="text-gray-500 dark:text-gray-400 uppercase text-xs font-semibold tracking-wide mt-6 mb-2">
                   User Panel
@@ -285,17 +285,23 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               </>
             )}
 
-            {/* Contractor Links */}
-            {currentUser?.role === 'contractor' && (
+            {/* Contractor or SubContractor => same block for now */}
+            {(currentUser?.role === UserRole.Contractor ||
+              currentUser?.role === UserRole.SubContractor) && (
               <>
-                {/* Contractor Section Header */}
-                <div className="mt-6 mb-4 px-4 py-8 bg-gray-200 dark:bg-gray-700 rounded-lg shadow-sm text-lg">
-                  <h3 className="text-teal-500 text-sm font-semibold">Contractor Hub</h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-base mt-1">
-                    Manage and oversee all contractor-related activities, agreements, and resources.
-                  </p>
-                </div>
-                <div className="space-y-1 text-lg">
+
+            <h3 className="text-gray-500 dark:text-gray-400 uppercase text-xs font-semibold tracking-wide mt-6 mb-2">
+              Contractor Panel
+            </h3>
+            <div className="border-b "/>
+            <p className="text-gray-500 dark:text-gray-400 text-sm tracking-wide mb-4">
+              Manage your contracts, resources, and team oversight here.
+            </p>
+            <div className="border-b "/>
+
+                <div className="space-y-2 text-lg"/>
+
+                <div className="space-y-2 text-lg">
                   {contractorLinks.map((link) => (
                     <NavLink
                       key={link.name}
@@ -307,7 +313,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                             : 'text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-600'
                         }`
                       }
-                      onClick={toggleSidebar} // Close sidebar on link click (for mobile)
+                      onClick={toggleSidebar}
                     >
                       <span className="mr-3">{link.icon}</span>
                       <span>{link.name}</span>
@@ -318,7 +324,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             )}
           </nav>
 
-          {/* Footer / Logout */}
+          {/* Logout Footer */}
           <div className="p-4 border-t border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
             <button
               onClick={handleLogout}

@@ -40,6 +40,9 @@ import { paymentApi } from '../api/paymentApi';
 import { currencyApi } from '../api/currencyApi';
 import { tasksApi } from '../api/tasksApi';
 import { documentApi } from '../api/documentApi';
+import { reportApi } from '../api/reportApi';
+import { cardApi } from '../api/cardApi';
+import { referenceApi } from '../api/referenceApi';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 
@@ -93,6 +96,9 @@ const rootReducer = combineReducers({
   [currencyApi.reducerPath]: currencyApi.reducer,
   [tasksApi.reducerPath]: tasksApi.reducer,
   [documentApi.reducerPath]: documentApi.reducer,
+  [reportApi.reducerPath]: reportApi.reducer,
+  [cardApi.reducerPath]: cardApi.reducer,
+  referenceApi: referenceApi.reducer
 
 });
 
@@ -136,6 +142,9 @@ export const store = configureStore({
       currencyApi.middleware,
       tasksApi.middleware,
       documentApi.middleware,
+      reportApi.middleware,
+      cardApi.middleware,
+      referenceApi.middleware
       
     ),
 });
