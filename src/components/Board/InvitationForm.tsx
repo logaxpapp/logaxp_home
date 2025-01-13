@@ -140,43 +140,7 @@ function InvitationForm({ boardId }: InvitationFormProps) {
         </button>
       </form>
 
-      {/* FORM TO DECLINE INVITATION */}
-      <form onSubmit={handleDecline} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Invitation Token (to decline)
-          </label>
-          <input
-            type="text"
-            value={invitationToken}
-            onChange={(e) => setInvitationToken(e.target.value)}
-            placeholder="Paste invitation token here..."
-            className="w-full px-3 py-2 border rounded 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Reason for Declining (optional)
-          </label>
-          <textarea
-            className="w-full px-3 py-2 border rounded 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={declineReason}
-            onChange={(e) => setDeclineReason(e.target.value)}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isDeclining}
-          className="bg-red-600 text-white px-4 py-2 rounded 
-                     hover:bg-red-700 disabled:bg-gray-400"
-        >
-          {isDeclining ? 'Declining...' : 'Decline Invitation'}
-        </button>
-      </form>
+      
     </div>
   );
 }

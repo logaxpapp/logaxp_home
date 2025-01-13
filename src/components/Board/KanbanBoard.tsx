@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, Fragment } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import Logo from '../../assets/images/green.svg'; // Added Logo import
+import { ReactComponent as Logo } from '../../assets/images/green.svg';
+
 import {
   useFetchBoardByIdQuery,
   useUpdateListMutation,
@@ -364,7 +365,7 @@ const KanbanBoard: React.FC = () => {
               <div className="bg-white text-blue-600 p-2 rounded-full">
                 <span className="font-bold">
                   
-                  <img src={Logo} alt="Securify" className="h-8 w-8" />
+                  <Logo className="h-8 w-8" />
 
              
                 </span>
