@@ -8,6 +8,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 interface AddCardModalProps {
   isOpen: boolean;
   onClose: () => void;
+  boardId: string;
 }
 
 const AddCardModal: React.FC<AddCardModalProps> = ({ isOpen, onClose }) => {

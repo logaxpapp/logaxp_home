@@ -441,7 +441,7 @@ const KanbanBoard: React.FC = () => {
                 viewMode === 'gantt' ? 'bg-white text-blue-600' : 'bg-lemonGreen text-white font-bold'
               }`}
             >
-              Gantt Chart
+              Progress
             </button>
           </div>
         </header>

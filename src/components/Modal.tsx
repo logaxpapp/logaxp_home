@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 interface ModalProps {
   onClose: () => void;
   children: ReactNode;
+  isOpen: boolean; 
 }
 
 const Modal: React.FC<ModalProps> = ({ onClose, children }) => {

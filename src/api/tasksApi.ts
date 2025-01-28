@@ -57,8 +57,6 @@ export const tasksApi = createApi({
           : [{ type: 'Board', id: 'LIST' }],
     }),
 
-    // src/api/tasksApi.ts
-
     // Fetch a Board by ID
     fetchBoardById: builder.query<IBoard, string>({
       query: (id) => `/boards/${id}`,

@@ -1,7 +1,8 @@
 // src/components/Board/GanttChartView.tsx
-import React, { useState, useMemo, useEffect, useRef } from "react";
-import { Gantt, Task, ViewMode } from "gantt-task-react";
-import "gantt-task-react/dist/index.css";
+
+import React, { useState, useMemo, useEffect } from "react";
+import { Gantt, ViewMode, Task } from "gantt-task-react";
+import "gantt-task-react/dist/index.css"; // Gantt library’s CSS
 
 import { IBoard, ICard } from "../../types/task";
 import { useAppSelector } from "../../app/hooks";
@@ -15,7 +16,7 @@ import {
   useUpdateGantCardMutation,
 } from "../../api/cardApi";
 
-// Existing modals
+// Your existing modals
 import AddCardModal from "./Card/AddCardModal";
 import EditCardModal from "./Card/EditCardModal";
 
@@ -35,7 +36,7 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
   const currentUser = useAppSelector(selectCurrentUser);
   const { showToast } = useToast();
 
-  // Update Gantt data via RTK Query
+  // RTK mutation for updating Gantt fields
   const [updateGantCard] = useUpdateGantCardMutation();
 
   // Local state for modals
@@ -48,7 +49,7 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
     skip: !selectedCardId,
   });
 
-  // Filters
+  // Search & filter states
   const [searchQuery, setSearchQuery] = useState("");
   const [filterProgress, setFilterProgress] = useState<number | "All">("All");
   const [filterStartDateFrom, setFilterStartDateFrom] = useState("");
@@ -60,13 +61,7 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const tasksPerPage = 10;
 
-  // Zoom (Day/Week/Month) state
-  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Day);
-
-  // Track if the user is dragging a bar (to block onSelect from opening the modal)
-  const dragInProgress = useRef(false);
-
-  // Fetch tasks with RTK Query
+  // Fetch the cards
   const {
     data: fetchedCards,
     isLoading,
@@ -80,26 +75,26 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
     startDateTo: filterStartDateTo,
     dueDateFrom: filterDueDateFrom,
     dueDateTo: filterDueDateTo,
-    page: currentPage + 1,
+    page: currentPage + 1, // react-paginate is 0-based
     limit: tasksPerPage,
   });
 
-  // Convert to Gantt Tasks
+  // Convert your cards into gantt-task-react Tasks
   const ganttTasks: Task[] = useMemo(() => {
     if (!fetchedCards) return [];
-    return fetchedCards.data.map((card: ICard) => {
-      const startDate = card.startDate ? new Date(card.startDate) : new Date();
-      const endDate = card.dueDate
-        ? new Date(card.dueDate)
-        : new Date(Date.now() + 86400000);
 
+    return fetchedCards.data.map((card: ICard) => {
+      // If a card is a "milestone" if start=dueDate, etc. (optional logic)
+      const startDate = card.startDate ? new Date(card.startDate) : new Date();
+      const endDate = card.dueDate ? new Date(card.dueDate) : new Date(Date.now() + 86400000);
+
+      // progress is 0..100
       const progressVal = card.progress ?? 0;
+
+      // Example dynamic color or styling
       let barColor = "#3366cc";
-      if (progressVal >= 100) {
-        barColor = "#66cc66"; // completed
-      } else if (card.priority === "High") {
-        barColor = "#cc3333"; // high priority
-      }
+      if (progressVal >= 100) barColor = "#66cc66"; // completed
+      else if (card.priority === "High") barColor = "#cc3333";
 
       return {
         id: card._id.toString(),
@@ -107,7 +102,7 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
         start: startDate,
         end: endDate,
         progress: progressVal,
-        type: "task",
+        type: "task", // or "milestone"
         styles: {
           backgroundColor: barColor,
           progressColor: "#99dd99",
@@ -118,10 +113,10 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
     });
   }, [fetchedCards]);
 
-  // Number of pages
+  // The total # of pages
   const pageCount = fetchedCards ? fetchedCards.totalPages : 0;
 
-  // Handle page change
+  // Pagination event
   const handlePageChange = ({ selected }: { selected: number }) => {
     setCurrentPage(selected);
   };
@@ -151,70 +146,47 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
     filterDueDateTo,
   ]);
 
-  // Gantt event handlers
-  const handleSelectTask = (task: Task) => {
-    // If user is currently dragging, skip opening the modal
-    if (dragInProgress.current) return;
+  // gantt-task-react event handlers
+  const onSelectTask = (task: Task) => {
+    // Called when a user clicks the bar/label
     setSelectedCardId(task.id);
     setIsEditModalOpen(true);
   };
 
   const handleDateChange = async (task: Task) => {
-    dragInProgress.current = true;
-    try {
-      if (task.end.getTime() < task.start.getTime()) {
-        showToast("End date cannot be before start date.", "error");
-        // revert it visually
-        refetch();
-      } else {
-        // Attempt update
-        await updateGantCard({
-          _id: task.id,
-          startDate: task.start.toISOString(),
-          dueDate: task.end.toISOString(),
-          progress: task.progress,
-        }).unwrap();
-        showToast(`Updated dates for: ${task.name}`, "success");
-      }
-    } catch (err) {
-      console.error("Date change error:", err);
-      showToast("Error updating date.", "error");
-      // revert
-      refetch();
-    } finally {
-      // small delay so onSelect won't fire
-      setTimeout(() => {
-        dragInProgress.current = false;
-      }, 150);
-    }
-  };
-
-  const handleProgressChange = async (task: Task) => {
-    dragInProgress.current = true;
-    const confirmed = window.confirm(
-      `Update progress of "${task.name}" to ${task.progress}%?`
-    );
-    if (!confirmed) {
-      refetch(); // revert
-      dragInProgress.current = false;
+    // Called when user drags/resizes the date range
+    if (task.end.getTime() < task.start.getTime()) {
+      showToast("End date cannot be before start date.", "error");
       return;
     }
 
     try {
       await updateGantCard({
         _id: task.id,
+        startDate: task.start.toISOString(),
+        dueDate: task.end.toISOString(),
         progress: task.progress,
       }).unwrap();
-      showToast(`Progress updated: ${task.name} => ${task.progress}%`, "success");
-    } catch (err) {
-      console.error("Progress update error:", err);
-      showToast("Error updating progress.", "error");
-      // revert
+      showToast(`Updated: ${task.name}`, "success");
       refetch();
-    } finally {
-      setTimeout(() => {
-        dragInProgress.current = false;
-      }, 150);
+    } catch (err) {
+      console.error("Failed to update date:", err);
+      showToast("Error updating date in Gantt.", "error");
+    }
+  };
+
+  const handleProgressChange = async (task: Task) => {
+    // Called when user drags the progress handle
+    try {
+      await updateGantCard({
+        _id: task.id,
+        progress: task.progress,
+      }).unwrap();
+      showToast(`Progress updated: ${task.progress}%`, "success");
+      refetch();
+    } catch (err) {
+      console.error("Failed to update progress:", err);
+      showToast("Error updating progress in Gantt.", "error");
     }
   };
 
@@ -229,7 +201,7 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
     }
   }, [isMobile]);
 
-  // Framer Motion variants
+  // Motion variants
   const sidebarVariants = {
     open: {
       width: isMobile ? "80%" : "25%",
@@ -255,57 +227,22 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
     hidden: { opacity: 0, transition: { duration: 0.3 } },
   };
 
-  // Zoom controls
-  const handleZoom = (mode: ViewMode) => {
-    setViewMode(mode);
-  };
-
   if (!board) return <p className="text-gray-500">Loading Board Data...</p>;
+
+  // Gantt config
+  const viewMode = ViewMode.Day; // or .Week / .Month
+  // Optionally: const columnWidth = 65;  etc.
 
   return (
     <div className="w-full px-2 md:px-4 py-4 md:py-6 bg-gray-100 dark:bg-neutral-900 min-h-screen transition-colors duration-300">
       <div className="max-w-[1600px] mx-auto w-full">
-        {/* HEADER */}
+        {/* Header */}
         <div className="mb-4 md:mb-6 rounded bg-white dark:bg-gray-800 shadow-sm px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
           <h2 className="text-lg md:text-2xl font-bold text-gray-700 dark:text-gray-200">
             Gantt for {board.name}
           </h2>
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Zoom Buttons */}
-            <div className="flex space-x-1 sm:space-x-2">
-              <button
-                onClick={() => handleZoom(ViewMode.Day)}
-                className={`px-2 py-1 text-sm rounded ${
-                  viewMode === ViewMode.Day
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
-              >
-                Day
-              </button>
-              <button
-                onClick={() => handleZoom(ViewMode.Week)}
-                className={`px-2 py-1 text-sm rounded ${
-                  viewMode === ViewMode.Week
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
-              >
-                Week
-              </button>
-              <button
-                onClick={() => handleZoom(ViewMode.Month)}
-                className={`px-2 py-1 text-sm rounded ${
-                  viewMode === ViewMode.Month
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
-              >
-                Month
-              </button>
-            </div>
-
-            {/* Add Task */}
+          <div className="flex items-center space-x-4">
+            {/* Add Task Button */}
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition-colors duration-200 text-sm font-medium"
@@ -313,7 +250,7 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
               + Add Task
             </button>
 
-            {/* Sidebar Toggle */}
+            {/* Sidebar Toggle Button */}
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-md"
@@ -366,7 +303,7 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
           </div>
         </div>
 
-        {/* MAIN CONTENT: SIDEBAR + GANTT */}
+        {/* Main Content: Sidebar + Gantt */}
         <div className="flex flex-row relative">
           <AnimatePresence>
             {isSidebarOpen && (
@@ -464,12 +401,13 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
                   <Gantt
                     tasks={ganttTasks}
                     viewMode={viewMode}
-                    onSelect={handleSelectTask}
-                    //onDateChange={handleDateChange}
-                    //onProgressChange={handleProgressChange}
+                    onSelect={onSelectTask}
+                    onDateChange={handleDateChange}
+                    onProgressChange={handleProgressChange}
                     locale="en-GB"
                     ganttHeight={600}
-                    columnWidth={viewMode === ViewMode.Month ? 300 : 65}
+                    columnWidth={65}
+                    // Optional styling overrides, e.g.:
                     barCornerRadius={4}
                     arrowColor="#999"
                   />

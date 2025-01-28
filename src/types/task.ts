@@ -100,6 +100,7 @@ export interface ICard {
   listName?: string; // Added for table view
   progress?: number; // Added for Gantt chart
   dependencies?: string[]; // Added for Gantt chart
+  type: string; 
   
 }
 

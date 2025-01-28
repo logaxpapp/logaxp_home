@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../Modal';
-import { ICardWithListName, IUpdateCardInput } from '../../../types/task';
-import { useUpdateCardMutation, useFetchAllCardsByBoardIdQuery } from '../../../api/cardApi';
+import {
+  ICardWithListName,
+  IUpdateCardInput,
+} from '../../../types/task';
+import {
+  useUpdateCardMutation,
+  useFetchAllCardsByBoardIdQuery,
+} from '../../../api/cardApi';
 import { useToast } from '../../../features/Toast/ToastContext';
 import DependencySelector from './DependencySelector';
 
 interface EditCardModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
-  boardId: string;             // Make sure you pass this in
-  card: ICardWithListName;     // The card data
+  boardId: string;
+  card: ICardWithListName;
 }
 
 const EditCardModal: React.FC<EditCardModalProps> = ({
   isOpen,
   onRequestClose,
   card,
-  boardId, // We use this below
+  boardId,
 }) => {
   const [updateCard, { isLoading }] = useUpdateCardMutation();
   const { showToast } = useToast();
@@ -24,27 +30,29 @@ const EditCardModal: React.FC<EditCardModalProps> = ({
   // Local state
   const [title, setTitle] = useState(card.title);
   const [description, setDescription] = useState(card.description ?? '');
-  const [startDate, setStartDate] = useState<string>(
-    card.startDate ? new Date(card.startDate).toISOString().split('T')[0] : ''
-  );
-  const [dueDate, setDueDate] = useState<string>(
-    card.dueDate ? new Date(card.dueDate).toISOString().split('T')[0] : ''
-  );
+  const [startDate, setStartDate] = useState<string>('');
+  const [dueDate, setDueDate] = useState<string>('');
   const [priority, setPriority] = useState(card.priority);
   const [status, setStatus] = useState(card.status);
+  const [progress, setProgress] = useState<number>(card.progress ?? 0);
   const [dependencies, setDependencies] = useState<string[]>(card.dependencies || []);
 
   // For dependency selection
   const { data: allCards, isLoading: isLoadingCards } = useFetchAllCardsByBoardIdQuery(boardId);
 
-  // Re-sync whenever 'card' changes
+  // Resync whenever 'card' changes
   useEffect(() => {
     setTitle(card.title);
     setDescription(card.description ?? '');
-    setStartDate(card.startDate ? new Date(card.startDate).toISOString().split('T')[0] : '');
-    setDueDate(card.dueDate ? new Date(card.dueDate).toISOString().split('T')[0] : '');
+    setStartDate(
+      card.startDate ? new Date(card.startDate).toISOString().split('T')[0] : ''
+    );
+    setDueDate(
+      card.dueDate ? new Date(card.dueDate).toISOString().split('T')[0] : ''
+    );
     setPriority(card.priority);
     setStatus(card.status);
+    setProgress(card.progress ?? 0);
     if (allCards) {
       const validDeps = card.dependencies?.filter((depId) =>
         allCards.some((c) => c._id === depId)
@@ -55,7 +63,23 @@ const EditCardModal: React.FC<EditCardModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Date check
+
+    // COMPARE OLD AND NEW VALUES
+     // Compare old vs. new
+  const oldProgress = card.progress ?? 0;
+  if (progress < oldProgress) {
+    showToast("Cannot decrease progress.", "error");
+    return;
+  } else if (progress > oldProgress) {
+    const confirmed = window.confirm(
+      `Are you sure you want to increase progress from ${oldProgress}% to ${progress}%?`
+    );
+    if (!confirmed) {
+      return;
+    }
+  }
+
+    // Validate date
     if (startDate && dueDate && new Date(dueDate) < new Date(startDate)) {
       showToast('Due date cannot be before start date.', 'error');
       return;
@@ -63,13 +87,14 @@ const EditCardModal: React.FC<EditCardModalProps> = ({
 
     const updateData: IUpdateCardInput = {
       _id: card._id,
-      boardId, // crucial line
+      boardId,
       title,
       description,
       priority,
       status,
       startDate: startDate || null,
       dueDate: dueDate || null,
+      progress,
       dependencies,
     };
 
@@ -87,16 +112,17 @@ const EditCardModal: React.FC<EditCardModalProps> = ({
 
   return (
     <Modal onClose={onRequestClose}>
-      <div className="p-4 sidebar">
-        <h2 className="text-xl font-bold mb-4 text-gray-900">Edit Card...</h2>
-        <form onSubmit={handleSubmit} className="space-y-4 text-gray-700">
+      <div className="p-4 text-gray-900">
+        <h2 className="text-xl font-bold mb-4">Edit Task</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>
             <label className="block text-sm font-semibold">Title</label>
             <input
+              type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full border rounded p-2"
+              className="w-full border rounded p-2 mt-1"
               required
             />
           </div>
@@ -107,59 +133,81 @@ const EditCardModal: React.FC<EditCardModalProps> = ({
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full border rounded p-2"
+              className="w-full border rounded p-2 mt-1"
               rows={4}
             />
           </div>
 
           {/* Dates */}
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row sm:space-x-2">
             <div className="flex-1">
               <label className="block text-sm font-semibold">Start Date</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full border rounded p-2"
+                className="w-full border rounded p-2 mt-1"
               />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 mt-4 sm:mt-0">
               <label className="block text-sm font-semibold">Due Date</label>
               <input
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full border rounded p-2"
+                className="w-full border rounded p-2 mt-1"
               />
             </div>
           </div>
 
-          {/* Status & Priority */}
+          {/* Progress */}
           <div>
-            <label className="block text-sm font-semibold">Status</label>
+            <label className="block text-sm font-semibold">Progress</label>
             <input
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="w-full border rounded p-2"
+              type="range"
+              min={0}
+              max={100}
+              value={progress}
+              onChange={(e) => setProgress(Number(e.target.value))}
+              className="mt-1 w-full"
             />
+            <p className="text-sm text-gray-600 mt-1">
+              {progress}%
+            </p>
           </div>
-          <div>
-            <label className="block text-sm font-semibold">Priority</label>
-            <select
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-              className="w-full border rounded p-2"
-            >
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
-            </select>
+
+          {/* Status & Priority */}
+          <div className="flex flex-col sm:flex-row sm:space-x-2">
+            <div className="flex-1">
+              <label className="block text-sm font-semibold">Status</label>
+              <input
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full border rounded p-2 mt-1"
+                placeholder="e.g. To Do, In Progress..."
+              />
+            </div>
+            <div className="flex-1 mt-4 sm:mt-0">
+              <label className="block text-sm font-semibold">Priority</label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                className="w-full border rounded p-2 mt-1"
+              >
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
           </div>
 
           {/* Dependencies */}
           <div>
+            <label className="block text-sm font-semibold">
+              Dependencies (other tasks that must finish first)
+            </label>
             {isLoadingCards ? (
-              <p>Loading available tasks...</p>
+              <p className="text-sm mt-1">Loading available tasks...</p>
             ) : (
               <DependencySelector
                 allCards={allCards || []}
@@ -171,7 +219,7 @@ const EditCardModal: React.FC<EditCardModalProps> = ({
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end space-x-2 mt-2">
+          <div className="flex justify-end space-x-2 mt-4">
             <button
               type="button"
               onClick={onRequestClose}
