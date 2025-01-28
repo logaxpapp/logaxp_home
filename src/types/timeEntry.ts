@@ -15,6 +15,7 @@ export interface ITimeEntry {
   updatedAt: string; // Last update timestamp (ISO string)
   breaks?: { breakStart: Date; breakEnd?: Date }[]; // Optional breaks
   reasonForAbsence?: string; // Optional reason for absence
+  dailyNote?: string; // Optional daily notes
   
 }
 
@@ -36,6 +37,7 @@ export interface ITimeEntryUpdate {
   clockOut?: string; // Updated clock-out time (ISO string)
   status?: 'clockedIn' | 'clockedOut' | 'onBreak' | 'absent'; // Updated status
   description?: string; // Updated description (optional)
+  dailyNote?: string; // Updated daily notes (optional)
 }
 
 

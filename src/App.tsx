@@ -138,6 +138,7 @@ const DocumentDetails = lazy(() => import('./components/Document/DocumentDetails
 const SentDocuments = lazy(() => import('./components/Document/SentDocuments'));
 const ReportManagement = lazy(() => import('./components/Report/ReportManagement'));
 const ReportPage = lazy(() => import('./components/Report/ReportPage'));
+const MyNotification = lazy(() => import('./components/Notifications/MyNotification'));
 
 
 
@@ -706,6 +707,7 @@ const App: React.FC = () => {
                           <ResourceList />
                         </Suspense>
                       }
+
                       />
                       <Route
                       path="resources/:id"
@@ -1133,6 +1135,14 @@ const App: React.FC = () => {
                         </Suspense>
                       }
                     />
+                     <Route
+                    path="my-notifications"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <MyNotification />
+                      </Suspense>
+                    }
+                  />
                   </Route>
                  
                   <Route
@@ -1143,6 +1153,7 @@ const App: React.FC = () => {
                       </Suspense>
                     }
                   />
+                 
 
                 </Route>
                

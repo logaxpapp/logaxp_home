@@ -20,7 +20,7 @@ const DashboardHome: React.FC = () => {
     { name: 'Incidence', icon: <FaTicketAlt />, path: '/dashboard/incidents' },
     { name: 'Scheduling', icon: <FaTicketAlt />, path: '/dashboard/scheduling' },
     { name: 'Attendance', icon: <FaTicketAlt />, path: '/dashboard/attendance' },
-    { name: 'Notifications', icon: <FaTicketAlt />, path: '/dashboard/notifications' },
+    { name: 'Notifications', icon: <FaTicketAlt />, path: '/dashboard/my-notifications' },
   ];
 
   const contractorCards = [
