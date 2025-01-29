@@ -7,26 +7,22 @@ import { IBoard } from '../../types/task';
 import { PlusCircleIcon } from '@heroicons/react/24/solid';
 import CreateBoardModal from './CreateBoardModal';
 import ComingSoon from '../../pages/ComingSoon';
+import WhiteboardManager from '../../pages/Whiteboard/WhiteboardManager';
+import { useParams } from 'react-router-dom';
 
 const BoardList: React.FC = () => {
   const { data: boards, error, isLoading } = useFetchAllBoardsQuery();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+   const WhiteboardManagerWrapper = () => {
+      const { id } = useParams();
+      return <WhiteboardManager  />;
+    };
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="bg-white shadow-lg rounded-lg overflow-hidden md:min-h-screen">
-        {/* Header Section */}
-        <div className="px-4 py-4 border-b border-gray-200 flex flex-col md:flex-row items-center justify-between">
-          <h1 className="text-2xl font-semibold text-gray-800">Task Management Boards</h1>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            <PlusCircleIcon className="h-5 w-5 mr-2" />
-            Create New Board
-          </button>
-        </div>
-
+        
         {/* Tabs Section */}
         <Tabs>
           <TabList className="react-tabs__tab-list flex flex-wrap gap-2 border-b border-gray-300">
@@ -34,7 +30,7 @@ const BoardList: React.FC = () => {
               Tasks
             </Tab>
             <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-blue-50 hover:bg-gray-200 rounded-t-md">
-              Report
+              WhiteBoard
             </Tab>
             <Tab className="react-tabs__tab cursor-pointer py-2 px-4 bg-green-50 hover:bg-gray-200 rounded-t-md">
               Analytics
@@ -91,8 +87,8 @@ const BoardList: React.FC = () => {
             )}
           </TabPanel>
           <TabPanel className="react-tabs__tab-panel p-4">
-            <h2 className="text-xl font-semibold text-gray-800">View and Create Reports</h2>
-            <ComingSoon />
+           
+            <WhiteboardManagerWrapper />
           </TabPanel>
           <TabPanel className="react-tabs__tab-panel p-4">
             <h2 className="text-xl font-semibold text-gray-800">View Analytics</h2>

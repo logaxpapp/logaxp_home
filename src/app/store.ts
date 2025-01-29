@@ -43,6 +43,7 @@ import { documentApi } from '../api/documentApi';
 import { reportApi } from '../api/reportApi';
 import { cardApi } from '../api/cardApi';
 import { referenceApi } from '../api/referenceApi';
+import { whiteboardApi } from '../api/whiteboardApi';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 
@@ -98,7 +99,8 @@ const rootReducer = combineReducers({
   [documentApi.reducerPath]: documentApi.reducer,
   [reportApi.reducerPath]: reportApi.reducer,
   [cardApi.reducerPath]: cardApi.reducer,
-  referenceApi: referenceApi.reducer
+  [referenceApi.reducerPath]: referenceApi.reducer,
+  [whiteboardApi.reducerPath]: whiteboardApi.reducer,
 
 });
 
@@ -144,7 +146,8 @@ export const store = configureStore({
       documentApi.middleware,
       reportApi.middleware,
       cardApi.middleware,
-      referenceApi.middleware
+      referenceApi.middleware,
+      whiteboardApi.middleware,
       
     ),
 });

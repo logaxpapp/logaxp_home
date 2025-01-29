@@ -139,6 +139,7 @@ const SentDocuments = lazy(() => import('./components/Document/SentDocuments'));
 const ReportManagement = lazy(() => import('./components/Report/ReportManagement'));
 const ReportPage = lazy(() => import('./components/Report/ReportPage'));
 const MyNotification = lazy(() => import('./components/Notifications/MyNotification'));
+const WhiteboardManager = lazy(() => import('./pages/Whiteboard/WhiteboardManager'));
 
 
 
@@ -162,6 +163,8 @@ const App: React.FC = () => {
     if (!boardId) return <p>No boardId in URL</p>;
     return <SendInvitation boardId={boardId} />;
   }
+
+  
 
    useEffect(() => {
     if (csrfData?.csrfToken) {
@@ -434,7 +437,7 @@ const App: React.FC = () => {
                         </Suspense>
                       }
                     />
-
+                   
                     <Route
                       path="surveys"
                       element={

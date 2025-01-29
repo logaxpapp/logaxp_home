@@ -118,3 +118,27 @@ export const setupSocketListeners = (socket: Socket, userId: string) => {
      );
    });
  };
+
+ export const setupWhiteboardSocketEvents = (socket: Socket, whiteboardId: string) => {
+  // 1) Join the room
+  socket.emit('join_whiteboard', { whiteboardId });
+
+  // 2) Listen for server updates
+  socket.on('whiteboard_update', (payload) => {
+    const { strokes, version } = payload;
+    console.log('Received whiteboard_update:', strokes, version);
+    // store.dispatch(setWhiteboardData({ strokes, version }));
+  });
+
+  // 3) Conflict event
+  socket.on('whiteboard_conflict', (payload) => {
+    const { serverVersion, serverStrokes } = payload;
+    console.warn('Whiteboard conflict!', serverVersion);
+    // store.dispatch(setWhiteboardConflict({ serverVersion, serverStrokes }));
+  });
+
+  // 4) Additional events, e.g. revert
+  socket.on('whiteboard_revert_done', (payload) => {
+    // ...
+  });
+};
