@@ -1,5 +1,3 @@
-// src/pages/Whiteboard/WhiteboardToolbar.tsx
-
 import React from 'react';
 import {
   FaPen,
@@ -9,7 +7,7 @@ import {
   FaUndo,
   FaRedo,
   FaTrash,
-  FaCameraRetro, // For snapshot icon
+  FaCameraRetro,
 } from 'react-icons/fa';
 
 interface WhiteboardToolbarProps {
@@ -17,7 +15,9 @@ interface WhiteboardToolbarProps {
   setSnapshotMode: React.Dispatch<React.SetStateAction<boolean>>;
 
   currentTool: 'pen' | 'rectangle' | 'eraser' | 'text';
-  setCurrentTool: React.Dispatch<React.SetStateAction<'pen' | 'rectangle' | 'eraser' | 'text'>>;
+  setCurrentTool: React.Dispatch<
+    React.SetStateAction<'pen' | 'rectangle' | 'eraser' | 'text'>
+  >;
 
   currentColor: string;
   setCurrentColor: React.Dispatch<React.SetStateAction<string>>;
@@ -25,7 +25,6 @@ interface WhiteboardToolbarProps {
   lineWidth: number;
   setLineWidth: React.Dispatch<React.SetStateAction<number>>;
 
-  // For Undo/Redo/Clear
   canUndo?: boolean;
   canRedo?: boolean;
   handleUndo?: () => void;
@@ -42,7 +41,6 @@ const WhiteboardToolbar: React.FC<WhiteboardToolbarProps> = ({
   setCurrentColor,
   lineWidth,
   setLineWidth,
-
   canUndo = false,
   canRedo = false,
   handleUndo,
@@ -61,46 +59,45 @@ const WhiteboardToolbar: React.FC<WhiteboardToolbarProps> = ({
         title="Toggle Snapshot Mode"
       >
         <FaCameraRetro className="mr-2" />
-        {snapshotMode ? 'Snapshot ON' : 'Snapshot OFF'}
+        {snapshotMode ? ' ON' : 'OFF'}
       </button>
 
-      {/* Tool Buttons */}
+      {/* Tools */}
       <button
         onClick={() => setCurrentTool('pen')}
         className={`flex items-center justify-center p-2 rounded transition-colors ${
-          currentTool === 'pen' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
+          currentTool === 'pen' ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
         } hover:bg-blue-500`}
-        aria-label="Pen Tool"
         title="Pen Tool"
       >
         <FaPen />
       </button>
+
       <button
         onClick={() => setCurrentTool('rectangle')}
         className={`flex items-center justify-center p-2 rounded transition-colors ${
-          currentTool === 'rectangle' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
+          currentTool === 'rectangle' ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
         } hover:bg-blue-500`}
-        aria-label="Rectangle Tool"
         title="Rectangle Tool"
       >
         <FaSquare />
       </button>
+
       <button
         onClick={() => setCurrentTool('eraser')}
         className={`flex items-center justify-center p-2 rounded transition-colors ${
-          currentTool === 'eraser' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
+          currentTool === 'eraser' ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
         } hover:bg-blue-500`}
-        aria-label="Eraser Tool"
         title="Eraser Tool"
       >
         <FaEraser />
       </button>
+
       <button
         onClick={() => setCurrentTool('text')}
         className={`flex items-center justify-center p-2 rounded transition-colors ${
-          currentTool === 'text' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
+          currentTool === 'text' ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
         } hover:bg-blue-500`}
-        aria-label="Text Tool"
         title="Text Tool"
       >
         <FaRegKeyboard />
@@ -109,14 +106,14 @@ const WhiteboardToolbar: React.FC<WhiteboardToolbarProps> = ({
       {/* Color Picker */}
       <div className="flex items-center space-x-1">
         <label htmlFor="colorPicker" className="text-sm font-medium text-gray-700">
-          Color:
+         
         </label>
         <input
           id="colorPicker"
           type="color"
           value={currentColor}
           onChange={(e) => setCurrentColor(e.target.value)}
-          className="w-8 h-8 p-0 border-none cursor-pointer"
+          className="w-6 h-6 p-0 border-none cursor-pointer"
           aria-label="Select Color"
           title="Select Color"
         />
@@ -125,7 +122,7 @@ const WhiteboardToolbar: React.FC<WhiteboardToolbarProps> = ({
       {/* Line Width */}
       <div className="flex items-center space-x-1">
         <label htmlFor="lineWidth" className="text-sm font-medium text-gray-700">
-          Width:
+         
         </label>
         <input
           id="lineWidth"
@@ -142,11 +139,10 @@ const WhiteboardToolbar: React.FC<WhiteboardToolbarProps> = ({
       </div>
 
       {/* Spacer */}
-      <div className="flex-1"></div>
+      <div className="flex-1" />
 
-      {/* Undo, Redo, Clear Buttons */}
+      {/* Undo, Redo, Clear */}
       <div className="flex items-center space-x-2">
-        {/* Undo */}
         <button
           onClick={handleUndo}
           disabled={!canUndo}
@@ -155,13 +151,11 @@ const WhiteboardToolbar: React.FC<WhiteboardToolbarProps> = ({
               ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
           }`}
-          aria-label="Undo"
           title="Undo"
         >
           <FaUndo />
         </button>
 
-        {/* Redo */}
         <button
           onClick={handleRedo}
           disabled={!canRedo}
@@ -170,17 +164,14 @@ const WhiteboardToolbar: React.FC<WhiteboardToolbarProps> = ({
               ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
           }`}
-          aria-label="Redo"
           title="Redo"
         >
           <FaRedo />
         </button>
 
-        {/* Clear */}
         <button
           onClick={handleClear}
-          className="flex items-center justify-center p-2 rounded transition-colors bg-red-400 text-white hover:bg-red-500"
-          aria-label="Clear Whiteboard"
+          className="flex items-center justify-center p-2 rounded transition-colors bg-red-40 text-red-600 hover:bg-gray-50"
           title="Clear Whiteboard"
         >
           <FaTrash />

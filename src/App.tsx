@@ -19,6 +19,7 @@ import ThankYou from './pages/ThankYou';
 import ContractCreate from './components/Contracts/Admin/ContractCreate';
 import ContractorEdit from './components/Contracts/Admin/ContractorEdit';
 import ContractEdit from './components/Contracts/Admin/ContractEdit';
+import ResetPassword from './pages/PasswordReset/ResetPassword';
 
 const CreateReferenceForm = lazy(() => import('./components/Reference/CreateReferenceForm'));
 const ReferencesManagement = lazy(() => import('./components/Reference/ReferencesManagement'));
@@ -279,6 +280,14 @@ const App: React.FC = () => {
                   element={
                     <Suspense fallback={<Loader />}>
                       <PasswordReset />
+                    </Suspense>
+                  }
+                />
+                <Route
+                   path="/reset-password/:token"
+                  element={
+                    <Suspense fallback={<Loader />}>
+                      <ResetPassword />
                     </Suspense>
                   }
                 />

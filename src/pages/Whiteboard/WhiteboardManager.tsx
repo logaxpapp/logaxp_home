@@ -15,6 +15,7 @@ import {
   IWhiteboard,
   IStroke,
 } from '../../api/whiteboardApi';
+import { FaTrash } from 'react-icons/fa';
 import { useFetchAllUsersQuery } from '../../api/usersApi';
 import SingleSelect from '../../components/common/Input/SelectDropdown/SingleSelect';
 import { useAppSelector } from '../../app/hooks';
@@ -36,12 +37,8 @@ const WhiteboardManager: React.FC = () => {
   const [newBoardTitle, setNewBoardTitle] = useState('');
   const [newBoardDesc, setNewBoardDesc] = useState('');
 
-  // -------------------------------
-  // STROKES + UNDO/REDO
-  // -------------------------------
+  // Strokes + Undo/Redo
   const [localStrokes, setLocalStrokes] = useState<IStroke[]>([]);
-
-  // Undo/Redo stacks
   const [undoStack, setUndoStack] = useState<IStroke[][]>([]);
   const [redoStack, setRedoStack] = useState<IStroke[][]>([]);
 
@@ -55,7 +52,7 @@ const WhiteboardManager: React.FC = () => {
   const [currentColor, setCurrentColor] = useState('#000000');
   const [lineWidth, setLineWidth] = useState(2);
 
-  // RTK Query: fetch boards
+  // Fetch boards
   const {
     data: myBoards,
     isLoading: loadingBoards,
@@ -65,7 +62,7 @@ const WhiteboardManager: React.FC = () => {
 
   const [createWhiteboard] = useCreateWhiteboardMutation();
 
-  // Active board
+  // Fetch active board
   const {
     data: activeBoard,
     isLoading: loadingBoard,
@@ -86,7 +83,7 @@ const WhiteboardManager: React.FC = () => {
   const [limit, setLimit] = useState<number>(10);
   const { data: allUsers } = useFetchAllUsersQuery({ page, limit });
 
-  // Whenever the activeBoard changes, we set localStrokes & reset undo/redo
+  // Whenever the activeBoard changes, set localStrokes & reset undo/redo
   useEffect(() => {
     if (activeBoard?.strokes) {
       setLocalStrokes(activeBoard.strokes);
@@ -95,9 +92,7 @@ const WhiteboardManager: React.FC = () => {
     }
   }, [activeBoard]);
 
-  // -------------------------------
-  // CREATE a new board
-  // -------------------------------
+  // Create a new board
   const handleCreateBoard = async () => {
     if (!currentUserId) {
       alert('Please log in');
@@ -118,18 +113,14 @@ const WhiteboardManager: React.FC = () => {
     }
   };
 
-  // -------------------------------
-  // SELECT a board
-  // -------------------------------
+  // Select a board
   const handleSelectBoard = (boardId: string) => {
     setSelectedBoardId(boardId);
     setSnapshotMode(false);
     setSelectedSnapshot(null);
   };
 
-  // -------------------------------
-  // SAVE strokes
-  // -------------------------------
+  // Save strokes
   const handleSave = async () => {
     if (!selectedBoardId) return;
     try {
@@ -149,9 +140,7 @@ const WhiteboardManager: React.FC = () => {
     }
   };
 
-  // -------------------------------
-  // ADD participant
-  // -------------------------------
+  // Add participant
   const handleAddParticipant = async (userId: string) => {
     if (!selectedBoardId) return;
     try {
@@ -162,9 +151,7 @@ const WhiteboardManager: React.FC = () => {
     }
   };
 
-  // -------------------------------
-  // REMOVE participant
-  // -------------------------------
+  // Remove participant
   const handleRemoveParticipant = async (userId: string) => {
     if (!selectedBoardId) return;
     try {
@@ -175,9 +162,7 @@ const WhiteboardManager: React.FC = () => {
     }
   };
 
-  // -------------------------------
-  // REVERT to snapshot
-  // -------------------------------
+  // Revert to snapshot
   const handleRevertSnapshot = async () => {
     if (!selectedBoardId || !selectedSnapshot) return;
     try {
@@ -189,9 +174,7 @@ const WhiteboardManager: React.FC = () => {
     }
   };
 
-  // -------------------------------
-  // DELETE a board
-  // -------------------------------
+  // Delete a board
   const handleDeleteBoard = async (boardId: string) => {
     if (!window.confirm('Are you sure you want to delete this board?')) return;
     try {
@@ -208,27 +191,41 @@ const WhiteboardManager: React.FC = () => {
     }
   };
 
-  // ------------------------------------------------
-  //         UNDO / REDO / CLEAR Logic
-  // ------------------------------------------------
+  // Delete a snapshot
+  const handleDeleteSnapshot = async (snapshotId: string) => {
+    if (!selectedBoardId) return;
+    if (!window.confirm('Are you sure you want to delete this snapshot?')) return;
+    try {
+      const response = await fetch(
+        `/api/whiteboards/${selectedBoardId}/snapshots/${snapshotId}`,
+        {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to delete snapshot');
+      }
+      refetchActiveBoard();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Undo/Redo/Clear logic
   const canUndo = undoStack.length > 0;
   const canRedo = redoStack.length > 0;
 
-  // Called by the Canvas when user starts a pen/eraser stroke
   const handleBeginStroke = () => {
-    // push the *current* strokes to undoStack
     setUndoStack((prev) => [...prev, structuredClone(localStrokes)]);
-    // clear the redoStack
     setRedoStack([]);
   };
 
   const handleUndo = () => {
     if (!canUndo) return;
     const prevState = undoStack[undoStack.length - 1];
-    setUndoStack((us) => us.slice(0, us.length - 1)); // remove last
-    // push current strokes to redo
+    setUndoStack((us) => us.slice(0, us.length - 1));
     setRedoStack((rs) => [...rs, structuredClone(localStrokes)]);
-    // revert localStrokes
     setLocalStrokes(prevState);
   };
 
@@ -236,277 +233,295 @@ const WhiteboardManager: React.FC = () => {
     if (!canRedo) return;
     const nextState = redoStack[redoStack.length - 1];
     setRedoStack((rs) => rs.slice(0, rs.length - 1));
-    // push current strokes to undo
     setUndoStack((us) => [...us, structuredClone(localStrokes)]);
-    // set localStrokes
     setLocalStrokes(nextState);
   };
 
   const handleClear = () => {
-    // push current strokes to undo
     setUndoStack((prev) => [...prev, structuredClone(localStrokes)]);
-    // clear localStrokes
     setLocalStrokes([]);
-    // clear redo
     setRedoStack([]);
   };
 
   // If not logged in, show a message
   if (!currentUserId) {
-    return <div>Please log in to manage your whiteboards.</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <p className="text-lg">Please log in to manage your whiteboards.</p>
+      </div>
+    );
   }
 
   return (
     <motion.div
-      className="p-4 space-y-4"
+      className="flex flex-col min-h-screen"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      {/* ========== Modal for Creating Whiteboard ========== */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          {/* Modal Overlay */}
-          <div
-            className="absolute inset-0 bg-black bg-opacity-50"
-            onClick={() => setIsCreateModalOpen(false)}
-          />
-          {/* Modal Content */}
-          <div className="bg-white p-6 rounded shadow relative z-10 w-[400px]">
-            <h2 className="text-xl font-bold mb-4">Create New Whiteboard</h2>
-            <label className="block mb-2">
-              Title
-              <input
-                type="text"
-                placeholder="Title"
-                className="border p-2 w-full mb-2"
-                value={newBoardTitle}
-                onChange={(e) => setNewBoardTitle(e.target.value)}
-              />
-            </label>
-            <label className="block mb-4">
-              Description
-              <textarea
-                placeholder="Description"
-                className="border p-2 w-full"
-                value={newBoardDesc}
-                onChange={(e) => setNewBoardDesc(e.target.value)}
-              />
-            </label>
+      {/* Sticky header with the vital message */}
+      <header className="sticky top-0 bg-gray-800 text-white p-2 z-50 text-center">
+        <p className="text-sm sm:text-base">
+          I want the vital message at all time
+        </p>
+      </header>
 
-            <div className="flex justify-end space-x-2">
-              <button
-                className="bg-gray-300 px-4 py-2 rounded"
-                onClick={() => setIsCreateModalOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={handleCreateBoard}
-              >
-                Create
-              </button>
+      {/* Main Content */}
+      <main className="container mx-auto flex-grow px-4 py-6 space-y-8">
+        {/* ----- Modal for Creating Whiteboard ----- */}
+        {isCreateModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            {/* Modal Overlay */}
+            <div
+              className="absolute inset-0 bg-black bg-opacity-50"
+              onClick={() => setIsCreateModalOpen(false)}
+            />
+            {/* Modal Content */}
+            <div className="bg-white p-6 rounded shadow relative z-10 w-[400px]">
+              <h2 className="text-xl font-bold mb-4">Create New Whiteboard</h2>
+              <label className="block mb-2">
+                Title
+                <input
+                  type="text"
+                  placeholder="Title"
+                  className="border p-2 w-full mb-2"
+                  value={newBoardTitle}
+                  onChange={(e) => setNewBoardTitle(e.target.value)}
+                />
+              </label>
+              <label className="block mb-4">
+                Description
+                <textarea
+                  placeholder="Description"
+                  className="border p-2 w-full"
+                  value={newBoardDesc}
+                  onChange={(e) => setNewBoardDesc(e.target.value)}
+                />
+              </label>
+
+              <div className="flex justify-end space-x-2">
+                <button
+                  className="bg-gray-300 px-4 py-2 rounded"
+                  onClick={() => setIsCreateModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  onClick={handleCreateBoard}
+                >
+                  Create
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ========== LIST OF USER'S BOARDS AS A SINGLE SELECT ========== */}
-      <div className="bg-white p-6 rounded-lg shadow-lg space-y-6">
-            {/* Header Section */}
-            <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-800">My Whiteboards</h2>
-                {/* Create New Whiteboard Button */}
-                <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md hover:bg-blue-600 transition duration-200 ease-in-out transform hover:scale-105"
-                onClick={() => setIsCreateModalOpen(true)}
-                >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                Create New Whiteboard
-                </button>
-            </div>
+        {/* ----- Section: Board Selection & Creation ----- */}
+        <section className="bg-white p-6 rounded-lg shadow-lg space-y-4">
+          <h2 className="text-xl font-semibold">Manage Whiteboards</h2>
+          <div className="flex flex-wrap gap-4 items-center">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md hover:bg-blue-600 transition duration-200 transform hover:scale-105"
+              onClick={() => setIsCreateModalOpen(true)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              New
+            </button>
 
-            
+            {/* SingleSelect for existing boards */}
+            {myBoards && myBoards.length > 0 && (
+              <SingleSelect
+                label="Select a Board"
+                options={myBoards.map((board) => ({
+                  value: board._id,
+                  label: board.title,
+                }))}
+                value={selectedBoardId}
+                onChange={(val) => {
+                  if (!val) {
+                    setSelectedBoardId(null);
+                    setLocalStrokes([]);
+                    setUndoStack([]);
+                    setRedoStack([]);
+                  } else {
+                    handleSelectBoard(val);
+                  }
+                }}
+                placeholder="Choose a Whiteboard..."
+                isLoading={loadingBoards}
+              />
+            )}
 
-        {loadingBoards && <p>Loading boards...</p>}
-        {errorBoards && <p>Error loading boards.</p>}
-
-        {myBoards && myBoards.length > 0 ? (
-          <>
-            <SingleSelect
-              label="Select a Board"
-              options={myBoards.map((board) => ({
-                value: board._id,
-                label: board.title,
-              }))}
-              value={selectedBoardId}
-              onChange={(val) => {
-                if (!val) {
-                  // No selection
-                  setSelectedBoardId(null);
-                  setLocalStrokes([]);
-                  setUndoStack([]);
-                  setRedoStack([]);
-                } else {
-                  // user picked a board
-                  handleSelectBoard(val);
-                }
-              }}
-              placeholder="Choose a Whiteboard..."
-              isLoading={loadingBoards}
-            />
-
+            {/* Button to delete selected board */}
             {selectedBoardId && (
               <button
                 className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
                 onClick={() => handleDeleteBoard(selectedBoardId)}
               >
-                Delete Selected Board
+                Delete
               </button>
             )}
-          </>
-        ) : (
-          <p>No boards found. Create one above!</p>
-        )}
-      </div>
-
-      {/* ========== CURRENT SELECTED BOARD ========== */}
-      {selectedBoardId && activeBoard && (
-        <div className="bg-white p-4 rounded shadow space-y-4">
-          <div>
-            <h1 className="text-2xl font-bold mb-2">
-              Whiteboard: {activeBoard.title}
-            </h1>
-            <p className="text-gray-600">Version: {activeBoard.version}</p>
-            <p className="text-gray-600">
-              Owner:{' '}
-              {typeof activeBoard.owner === 'object'
-                ? (activeBoard.owner as any).name
-                : 'N/A'}
-            </p>
           </div>
 
-          {/* Toolbar */}
-          <WhiteboardToolbar
-            snapshotMode={snapshotMode}
-            setSnapshotMode={setSnapshotMode}
-            currentTool={currentTool}
-            setCurrentTool={setCurrentTool}
-            currentColor={currentColor}
-            setCurrentColor={setCurrentColor}
-            lineWidth={lineWidth}
-            setLineWidth={setLineWidth}
+          {loadingBoards && <p>Loading boards...</p>}
+          {errorBoards && <p>Error loading boards.</p>}
+          {myBoards && myBoards.length === 0 && (
+            <p>No boards found. Create one above!</p>
+          )}
+        </section>
 
-            // pass Undo/Redo data
-            canUndo={canUndo}
-            canRedo={canRedo}
-            handleUndo={handleUndo}
-            handleRedo={handleRedo}
-            handleClear={handleClear}
-          />
+        {/* ----- Section: Current Selected Board ----- */}
+        {selectedBoardId && activeBoard && (
+          <section className="bg-white p-6 rounded-lg shadow space-y-6">
+            {/* Board Header */}
+            <div>
+              <h2 className="text-lg font-bold mb-2">
+                {activeBoard.title}{' '}
+                <span className="text-gray-600 ml-2">
+                  (Version {activeBoard.version})
+                </span>
+              </h2>
+              <p className="text-gray-600">
+                Owner:{' '}
+                {typeof activeBoard.owner === 'object'
+                  ? (activeBoard.owner as any).name
+                  : 'N/A'}
+              </p>
+            </div>
 
-          {/* Canvas Editor */}
-          <CanvasWhiteboard
-            localStrokes={localStrokes}
-            setLocalStrokes={setLocalStrokes}
-            serverVersion={activeBoard.version}
-            whiteboardId={activeBoard._id}
-            currentTool={currentTool}
-            currentColor={currentColor}
-            lineWidth={lineWidth}
-            onBeginStroke={handleBeginStroke} // Undo hook
-          />
+            {/* Toolbar */}
+            <WhiteboardToolbar
+              snapshotMode={snapshotMode}
+              setSnapshotMode={setSnapshotMode}
+              currentTool={currentTool}
+              setCurrentTool={setCurrentTool}
+              currentColor={currentColor}
+              setCurrentColor={setCurrentColor}
+              lineWidth={lineWidth}
+              setLineWidth={setLineWidth}
+              canUndo={canUndo}
+              canRedo={canRedo}
+              handleUndo={handleUndo}
+              handleRedo={handleRedo}
+              handleClear={handleClear}
+            />
 
-          {/* Save button */}
-          <div>
-            <button
-              className="mt-4 px-3 py-1 bg-blue-500 text-white rounded"
-              onClick={handleSave}
-            >
-              Save Changes
-            </button>
-          </div>
+            {/* Canvas Editor */}
+            <CanvasWhiteboard
+              localStrokes={localStrokes}
+              setLocalStrokes={setLocalStrokes}
+              serverVersion={activeBoard.version}
+              whiteboardId={activeBoard._id}
+              currentTool={currentTool}
+              currentColor={currentColor}
+              lineWidth={lineWidth}
+              onBeginStroke={handleBeginStroke}
+            />
 
-          {/* Participants */}
-          <div className="border-t pt-4">
-            <h2 className="text-lg font-semibold">Participants</h2>
-            <ul className="list-disc ml-6">
-              {activeBoard.participants &&
-                (activeBoard.participants as any[]).map((p: any) => (
-                  <li key={p._id}>
-                    {p.name || p.email || p._id}
+            {/* Save button */}
+            <div>
+              <button
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                onClick={handleSave}
+              >
+                Save Changes
+              </button>
+            </div>
+
+            {/* Participants */}
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold">Participants</h3>
+              <ul className="list-disc ml-6">
+                {activeBoard.participants &&
+                  (activeBoard.participants as any[]).map((p: any) => (
+                    <li key={p._id} className="flex items-center gap-2">
+                      <span>{p.name || p.email || p._id}</span>
+                      <button
+                        onClick={() => handleRemoveParticipant(p._id)}
+                        className="text-red-500 underline hover:text-red-700 hover:bg-red-100 transition-colors rounded px-1"
+                      >
+                        <FaTrash className="inline w-4 h-4" />
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+              {/* Add participant from user list */}
+              {allUsers?.users && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <p className="text-sm text-gray-600">Add participant:</p>
+                  {allUsers.users.map((u: IUser) => (
                     <button
-                      onClick={() => handleRemoveParticipant(p._id)}
-                      className="ml-2 text-red-500 underline"
+                      key={u._id}
+                      className="bg-blue-100 px-2 py-1 rounded text-sm hover:bg-blue-200 transition"
+                      onClick={() => handleAddParticipant(u._id)}
                     >
-                      Remove
+                      {u.name}
                     </button>
-                  </li>
-                ))}
-            </ul>
-            {/* Add participant from user list */}
-            {allUsers?.users && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                <p className="text-sm text-gray-600">Add participant:</p>
-                {allUsers.users.map((u: IUser) => (
-                  <button
-                    key={u._id}
-                    className="bg-blue-200 px-2 py-1 rounded text-sm"
-                    onClick={() => handleAddParticipant(u._id)}
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Snapshots */}
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-4">Snapshots</h3>
+              <div className="space-y-3">
+                {activeBoard.snapshots?.map((snap) => (
+                  <div
+                    key={snap._id as string}
+                    className="p-3 border rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-between"
                   >
-                    {u.name}
-                  </button>
+                    <div>
+                      <p className="font-medium">Version: {snap.version}</p>
+                      <p className="text-sm text-gray-600">
+                        Created: {new Date(snap.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedSnapshot(snap._id as string)}
+                        className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"
+                      >
+                        Select
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSnapshot(snap._id as string)}
+                        className="px-3 py-1 text-sm bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
-            )}
-          </div>
-
-          {/* Snapshots */}
-          <div className="border-t pt-4">
-            <h2 className="text-lg font-semibold mb-4">Snapshots</h2>
-            <div className="space-y-3">
-              {activeBoard.snapshots?.map((snap) => (
-                <div
-                  key={snap._id as string}
-                  className="p-3 border rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-between"
-                >
-                  <div>
-                    <p className="font-medium">Version: {snap.version}</p>
-                    <p className="text-sm text-gray-600">
-                      Created: {new Date(snap.createdAt).toLocaleString()}
-                    </p>
-                  </div>
+              {selectedSnapshot && (
+                <div className="mt-4">
                   <button
-                    onClick={() => setSelectedSnapshot(snap._id as string)}
-                    className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"
+                    onClick={handleRevertSnapshot}
+                    className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
                   >
-                    Select
+                    Revert to Selected Snapshot
                   </button>
                 </div>
-              ))}
+              )}
             </div>
-            {selectedSnapshot && (
-              <div className="mt-4">
-                <button
-                  onClick={handleRevertSnapshot}
-                  className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
-                >
-                  Revert to Selected Snapshot
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+          </section>
+        )}
+      </main>
+
+      {/* Footer (optional) */}
+      <footer className="bg-gray-100 py-4 text-center text-sm text-gray-500">
+        &copy; {new Date().getFullYear()} - Whiteboard Manager
+      </footer>
     </motion.div>
   );
 };

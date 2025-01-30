@@ -87,20 +87,34 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
   // Convert to Gantt Tasks
   const ganttTasks: Task[] = useMemo(() => {
     if (!fetchedCards) return [];
+    
+    const taskIds = new Set(fetchedCards.data.map((card: ICard) => card._id.toString()));
+    
     return fetchedCards.data.map((card: ICard) => {
       const startDate = card.startDate ? new Date(card.startDate) : new Date();
       const endDate = card.dueDate
         ? new Date(card.dueDate)
         : new Date(Date.now() + 86400000);
-
+  
       const progressVal = card.progress ?? 0;
       let barColor = "#3366cc";
       if (progressVal >= 100) {
         barColor = "#66cc66"; // completed
       } else if (card.priority === "High") {
         barColor = "#cc3333"; // high priority
+      }else if (card.priority === "Medium") {
+        barColor = "#ffcc66"; // medium priority
+      }else if (card.priority === "Low") {
+        barColor = "#99dd99"; // low priority
       }
 
+  
+      const validDependencies = (card.dependencies || []).filter(dep => taskIds.has(dep));
+  
+      if (validDependencies.length !== (card.dependencies || []).length) {
+        console.warn(`Some dependencies for task ${card._id} are missing in the loaded tasks.`);
+      }
+  
       return {
         id: card._id.toString(),
         name: card.title || "Untitled Task",
@@ -108,6 +122,7 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
         end: endDate,
         progress: progressVal,
         type: "task",
+        dependencies: validDependencies,
         styles: {
           backgroundColor: barColor,
           progressColor: "#99dd99",
@@ -117,6 +132,7 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
       };
     });
   }, [fetchedCards]);
+  
 
   // Number of pages
   const pageCount = fetchedCards ? fetchedCards.totalPages : 0;
@@ -472,6 +488,10 @@ const GanttChartView: React.FC<GanttChartViewProps> = ({ board }) => {
                     columnWidth={viewMode === ViewMode.Month ? 300 : 65}
                     barCornerRadius={4}
                     arrowColor="#999"
+                    arrowIndent={40}
+                    todayColor="#f5ebe0"
+                    
+                    
                   />
                 </div>
               </div>

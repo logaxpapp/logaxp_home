@@ -274,7 +274,6 @@ export const api = createApi({
       invalidatesTags: (result, error, id) => [{ type: 'AppraisalPeriod', id }, { type: 'AppraisalPeriod', id: 'LIST' }],
     }),
 
-    // --- Admin ShiftType Endpoints ---
 
     // Create Shift Type
     createShiftType: builder.mutation<IShiftType, Partial<IShiftType>>({
@@ -287,16 +286,16 @@ export const api = createApi({
     }),
 
     getShiftTypes: builder.query<IShiftType[], void>({
-  query: () => 'admin/shifts/types',
-  transformResponse: (response: { shiftTypes: IShiftType[] }) => response.shiftTypes, // Access `shiftTypes` array directly
-  providesTags: (result) =>
-    result
-      ? [
-          ...result.map(({ _id }) => ({ type: 'ShiftType' as const, id: _id })),
-          { type: 'ShiftType', id: 'LIST' },
-        ]
-      : [{ type: 'ShiftType', id: 'LIST' }],
-}),
+      query: () => 'admin/shifts/types',
+      transformResponse: (response: { shiftTypes: IShiftType[] }) => response.shiftTypes, // Access `shiftTypes` array directly
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ _id }) => ({ type: 'ShiftType' as const, id: _id })),
+              { type: 'ShiftType', id: 'LIST' },
+            ]
+          : [{ type: 'ShiftType', id: 'LIST' }],
+    }),
 
     // Update Shift Type
     updateShiftType: builder.mutation<IShiftType, { id: string; updates: Partial<IShiftType> }>({
@@ -319,8 +318,6 @@ export const api = createApi({
         { type: 'ShiftType', id: 'LIST' },
       ],
     }),
-
-    // --- Admin Shift Endpoints ---
 
     // Create Shift
     createShift: builder.mutation<IShift, Partial<IShift>>({
@@ -423,7 +420,6 @@ export const api = createApi({
       invalidatesTags: (result, error, id) => [{ type: 'Shift', id }],
     }),
 
-    // --- User Shift Endpoints ---
 
     // View Schedule
     viewSchedule: builder.query<{ shifts: IShift[]; total: number }, void>({

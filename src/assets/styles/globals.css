@@ -212,3 +212,21 @@ html {
 .react-tabs__tab-panel {
   @apply p-1 bg-white;
 }
+
+
+/* Add this to your CSS */
+.canvas-container {
+  width: 100%;
+  max-width: 1470px; /* Optional: Set a max-width for larger screens */
+  margin: 0 auto; /* Center the canvas */
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1470 / 800; /* Maintain aspect ratio */
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: crosshair;
+}

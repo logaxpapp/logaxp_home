@@ -9,15 +9,14 @@ import {
   markNotificationAsRead,
 } from '../../store/slices/notificationSlice';
 import { FaBell } from 'react-icons/fa';
-import { IUser } from '../../types/user';
-import { Notification } from '../../types/notification';
 import { motion } from 'framer-motion';
+import { Notification } from '../../types/notification';
+import { IUser } from '../../types/user';
 
-// Type guard function
 function isIUser(sender: string | IUser | null): sender is IUser {
-    return typeof sender === 'object' && sender !== null && 'name' in sender;
-  }
-  
+  return typeof sender === 'object' && sender !== null && 'name' in sender;
+}
+
 const Notifications: React.FC = () => {
   const dispatch = useAppDispatch();
   const { data: notificationsData } = useGetNotificationsQuery();
@@ -28,7 +27,6 @@ const Notifications: React.FC = () => {
 
   useEffect(() => {
     if (notificationsData) {
-      console.log('Notifications Data:', notificationsData);
       dispatch(setNotifications(notificationsData.data));
     }
   }, [dispatch, notificationsData]);
@@ -42,7 +40,7 @@ const Notifications: React.FC = () => {
     const senderName = isIUser(notification.sender)
       ? notification.sender.name
       : notification.sender || 'Someone';
-  
+
     switch (notification.type) {
       case 'article_like':
         return `${senderName} liked your article.`;
@@ -52,23 +50,20 @@ const Notifications: React.FC = () => {
         return 'You have a new notification.';
     }
   };
-  
 
   return (
     <div className="relative">
-      {/* Notification Bell Icon */}
       <button
         className="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 focus:outline-none"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle notifications"
       >
         <FaBell className="text-gray-800 dark:text-white w-6 h-6" />
-        {notifications.some((notification) => !notification.read) && (
+        {notifications.some((n) => !n.read) && (
           <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-700"></span>
         )}
       </button>
 
-      {/* Notifications Dropdown */}
       {isOpen && (
         <motion.div
           className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden z-50"
@@ -78,7 +73,9 @@ const Notifications: React.FC = () => {
           transition={{ duration: 0.2 }}
         >
           <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Notifications</h3>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+              Notifications
+            </h3>
           </div>
           <ul className="max-h-64 overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
             {notifications.length > 0 ? (
@@ -91,9 +88,9 @@ const Notifications: React.FC = () => {
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                    <p className="text-sm font-medium text-gray-800 dark:text-white">
+                      <p className="text-sm font-medium text-gray-800 dark:text-white">
                         {renderNotificationMessage(notification)}
-                        </p>
+                      </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         {new Date(notification.timestamp).toLocaleString()}
                       </p>

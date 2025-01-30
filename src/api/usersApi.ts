@@ -34,6 +34,17 @@ interface PasswordResetRequest {
   email: string;
 }
 
+interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
+// You may want a `MessageResponse` type if your server returns a { message: string }
+interface MessageResponse {
+  message: string;
+}
+
+
 interface CsrfTokenResponse {
   csrfToken: string;
 }
@@ -549,22 +560,31 @@ export const usersApi = createApi({
 
     changePassword: builder.mutation<void, { currentPassword: string; newPassword: string }>({
       query: (data) => ({
-        url: `${AUTH_API}/change-password`,
+        url: `/change-password`,
         method: 'PUT',
         body: data,
       }),
     }),
     
     // Password Reset Mutation
-    passwordReset: builder.mutation<void, PasswordResetRequest>({
+    passwordReset: builder.mutation<MessageResponse, PasswordResetRequest>({
       query: (data) => ({
-        url: `${PASSWORD_RESET_API}/request`,
+        url: `${AUTH_API}/request-password-reset`,
         method: 'POST',
         body: data,
       }),
     }),
 
-    // src/api/usersApi.ts
+    // 2) Perform the actual Reset using Token
+    resetPassword: builder.mutation<MessageResponse, ResetPasswordRequest>({
+      query: (data) => ({
+        url: `${AUTH_API}/reset-password`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
+
 
       // Add this endpoint in the `endpoints` section
       registerUser: builder.mutation<IUser, { name: string; email: string; password: string }>({
@@ -764,6 +784,7 @@ export const {
   useLogoutMutation,
   useGetCsrfTokenQuery,
   usePasswordResetMutation,
+  useResetPasswordMutation,
   useGetAllLoggedInUsersQuery,
   useChangePasswordMutation,
   useRegisterUserMutation,

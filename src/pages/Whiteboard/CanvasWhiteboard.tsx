@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { IStroke } from '../../api/whiteboardApi';
 import { getSocket } from '../../socket';
-import { FaFont, FaTimes, FaUndo, FaRedo, FaTrash } from 'react-icons/fa'; // Added icons for undo, redo, and clear
+import { FaFont, FaTimes } from 'react-icons/fa'; // Added icons for undo, redo, and clear
 
 interface CanvasWhiteboardProps {
   localStrokes: IStroke[];
@@ -36,14 +36,11 @@ const CanvasWhiteboard: React.FC<CanvasWhiteboardProps> = ({
   const [fontSize, setFontSize] = useState(16);
   const [fontFamily, setFontFamily] = useState('Arial');
 
-  // For undo/redo
-  const [history, setHistory] = useState<IStroke[][]>([]);
-  const [future, setFuture] = useState<IStroke[][]>([]);
 
   // 1) Draw a dot grid
   const drawDotGrid = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
-    const dotSpacing = 25;
-    const dotRadius = 0.4;
+    const dotSpacing = 40;
+    const dotRadius = 0.5;
     ctx.fillStyle = '#000';
     for (let x = 0; x < canvas.width; x += dotSpacing) {
       for (let y = 0; y < canvas.height; y += dotSpacing) {
@@ -53,6 +50,31 @@ const CanvasWhiteboard: React.FC<CanvasWhiteboardProps> = ({
       }
     }
   };
+
+  // Function to resize the canvas
+  const resizeCanvas = () => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const container = canvas.parentElement;
+      if (container) {
+        // Set canvas width to container's width
+        const width = container.clientWidth;
+        const height = (width * 800) / 1470; // Maintain aspect ratio
+
+        // Set canvas dimensions
+        canvas.width = width;
+        canvas.height = height;
+      }
+    }
+  };
+
+  // Resize canvas on mount and window resize
+  useEffect(() => {
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    return () => window.removeEventListener('resize', resizeCanvas);
+  }, []);
+
 
   // 2) Redraw all strokes whenever localStrokes changes
   useEffect(() => {
@@ -248,12 +270,10 @@ localStrokes.forEach((stroke) => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative container mx-auto">
       {/* Canvas */}
       <canvas
         ref={canvasRef}
-        width={1600}
-        height={800}
         className="bg-white rounded-lg shadow-md cursor-crosshair"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { selectCurrentUser } from '../../store/slices/authSlice';
@@ -9,31 +10,30 @@ import {
 } from '../../api/reportApi';
 import { useToast } from '../../features/Toast/ToastContext';
 import { FiDownload } from 'react-icons/fi';
+import AnimatedButton from '../../components/common/Button/AnimatedButton';
 
 const ReportGenerator: React.FC = () => {
   const [searchParams] = useSearchParams();
-
-  // Grab the logged-in user from Redux
   const currentUser = useAppSelector(selectCurrentUser);
 
-  // Local states
+  // Form states
   const [reportType, setReportType] = useState<ReportType>(ReportType.TASKS_BY_STATUS);
   const [boardId, setBoardId] = useState('');
   const [listId, setListId] = useState('');
-  const [userId, setUserId] = useState(''); // We'll auto-fill this with currentUser?._id
+  const [userId, setUserId] = useState('');
   const [status, setStatus] = useState('');
   const [priority, setPriority] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  // Toast and RTK Mutation
   const { showToast } = useToast();
   const [generateReport, { isLoading, data }] = useGenerateReportMutation();
 
-  // On mount, read query params & fill state
+  // Populate form state from query params on mount
   useEffect(() => {
     const boardIdQuery = searchParams.get('boardId') || '';
     const listIdQuery = searchParams.get('listId') || '';
-    // We won't rely on userId from searchParams, because we prefer the Redux store
     const statusQuery = searchParams.get('status') || '';
     const priorityQuery = searchParams.get('priority') || '';
     const startDateQuery = searchParams.get('startDate') || '';
@@ -47,7 +47,7 @@ const ReportGenerator: React.FC = () => {
     setEndDate(endDateQuery);
   }, [searchParams]);
 
-  // If currentUser is available, auto-fill userId
+  // Auto-fill userId if logged in
   useEffect(() => {
     if (currentUser?._id) {
       setUserId(currentUser._id);
@@ -55,14 +55,14 @@ const ReportGenerator: React.FC = () => {
   }, [currentUser]);
 
   /**
-   * Generate Report Handler
+   * Handle Report Generation
    */
   const handleGenerate = async () => {
     const input: IGenerateReportInput = {
       reportType,
       boardId: boardId || undefined,
       listId: listId || undefined,
-      userId: userId || undefined,       // auto-populated from Redux
+      userId: userId || undefined,
       status: status || undefined,
       priority: priority || undefined,
       startDate: startDate || undefined,
@@ -78,13 +78,11 @@ const ReportGenerator: React.FC = () => {
   };
 
   /**
-   * Export as JSON
+   * Export the Generated Report as JSON
    */
   const handleExport = () => {
     if (!data) return;
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: 'application/json',
-    });
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -95,138 +93,190 @@ const ReportGenerator: React.FC = () => {
   };
 
   return (
-    <div className="p-4 md:p-8 text-gray-800 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">Generate Report</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Report Type */}
-        <div>
-          <label className="block font-medium">Report Type</label>
-          <select
-            className="w-full p-2 border rounded mt-1"
-            value={reportType}
-            onChange={(e) => setReportType(e.target.value as ReportType)}
-          >
-            {Object.values(ReportType).map((rt) => (
-              <option key={rt} value={rt}>
-                {rt}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Board ID */}
-        <div>
-          <label className="block font-medium">Board ID</label>
-          <input
-            className="w-full p-2 border rounded mt-1"
-            type="text"
-            value={boardId}
-            onChange={(e) => setBoardId(e.target.value)}
-          />
-        </div>
-
-        {/* List ID */}
-        <div>
-          <label className="block font-medium">List ID</label>
-          <input
-            className="w-full p-2 border rounded mt-1"
-            type="text"
-            value={listId}
-            onChange={(e) => setListId(e.target.value)}
-          />
-        </div>
-
-        {/* User ID (auto-populated) */}
-        <div>
-          <label className="block font-medium">User ID</label>
-          <input
-            className="w-full p-2 border rounded mt-1 bg-gray-100"
-            type="text"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            disabled // or remove `disabled` if you want them to override
-          />
-        </div>
-
-        {/* Status */}
-        <div>
-          <label className="block font-medium">Status</label>
-          <input
-            className="w-full p-2 border rounded mt-1"
-            type="text"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          />
-        </div>
-
-        {/* Priority */}
-        <div>
-          <label className="block font-medium">Priority</label>
-          <input
-            className="w-full p-2 border rounded mt-1"
-            type="text"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-          />
-        </div>
-
-        {/* Start Date */}
-        <div>
-          <label className="block font-medium">Start Date</label>
-          <input
-            className="w-full p-2 border rounded mt-1"
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-        </div>
-
-        {/* End Date */}
-        <div>
-          <label className="block font-medium">End Date</label>
-          <input
-            className="w-full p-2 border rounded mt-1"
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center space-x-2">
-        <button
-          onClick={handleGenerate}
-          disabled={isLoading}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          {isLoading ? 'Generating...' : 'Generate'}
-        </button>
-
-        {data && (
-          <button
-            onClick={handleExport}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center space-x-1"
-          >
-            <FiDownload />
-            <span>Export</span>
-          </button>
-        )}
-      </div>
-
-      {/* Display Generated Report Data */}
-      {data && (
-        <div className="mt-6 bg-gray-100 p-4 rounded">
-          <h2 className="text-xl font-semibold">Report: {data.title}</h2>
-          <p className="text-sm text-gray-600">
-            Generated At: {new Date(data.generatedAt || '').toLocaleString()}
+    <motion.div
+      className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      <div className="w-full max-w-6xl bg-white shadow-lg rounded-xl overflow-hidden">
+        {/* Header */}
+        <div className="bg-blue-600 px-6 py-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Generate Report</h1>
+          <p className="text-blue-100 text-sm md:text-base mt-1">
+            Quickly create customized task or project reports
           </p>
-          <pre className="mt-2 p-2 bg-white rounded text-xs overflow-auto">
-            {JSON.stringify(data.data, null, 2)}
-          </pre>
         </div>
-      )}
-    </div>
+
+        <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* ========== LEFT COLUMN: Form & Generate Button ========== */}
+          <motion.div
+            className="flex flex-col space-y-4"
+            initial={{ x: -30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            {/* Report Type */}
+            <div>
+              <label className="block font-medium mb-2">Report Type</label>
+              <select
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                value={reportType}
+                onChange={(e) => setReportType(e.target.value as ReportType)}
+              >
+                {Object.values(ReportType).map((rt) => (
+                  <option key={rt} value={rt}>
+                    {rt}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Board ID */}
+            <div>
+              <label className="block font-medium mb-2">Board ID</label>
+              <input
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                type="text"
+                value={boardId}
+                onChange={(e) => setBoardId(e.target.value)}
+                placeholder="Optional"
+              />
+            </div>
+
+            {/* List ID */}
+            <div>
+              <label className="block font-medium mb-2">List ID</label>
+              <input
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                type="text"
+                value={listId}
+                onChange={(e) => setListId(e.target.value)}
+                placeholder="Optional"
+              />
+            </div>
+
+            {/* User ID (auto-populated) */}
+            <div>
+              <label className="block font-medium mb-2">User ID</label>
+              <input
+                className="w-full p-2 border rounded bg-gray-100 cursor-not-allowed focus:ring-2 focus:ring-blue-500"
+                type="text"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                disabled
+              />
+            </div>
+
+            {/* Status */}
+            <div>
+              <label className="block font-medium mb-2">Status</label>
+              <input
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                type="text"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                placeholder="E.g. 'Open', 'In Progress'..."
+              />
+            </div>
+
+            {/* Priority */}
+            <div>
+              <label className="block font-medium mb-2">Priority</label>
+              <input
+                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                type="text"
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                placeholder="E.g. 'High', 'Low'..."
+              />
+            </div>
+
+            {/* Dates */}
+            <div className="flex space-x-4">
+              <div className="w-1/2">
+                <label className="block font-medium mb-2">Start Date</label>
+                <input
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+              <div className="w-1/2">
+                <label className="block font-medium mb-2">End Date</label>
+                <input
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Generate Button */}
+            <div className="flex items-center space-x-2 pt-4">
+              <AnimatedButton
+                onClick={handleGenerate}
+                disabled={isLoading}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {isLoading ? 'Generating...' : 'Generate'}
+              </AnimatedButton>
+
+              {data && (
+                <AnimatedButton
+                  onClick={handleExport}
+                  className="bg-green-600 hover:bg-green-700"
+                  Icon={FiDownload}
+                >
+                  Export
+                </AnimatedButton>
+              )}
+            </div>
+          </motion.div>
+
+          {/* ========== RIGHT COLUMN: Report Preview ========== */}
+          <motion.div
+            className="bg-gray-50 p-4 rounded-lg shadow-inner overflow-auto"
+            initial={{ x: 30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            {data ? (
+              <>
+                <h2 className="text-xl font-semibold mb-2">Report: {data.title}</h2>
+                <p className="text-sm text-gray-600 mb-4">
+                  Generated At: {new Date(data.generatedAt || '').toLocaleString()}
+                </p>
+                <pre className="bg-white p-4 rounded-lg text-sm overflow-auto">
+                  {JSON.stringify(data.data, null, 2)}
+                </pre>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                <svg
+                  className="w-16 h-16 mb-2"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 17v2h6v-2m-3-1.5V7M5 12h2m10 0h2M3 8h2m10 0h2m-7 4h.01m0 4h.01M14 8h.01m0 4h.01"
+                  />
+                </svg>
+                <p className="text-center text-sm">
+                  Your generated report will appear here once ready.
+                </p>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
