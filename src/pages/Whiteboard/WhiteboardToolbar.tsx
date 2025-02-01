@@ -1,3 +1,4 @@
+// src/features/whiteboard/WhiteboardToolbar.tsx
 import React from 'react';
 import {
   FaPen,
@@ -8,16 +9,24 @@ import {
   FaRedo,
   FaTrash,
   FaCameraRetro,
+  FaBold,
+  FaItalic,
+  FaAlignLeft,
+  FaAlignCenter,
+  FaAlignRight,
+  FaListUl,
 } from 'react-icons/fa';
+
+// In WhiteboardToolbar.tsx (props interface)
+import { WhiteboardTool } from '../../types/whiteboard';
 
 interface WhiteboardToolbarProps {
   snapshotMode: boolean;
   setSnapshotMode: React.Dispatch<React.SetStateAction<boolean>>;
 
-  currentTool: 'pen' | 'rectangle' | 'eraser' | 'text';
-  setCurrentTool: React.Dispatch<
-    React.SetStateAction<'pen' | 'rectangle' | 'eraser' | 'text'>
-  >;
+  // BOTH must be WhiteboardTool
+  currentTool: WhiteboardTool;
+  setCurrentTool: React.Dispatch<React.SetStateAction<WhiteboardTool>>; 
 
   currentColor: string;
   setCurrentColor: React.Dispatch<React.SetStateAction<string>>;
@@ -25,13 +34,22 @@ interface WhiteboardToolbarProps {
   lineWidth: number;
   setLineWidth: React.Dispatch<React.SetStateAction<number>>;
 
-  canUndo?: boolean;
-  canRedo?: boolean;
-  handleUndo?: () => void;
-  handleRedo?: () => void;
-  handleClear?: () => void;
-}
+  // text style toggles
+  isBold: boolean;
+  setIsBold: React.Dispatch<React.SetStateAction<boolean>>;
+  isItalic: boolean;
+  setIsItalic: React.Dispatch<React.SetStateAction<boolean>>;
+  textAlign: 'left' | 'center' | 'right';
+  setTextAlign: React.Dispatch<React.SetStateAction<'left' | 'center' | 'right'>>;
+  useBullet: boolean;
+  setUseBullet: React.Dispatch<React.SetStateAction<boolean>>;
 
+  canUndo: boolean;
+  canRedo: boolean;
+  handleUndo: () => void;
+  handleRedo: () => void;
+  handleClear: () => void;
+}
 const WhiteboardToolbar: React.FC<WhiteboardToolbarProps> = ({
   snapshotMode,
   setSnapshotMode,
@@ -41,62 +59,66 @@ const WhiteboardToolbar: React.FC<WhiteboardToolbarProps> = ({
   setCurrentColor,
   lineWidth,
   setLineWidth,
-  canUndo = false,
-  canRedo = false,
+  isBold,
+  setIsBold,
+  isItalic,
+  setIsItalic,
+  textAlign,
+  setTextAlign,
+  useBullet,
+  setUseBullet,
+  canUndo,
+  canRedo,
   handleUndo,
   handleRedo,
   handleClear,
 }) => {
   return (
-    <div className="flex flex-wrap items-center space-x-2 p-2 bg-gray-100 rounded shadow">
+    <div className="flex flex-wrap items-center space-x-6 p-3 bg-white shadow">
       {/* Snapshot Toggle */}
       <button
         onClick={() => setSnapshotMode(!snapshotMode)}
         className={`flex items-center px-3 py-1 rounded transition-colors ${
           snapshotMode ? 'bg-green-700 text-white' : 'bg-green-300 text-green-800'
         } hover:bg-green-400`}
-        aria-label="Toggle Snapshot Mode"
         title="Toggle Snapshot Mode"
       >
-        <FaCameraRetro className="mr-2" />
-        {snapshotMode ? ' ON' : 'OFF'}
+        <FaCameraRetro className="mr-1" />
+        {snapshotMode ? 'Snapshot ON' : 'Snapshot OFF'}
       </button>
 
-      {/* Tools */}
+      {/* Tools (Pen, Rectangle, Eraser, Text) */}
       <button
         onClick={() => setCurrentTool('pen')}
-        className={`flex items-center justify-center p-2 rounded transition-colors ${
-          currentTool === 'pen' ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
+        className={`p-2 rounded transition-colors ${
+          currentTool === 'pen' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
         } hover:bg-blue-500`}
         title="Pen Tool"
       >
         <FaPen />
       </button>
-
       <button
         onClick={() => setCurrentTool('rectangle')}
-        className={`flex items-center justify-center p-2 rounded transition-colors ${
-          currentTool === 'rectangle' ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
+        className={`p-2 rounded transition-colors ${
+          currentTool === 'rectangle' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
         } hover:bg-blue-500`}
         title="Rectangle Tool"
       >
         <FaSquare />
       </button>
-
       <button
         onClick={() => setCurrentTool('eraser')}
-        className={`flex items-center justify-center p-2 rounded transition-colors ${
-          currentTool === 'eraser' ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
+        className={`p-2 rounded transition-colors ${
+          currentTool === 'eraser' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
         } hover:bg-blue-500`}
         title="Eraser Tool"
       >
         <FaEraser />
       </button>
-
       <button
         onClick={() => setCurrentTool('text')}
-        className={`flex items-center justify-center p-2 rounded transition-colors ${
-          currentTool === 'text' ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
+        className={`p-2 rounded transition-colors ${
+          currentTool === 'text' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
         } hover:bg-blue-500`}
         title="Text Tool"
       >
@@ -104,79 +126,115 @@ const WhiteboardToolbar: React.FC<WhiteboardToolbarProps> = ({
       </button>
 
       {/* Color Picker */}
-      <div className="flex items-center space-x-1">
-        <label htmlFor="colorPicker" className="text-sm font-medium text-gray-700">
-         
-        </label>
-        <input
-          id="colorPicker"
-          type="color"
-          value={currentColor}
-          onChange={(e) => setCurrentColor(e.target.value)}
-          className="w-6 h-6 p-0 border-none cursor-pointer"
-          aria-label="Select Color"
-          title="Select Color"
-        />
-      </div>
+      <input
+        type="color"
+        value={currentColor}
+        onChange={(e) => setCurrentColor(e.target.value)}
+        className="w-8 h-8 cursor-pointer"
+        title="Choose Color"
+      />
 
       {/* Line Width */}
       <div className="flex items-center space-x-1">
-        <label htmlFor="lineWidth" className="text-sm font-medium text-gray-700">
-         
-        </label>
         <input
-          id="lineWidth"
           type="range"
           min={1}
           max={20}
           value={lineWidth}
           onChange={(e) => setLineWidth(Number(e.target.value))}
           className="w-24"
-          aria-label="Line Width"
-          title="Adjust Line Width"
+          title="Line Width"
         />
-        <span className="text-sm text-gray-700">{lineWidth}px</span>
+        <span className="text-sm">{lineWidth}px</span>
       </div>
+
+      {/* Text style toggles (Bold, Italic, Align, Bullet) */}
+      <button
+        onClick={() => setIsBold((prev) => !prev)}
+        className={`p-2 rounded transition-colors ${
+          isBold ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+        } hover:bg-blue-500`}
+        title="Bold"
+      >
+        <FaBold />
+      </button>
+      <button
+        onClick={() => setIsItalic((prev) => !prev)}
+        className={`p-2 rounded transition-colors ${
+          isItalic ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+        } hover:bg-blue-500`}
+        title="Italic"
+      >
+        <FaItalic />
+      </button>
+      <button
+        onClick={() => setTextAlign('left')}
+        className={`p-2 rounded transition-colors ${
+          textAlign === 'left' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+        } hover:bg-blue-500`}
+        title="Align Left"
+      >
+        <FaAlignLeft />
+      </button>
+      <button
+        onClick={() => setTextAlign('center')}
+        className={`p-2 rounded transition-colors ${
+          textAlign === 'center' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+        } hover:bg-blue-500`}
+        title="Align Center"
+      >
+        <FaAlignCenter />
+      </button>
+      <button
+        onClick={() => setTextAlign('right')}
+        className={`p-2 rounded transition-colors ${
+          textAlign === 'right' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+        } hover:bg-blue-500`}
+        title="Align Right"
+      >
+        <FaAlignRight />
+      </button>
+      <button
+        onClick={() => setUseBullet((prev) => !prev)}
+        className={`p-2 rounded transition-colors ${
+          useBullet ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+        } hover:bg-blue-500`}
+        title="Bullet List"
+      >
+        <FaListUl />
+      </button>
 
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Undo, Redo, Clear */}
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={handleUndo}
-          disabled={!canUndo}
-          className={`flex items-center justify-center p-2 rounded transition-colors ${
-            canUndo
-              ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-          }`}
-          title="Undo"
-        >
-          <FaUndo />
-        </button>
-
-        <button
-          onClick={handleRedo}
-          disabled={!canRedo}
-          className={`flex items-center justify-center p-2 rounded transition-colors ${
-            canRedo
-              ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-          }`}
-          title="Redo"
-        >
-          <FaRedo />
-        </button>
-
-        <button
-          onClick={handleClear}
-          className="flex items-center justify-center p-2 rounded transition-colors bg-red-40 text-red-600 hover:bg-gray-50"
-          title="Clear Whiteboard"
-        >
-          <FaTrash />
-        </button>
-      </div>
+      {/* Undo / Redo / Clear */}
+      <button
+        onClick={handleUndo}
+        disabled={!canUndo}
+        className={`p-2 rounded transition-colors ${
+          canUndo ? 'bg-gray-200 text-gray-800 hover:bg-gray-300' : 'bg-gray-100 text-gray-400'
+        }`}
+        title="Undo"
+      >
+        <FaUndo />
+      </button>
+      <button
+        onClick={handleRedo}
+        disabled={!canRedo}
+        className={`p-2 rounded transition-colors ${
+          canRedo ? 'bg-gray-200 text-gray-800 hover:bg-gray-300' : 'bg-gray-100 text-gray-400'
+        }`}
+        title="Redo"
+      >
+        <FaRedo />
+      </button>
+      <button
+        onClick={handleClear}
+        className="p-2 rounded transition-colors bg-red-500 text-white hover:bg-red-600"
+        title="Clear Whiteboard"
+      >
+        <FaTrash />
+      </button>
     </div>
   );
 };

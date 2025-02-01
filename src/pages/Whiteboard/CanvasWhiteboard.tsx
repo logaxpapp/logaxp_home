@@ -1,16 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { IStroke } from '../../api/whiteboardApi';
+// src/features/whiteboard/CanvasWhiteboard.tsx
+import React, { useEffect, useRef, useState, MouseEvent } from 'react';
+import { IStroke } from '../../api/whiteboardApi'; // your existing interface
 import { getSocket } from '../../socket';
-import { FaFont, FaTimes } from 'react-icons/fa'; // Added icons for undo, redo, and clear
+import { FaTimes, FaCheck } from 'react-icons/fa';
 
 interface CanvasWhiteboardProps {
   localStrokes: IStroke[];
   setLocalStrokes: React.Dispatch<React.SetStateAction<IStroke[]>>;
   serverVersion: number;
   whiteboardId: string;
-  currentTool: 'pen' | 'rectangle' | 'eraser' | 'text';
+  currentTool: IStroke['type'];
   currentColor: string;
   lineWidth: number;
+  isBold?: boolean;
+  isItalic?: boolean;
+  textAlign?: 'left' | 'center' | 'right';
+  useBullet?: boolean;
   onBeginStroke?: () => void;
 }
 
@@ -24,23 +29,38 @@ const CanvasWhiteboard: React.FC<CanvasWhiteboardProps> = ({
   lineWidth,
   onBeginStroke,
 }) => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  // ========== Refs for two canvases ==========
+  const bgCanvasRef = useRef<HTMLCanvasElement | null>(null);  // background (dot grid)
+  const fgCanvasRef = useRef<HTMLCanvasElement | null>(null);  // foreground (user strokes)
 
-  // For rectangle
-  const [startRectPoint, setStartRectPoint] = useState<{ x: number; y: number } | null>(null);
+  // For shapes that need a start/end point
+  const [startShapePoint, setStartShapePoint] = useState<{ x: number; y: number } | null>(null);
 
-  // For text
-  const [isTextModalOpen, setIsTextModalOpen] = useState(false);
-  const [textPosition, setTextPosition] = useState<{ x: number; y: number } | null>(null);
-  const [textInput, setTextInput] = useState('');
-  const [fontSize, setFontSize] = useState(16);
-  const [fontFamily, setFontFamily] = useState('Arial');
+  // Inline text editing
+  const [textEditing, setTextEditing] = useState<{
+    isVisible: boolean;
+    x: number;
+    y: number;
+    text: string;
+    fontSize: number;
+    fontFamily: string;
+    color: string;
+  }>({
+    isVisible: false,
+    x: 0,
+    y: 0,
+    text: '',
+    fontSize: 16,
+    fontFamily: 'Arial',
+    color: '#000000',
+  });
 
-
-  // 1) Draw a dot grid
+  // --------------------
+  // Draw the dot grid (background)
+  // --------------------
   const drawDotGrid = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
     const dotSpacing = 40;
-    const dotRadius = 0.5;
+    const dotRadius = 0.7;
     ctx.fillStyle = '#000';
     for (let x = 0; x < canvas.width; x += dotSpacing) {
       for (let y = 0; y < canvas.height; y += dotSpacing) {
@@ -51,105 +71,224 @@ const CanvasWhiteboard: React.FC<CanvasWhiteboardProps> = ({
     }
   };
 
-  // Function to resize the canvas
-  const resizeCanvas = () => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const container = canvas.parentElement;
-      if (container) {
-        // Set canvas width to container's width
-        const width = container.clientWidth;
-        const height = (width * 800) / 1470; // Maintain aspect ratio
+  // --------------------
+  // Resize both canvases
+  // --------------------
+  const resizeCanvases = () => {
+    const bgCanvas = bgCanvasRef.current;
+    const fgCanvas = fgCanvasRef.current;
+    if (!bgCanvas || !fgCanvas) return;
 
-        // Set canvas dimensions
-        canvas.width = width;
-        canvas.height = height;
-      }
+    const container = bgCanvas.parentElement; 
+    if (!container) return;
+
+    const width = container.clientWidth;
+    const height = (width * 800) / 1470; // maintain aspect ratio or adapt
+
+    // set size for background
+    bgCanvas.width = width;
+    bgCanvas.height = height;
+
+    // set size for foreground
+    fgCanvas.width = width;
+    fgCanvas.height = height;
+
+    // redraw the background dot grid after resize
+    const bgCtx = bgCanvas.getContext('2d');
+    if (bgCtx) {
+      bgCtx.clearRect(0, 0, width, height);
+      drawDotGrid(bgCtx, bgCanvas);
     }
   };
 
-  // Resize canvas on mount and window resize
+  // ---------------------------------------------
+  // On mount / unmount, resize + draw background
+  // ---------------------------------------------
   useEffect(() => {
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    return () => window.removeEventListener('resize', resizeCanvas);
+    resizeCanvases();
+    window.addEventListener('resize', resizeCanvases);
+    return () => window.removeEventListener('resize', resizeCanvases);
   }, []);
 
-
-  // 2) Redraw all strokes whenever localStrokes changes
+  // ---------------------------------------------
+  // Redraw user strokes on the foreground canvas
+  // whenever localStrokes changes
+  // ---------------------------------------------
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const fgCanvas = fgCanvasRef.current;
+    if (!fgCanvas) return;
+    const ctx = fgCanvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawDotGrid(ctx, canvas);
+    // Clear the foreground
+    ctx.clearRect(0, 0, fgCanvas.width, fgCanvas.height);
 
-    // Re-draw strokes
-   // Inside the useEffect where strokes are redrawn
-localStrokes.forEach((stroke) => {
-  ctx.save();
-  ctx.lineWidth = stroke.lineWidth || 2;
-  ctx.strokeStyle = stroke.color || '#000';
-  ctx.fillStyle = stroke.color || '#000';
+    // Now, draw each stroke
+    localStrokes.forEach((stroke) => {
+      ctx.save();
+      ctx.lineWidth = stroke.lineWidth || 2;
+      ctx.strokeStyle = stroke.color || '#000';
+      ctx.fillStyle = stroke.color || '#000';
 
-  if (stroke.type === 'rectangle' && stroke.points.length === 2) {
-    const [start, end] = stroke.points;
-    const rectWidth = end.x - start.x;
-    const rectHeight = end.y - start.y;
-    ctx.strokeRect(start.x, start.y, rectWidth, rectHeight);
-
-  } else if (stroke.type === 'text') {
-    // Text stroke with wrapping
-    const [pos] = stroke.points;
-    const textValue = stroke.text || '';
-    const strokeFontSize = stroke.fontSize || fontSize;
-    const strokeFontFamily = stroke.fontFamily || fontFamily;
-    ctx.font = `${strokeFontSize}px ${strokeFontFamily}`;
-
-    const maxWidth = canvasRef.current!.width - pos.x; // Available width for text
-    const lineHeight = strokeFontSize * 1.2; // Line height for wrapping
-
-    let y = pos.y; // Initial Y position
-
-    // Split text into lines
-    const words = textValue.split(' ');
-    let line = '';
-
-    for (let i = 0; i < words.length; i++) {
-      const testLine = line + words[i] + ' ';
-      const metrics = ctx.measureText(testLine);
-      const testWidth = metrics.width;
-
-      if (testWidth > maxWidth && i > 0) {
-        // Draw the current line and move to the next
-        ctx.fillText(line.trim(), pos.x, y);
-        line = words[i] + ' ';
-        y += lineHeight; // Move Y position down
-      } else {
-        line = testLine;
+      if (stroke.type === 'rectangle' && stroke.points.length === 2) {
+        const [start, end] = stroke.points;
+        const w = end.x - start.x;
+        const h = end.y - start.y;
+        ctx.strokeRect(start.x, start.y, w, h);
+      } else if (stroke.type === 'text') {
+        const [pos] = stroke.points;
+        ctx.font = `${stroke.fontSize || 16}px ${stroke.fontFamily || 'Arial'}`;
+        ctx.fillText(stroke.text || '', pos.x, pos.y);
       }
-    }
+      // line
+      else if (stroke.type === 'line' && stroke.points.length === 2) {
+        drawLine(ctx, stroke.points[0], stroke.points[1]);
+      }
+      // arrow
+      else if (stroke.type === 'arrow' && stroke.points.length === 2) {
+        drawLine(ctx, stroke.points[0], stroke.points[1]);
+        drawArrowHead(ctx, stroke.points[0], stroke.points[1]);
+      }
+      // circle
+      else if (stroke.type === 'circle' && stroke.points.length === 2) {
+        drawCircle(ctx, stroke.points[0], stroke.points[1]);
+      }
+      // leftArrow, downArrow, upArrow
+      else if (stroke.type === 'leftArrow' && stroke.points.length === 2) {
+        drawLine(ctx, stroke.points[0], stroke.points[1]);
+        drawArrowHead(ctx, stroke.points[1], stroke.points[0]); // reverse
+      } else if (stroke.type === 'downArrow' && stroke.points.length === 2) {
+        drawLine(ctx, stroke.points[0], stroke.points[1]);
+        drawArrowHead(ctx, stroke.points[0], stroke.points[1]);
+      } else if (stroke.type === 'upArrow' && stroke.points.length === 2) {
+        drawLine(ctx, stroke.points[0], stroke.points[1]);
+        drawArrowHead(ctx, stroke.points[1], stroke.points[0]);
+      }
+      // triangle, diamond, polygon
+      else if (stroke.type === 'triangle' && stroke.points.length === 2) {
+        drawTriangle(ctx, stroke.points[0], stroke.points[1]);
+      } else if (stroke.type === 'diamond' && stroke.points.length === 2) {
+        drawDiamond(ctx, stroke.points[0], stroke.points[1]);
+      } else if (stroke.type === 'polygon' && stroke.points.length === 2) {
+        drawPolygonPlaceholder(ctx, stroke.points[0], stroke.points[1]);
+      }
+      // connectors
+      else if (stroke.type === 'straightConnector' && stroke.points.length === 2) {
+        drawLine(ctx, stroke.points[0], stroke.points[1]);
+      } else if (stroke.type === 'elbowConnector' && stroke.points.length === 2) {
+        drawElbowConnector(ctx, stroke.points[0], stroke.points[1]);
+      } else if (stroke.type === 'curvedConnector' && stroke.points.length === 2) {
+        drawCurvedConnector(ctx, stroke.points[0], stroke.points[1]);
+      }
+      // pen or eraser
+      else if ((stroke.type === 'pen' || stroke.type === 'eraser') && stroke.points.length) {
+        ctx.beginPath();
+        stroke.points.forEach((pt, idx) => {
+          if (idx === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        });
+        ctx.stroke();
+      }
 
-    // Draw the last line
-    ctx.fillText(line.trim(), pos.x, y);
-
-  } else {
-    // Pen or eraser
-    ctx.beginPath();
-    stroke.points.forEach((pt, idx) => {
-      if (idx === 0) ctx.moveTo(pt.x, pt.y);
-      else ctx.lineTo(pt.x, pt.y);
+      ctx.restore();
     });
+  }, [localStrokes]);
+
+  // ---------------------------------------------------------
+  // Drawing helper functions (used in the foreground canvas)
+  // ---------------------------------------------------------
+  function drawLine(ctx: CanvasRenderingContext2D, start: { x: number; y: number }, end: { x: number; y: number }) {
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
     ctx.stroke();
   }
 
-  ctx.restore();
-});
-  }, [localStrokes, fontSize, fontFamily]);
+  function drawCircle(ctx: CanvasRenderingContext2D, start: { x: number; y: number }, end: { x: number; y: number }) {
+    const rx = (end.x - start.x) / 2;
+    const ry = (end.y - start.y) / 2;
+    const cx = start.x + rx;
+    const cy = start.y + ry;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, Math.abs(rx), Math.abs(ry), 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
 
-  // 3) Emit to server
+  function drawArrowHead(ctx: CanvasRenderingContext2D, start: { x: number; y: number }, end: { x: number; y: number }) {
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const angle = Math.atan2(dy, dx);
+    const headLength = 10;
+    ctx.save();
+    ctx.translate(end.x, end.y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-headLength, headLength / 2);
+    ctx.lineTo(-headLength, -headLength / 2);
+    ctx.closePath();
+    ctx.fillStyle = ctx.strokeStyle;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawTriangle(ctx: CanvasRenderingContext2D, start: { x: number; y: number }, end: { x: number; y: number }) {
+    const midX = (start.x + end.x) / 2;
+    ctx.beginPath();
+    ctx.moveTo(midX, start.y);       // top
+    ctx.lineTo(end.x, end.y);        // bottom right
+    ctx.lineTo(start.x, end.y);      // bottom left
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  function drawDiamond(ctx: CanvasRenderingContext2D, start: { x: number; y: number }, end: { x: number; y: number }) {
+    const midX = (start.x + end.x) / 2;
+    const midY = (start.y + end.y) / 2;
+    ctx.beginPath();
+    ctx.moveTo(midX, start.y);    // top
+    ctx.lineTo(end.x, midY);      // right
+    ctx.lineTo(midX, end.y);      // bottom
+    ctx.lineTo(start.x, midY);    // left
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  function drawPolygonPlaceholder(ctx: CanvasRenderingContext2D, start: { x: number; y: number }, end: { x: number; y: number }) {
+    // Just an example hex or pentagon
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, start.y);
+    ctx.lineTo(end.x + 20, (start.y + end.y) / 2);
+    ctx.lineTo(end.x, end.y);
+    ctx.lineTo(start.x, end.y);
+    ctx.lineTo(start.x - 20, (start.y + end.y) / 2);
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  function drawElbowConnector(ctx: CanvasRenderingContext2D, start: { x: number; y: number }, end: { x: number; y: number }) {
+    // single "L" shaped line
+    const midX = (start.x + end.x) / 2;
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(midX, start.y);
+    ctx.lineTo(midX, end.y);
+    ctx.lineTo(end.x, end.y);
+    ctx.stroke();
+  }
+
+  function drawCurvedConnector(ctx: CanvasRenderingContext2D, start: { x: number; y: number }, end: { x: number; y: number }) {
+    // simple quadratic curve
+    const controlX = (start.x + end.x) / 2;
+    const controlY = (start.y + end.y) / 2 - 50;
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.quadraticCurveTo(controlX, controlY, end.x, end.y);
+    ctx.stroke();
+  }
+
+  // ============== WebSocket emit ===============
   const emitToServer = (strokes: IStroke[]) => {
     const socket = getSocket();
     if (!socket) return;
@@ -160,16 +299,16 @@ localStrokes.forEach((stroke) => {
     });
   };
 
-  // 4) Mouse Handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!canvasRef.current) return;
-    const rect = canvasRef.current.getBoundingClientRect();
+  // ================= Mouse events on FG Canvas =================
+  const handleMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
+    const fgCanvas = fgCanvasRef.current;
+    if (!fgCanvas) return;
+    const rect = fgCanvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // pen or eraser
     if (currentTool === 'pen' || currentTool === 'eraser') {
-      onBeginStroke?.(); // Let parent store old strokes in undo stack
+      onBeginStroke?.();
       const color = currentTool === 'eraser' ? '#FFFFFF' : currentColor;
       const newStroke: IStroke = {
         type: currentTool,
@@ -181,186 +320,259 @@ localStrokes.forEach((stroke) => {
       return;
     }
 
-    // rectangle
-    if (currentTool === 'rectangle') {
-      setStartRectPoint({ x, y });
+    // shapes
+    if (
+      currentTool === 'rectangle' ||
+      currentTool === 'line' ||
+      currentTool === 'arrow' ||
+      currentTool === 'circle' ||
+      currentTool === 'leftArrow' ||
+      currentTool === 'downArrow' ||
+      currentTool === 'upArrow' ||
+      currentTool === 'triangle' ||
+      currentTool === 'diamond' ||
+      currentTool === 'polygon' ||
+      currentTool === 'straightConnector' ||
+      currentTool === 'elbowConnector' ||
+      currentTool === 'curvedConnector'
+    ) {
+      onBeginStroke?.();
+      setStartShapePoint({ x, y });
       return;
     }
 
     // text
     if (currentTool === 'text') {
-      setTextPosition({ x, y });
-      setIsTextModalOpen(true);
-      return;
+      setTextEditing({
+        isVisible: true,
+        x,
+        y,
+        text: '',
+        fontSize: 16,
+        fontFamily: 'Arial',
+        color: currentColor,
+      });
     }
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
     if (e.buttons !== 1) return;
-    if (!canvasRef.current) return;
+    const fgCanvas = fgCanvasRef.current;
+    if (!fgCanvas) return;
 
-    // pen or eraser => add points
     if (currentTool === 'pen' || currentTool === 'eraser') {
-      const rect = canvasRef.current.getBoundingClientRect();
+      const rect = fgCanvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
       setLocalStrokes((prev) => {
         const copy = [...prev];
-        const lastStroke = copy[copy.length - 1];
-        if (lastStroke) {
-          lastStroke.points.push({ x, y });
+        const last = copy[copy.length - 1];
+        if (last) {
+          last.points.push({ x, y });
         }
         return copy;
       });
     }
   };
 
-  const handleMouseUp = (e: React.MouseEvent) => {
-    if (!canvasRef.current) return;
+  const handleMouseUp = (e: MouseEvent<HTMLCanvasElement>) => {
+    const fgCanvas = fgCanvasRef.current;
+    if (!fgCanvas) return;
 
-    // rectangle => finalize
-    if (currentTool === 'rectangle' && startRectPoint) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+    if (startShapePoint) {
+      const rect = fgCanvas.getBoundingClientRect();
+      const xUp = e.clientX - rect.left;
+      const yUp = e.clientY - rect.top;
 
-      const newRectStroke: IStroke = {
-        type: 'rectangle',
+      const newShape: IStroke = {
+        type: currentTool,
         color: currentColor,
         lineWidth,
-        points: [startRectPoint, { x, y }],
+        points: [startShapePoint, { x: xUp, y: yUp }],
       };
-      const updated = [...localStrokes, newRectStroke];
+      const updated = [...localStrokes, newShape];
       setLocalStrokes(updated);
-      setStartRectPoint(null);
-
+      setStartShapePoint(null);
       emitToServer(updated);
-
     } else if (currentTool === 'pen' || currentTool === 'eraser') {
-      // pen or eraser => finalize => emit
       emitToServer(localStrokes);
     }
   };
 
-  // 5) Text Modal
-  const handleTextSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!textPosition || textInput.trim() === '') {
-      setIsTextModalOpen(false);
-      setTextInput('');
+  // ============== Inline text editor ==============
+  const handleConfirmText = () => {
+    if (!textEditing.isVisible) return;
+    const { x, y, text, fontSize, fontFamily, color } = textEditing;
+    if (!text.trim()) {
+      setTextEditing((p) => ({ ...p, isVisible: false }));
       return;
     }
 
-    const newTextStroke: IStroke = {
+    const textStroke: IStroke = {
       type: 'text',
-      color: currentColor,
+      color,
       lineWidth,
-      points: [textPosition],
-      text: textInput,
+      points: [{ x, y }],
+      text,
       fontSize,
       fontFamily,
     };
-    const updated = [...localStrokes, newTextStroke];
+    const updated = [...localStrokes, textStroke];
     setLocalStrokes(updated);
-    setIsTextModalOpen(false);
-    setTextInput('');
-
+    setTextEditing((p) => ({ ...p, isVisible: false }));
     emitToServer(updated);
   };
 
+  const handleCancelText = () => {
+    setTextEditing((p) => ({ ...p, isVisible: false, text: '' }));
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTextEditing((p) => ({ ...p, text: e.target.value }));
+  };
+
+  const handleFontSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const size = parseInt(e.target.value, 10) || 16;
+    setTextEditing((p) => ({ ...p, fontSize: size }));
+  };
+
+  const handleFontFamilyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTextEditing((p) => ({ ...p, fontFamily: e.target.value }));
+  };
+
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTextEditing((p) => ({ ...p, color: e.target.value }));
+  };
+
+  // ===========================
+  // Render: Two overlapping canvases + text editor
+  // ===========================
   return (
-    <div className="relative container mx-auto">
-      {/* Canvas */}
+    <div className="relative w-full h-full">
+      {/* Background Canvas (non-erasable dot grid) */}
       <canvas
-        ref={canvasRef}
-        className="bg-white rounded-lg shadow-md cursor-crosshair"
+        ref={bgCanvasRef}
+        style={{ position: 'absolute', top: 0, left: 0 }}
+        className="pointer-events-none"
+      />
+
+      {/* Foreground Canvas (erasable strokes) */}
+      <canvas
+        ref={fgCanvasRef}
+        style={{ position: 'absolute', top: 0, left: 0 }}
+        className="bg-transparent cursor-crosshair w-full h-full"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       />
 
-      {/* Text Modal */}
-      {isTextModalOpen && textPosition && (
-        <div
-          className="
-            absolute top-4 left-1/2 transform -translate-x-1/2
-            bg-white p-4 rounded-lg shadow-lg
-            flex items-center space-x-4
-          "
-        >
-          <FaFont className="text-blue-500 w-6 h-6" />
-          <form onSubmit={handleTextSubmit} className="flex items-center space-x-4">
-            {/* Text Input */}
-            <input
-              type="text"
-              value={textInput}
-              onChange={(e) => setTextInput(e.target.value)}
-              className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Type your text..."
-              required
-            />
-
-            {/* Font Size */}
-            <div className="flex items-center space-x-2">
-              <FaFont className="text-gray-700" />
+      {/* Inline Text Editor */}
+      {textEditing.isVisible && (
+        <>
+          {/* Floating Toolbar for text style */}
+          <div
+            style={{
+              position: 'absolute',
+              top: textEditing.y - 45,
+              left: textEditing.x,
+              transform: 'translate(-50%, -50%)',
+              background: '#fff',
+              border: '0.5px solid #ddd',
+              padding: '4px 10px',
+              borderRadius: 12,
+              display: 'flex',
+              gap: '10px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              zIndex: 10,
+            }}
+          >
+            <div className="flex items-center space-x-1">
               <input
                 type="number"
-                value={fontSize}
-                onChange={(e) => setFontSize(Number(e.target.value))}
-                className="w-16 p-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 flex-wrap"
+                value={textEditing.fontSize}
+                onChange={handleFontSizeChange}
+                className="w-12 rounded px-1 text-xs border border-gray-100"
                 min={8}
-                max={200}
-                required
+                max={128}
               />
             </div>
 
-            {/* Font Family */}
-            <div className="flex items-center space-x-2">
-              <FaFont className="text-gray-700" />
+            <div className="flex items-center space-x-1">
               <select
-                value={fontFamily}
-                onChange={(e) => setFontFamily(e.target.value)}
-                className="p-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
+                value={textEditing.fontFamily}
+                onChange={handleFontFamilyChange}
+                className="border border-gray-100 rounded text-xs"
               >
-                <option value="Arial">Arial</option>
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Courier New">Courier New</option>
-                <option value="Verdana">Verdana</option>
-                <option value="Georgia">Georgia</option>
-                <option value="Tahoma">Tahoma</option>
-                <option value="Trebuchet MS">Trebuchet MS</option>
-                <option value="Lucida Console">Lucida Console</option>
+                <option>Arial</option>
+                <option>Times New Roman</option>
+                <option>Courier New</option>
+                <option>Verdana</option>
+                <option>Georgia</option>
+                <option>Tahoma</option>
+                <option>Trebuchet MS</option>
+                <option>Lucida Console</option>
               </select>
             </div>
 
-            {/* Submit */}
-            <button
-              type="submit"
-              className="
-                px-4 py-2 bg-blue-500 text-white rounded
-                hover:bg-blue-600 transition duration-200
-                flex items-center space-x-1
-              "
-            >
-              Add
-              <FaFont className="w-4 h-4" />
-            </button>
+            <div className="flex items-center space-x-2 border border-gray-50 rounded p-1">
+              <input
+                type="color"
+                value={textEditing.color}
+                onChange={handleColorChange}
+                className="w-8 h-8 p-1"
+              />
+            </div>
 
-            {/* Close */}
             <button
-              type="button"
-              className="text-gray-500 hover:text-gray-700 transition duration-200"
-              onClick={() => {
-                setIsTextModalOpen(false);
-                setTextInput('');
-              }}
+              onClick={handleConfirmText}
+              className="text-green-500 px-2 py-1 rounded text-sm hover:bg-green-600"
+              title="Add Text"
             >
-              <FaTimes className="w-5 h-5" />
+              <FaCheck />
             </button>
-          </form>
-        </div>
+            <button
+              onClick={handleCancelText}
+              className="text-gray-500 px-2 py-1 rounded text-sm hover:bg-gray-300"
+              title="Cancel"
+            >
+              <FaTimes />
+            </button>
+          </div>
+
+          {/* The actual text <textarea> for typing */}
+          <textarea
+            value={textEditing.text}
+            onChange={handleTextChange}
+            style={{
+              position: 'absolute',
+              top: textEditing.y,
+              left: textEditing.x,
+              transform: 'translate(-50%, -50%)',
+              fontSize: textEditing.fontSize,
+              fontFamily: textEditing.fontFamily,
+              color: textEditing.color,
+              background: '#fff',
+              border: '0.2px solid #aaa',
+              padding: '4px 8px',
+              borderRadius: 4,
+              outline: 'none',
+              resize: 'none',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              zIndex: 9,
+              minWidth: '100px',
+              maxWidth: '400px',
+              minHeight: '30px',
+              marginTop: '0.8em',
+            }}
+            autoFocus
+            onFocus={(e) => {
+              const val = e.currentTarget.value;
+              e.currentTarget.value = '';
+              e.currentTarget.value = val;
+            }}
+          />
+        </>
       )}
     </div>
   );

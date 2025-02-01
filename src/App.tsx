@@ -140,7 +140,7 @@ const SentDocuments = lazy(() => import('./components/Document/SentDocuments'));
 const ReportManagement = lazy(() => import('./components/Report/ReportManagement'));
 const ReportPage = lazy(() => import('./components/Report/ReportPage'));
 const MyNotification = lazy(() => import('./components/Notifications/MyNotification'));
-const WhiteboardManager = lazy(() => import('./pages/Whiteboard/WhiteboardManager'));
+const WhiteboardPage = lazy(() => import('./pages/Whiteboard/WhiteboardPage'));
 
 
 
@@ -331,6 +331,7 @@ const App: React.FC = () => {
                     </Suspense>
                   }
                 />
+               
 
                 {/* Protected Routes */}
                 <Route
@@ -720,6 +721,14 @@ const App: React.FC = () => {
                         </Suspense>
                       }
 
+                      />
+                       <Route
+                        path="whiteboard/:boardId" 
+                        element={
+                          <Suspense fallback={<Loader />}>
+                            <WhiteboardPage />
+                          </Suspense>
+                        }
                       />
                       <Route
                       path="resources/:id"

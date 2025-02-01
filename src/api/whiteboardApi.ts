@@ -1,14 +1,20 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { customBaseQuery } from './baseQuery';
+import { WhiteboardTool } from '../types/whiteboard';
+
+
+// In your whiteboardApi.ts or wherever IStroke is defined
+// In your whiteboardApi.ts or a shared types file:
 
 export interface IStroke {
-  type: string;
+  type: WhiteboardTool;  // use the new type
   color: string;
   points: { x: number; y: number }[];
   lineWidth: number;
-  text?: string;
-  fontSize?: number;
   fontFamily?: string;
+  fontSize?: number;
+  text?: string;
+  // ...
 }
 
 export interface IWhiteboard {
@@ -25,6 +31,15 @@ export interface IWhiteboard {
   
 }
 
+interface EditWhiteboardPayload {
+  id: string;
+  data: {
+    title?: string;
+    description?: string;
+  };
+}
+
+
 interface CreateWhiteboardPayload {
   ownerId: string;
   title: string;
@@ -35,6 +50,21 @@ interface UpdateWhiteboardPayload {
   strokes: IStroke[];
   createSnapshot?: boolean;
 }
+
+interface PaginatedSnapshots {
+  snapshots: any[]; // or define Snapshot interface
+  total: number;
+  page: number;
+  limit: number;
+}
+
+interface PaginatedParticipants {
+  participants: any[]; // or define Participant interface
+  total: number;
+  page: number;
+  limit: number;
+}
+
 
 export const whiteboardApi = createApi({
   reducerPath: 'whiteboardApi',
@@ -53,6 +83,17 @@ export const whiteboardApi = createApi({
       }),
       invalidatesTags: ['Whiteboard'],
     }),
+
+    editWhiteboard: builder.mutation<IWhiteboard, EditWhiteboardPayload>({
+      query: ({ id, data }) => ({
+        url: `/whiteboards/${id}`,
+        method: 'PATCH',
+        // Now we send `data` as the body
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Whiteboard', id }],
+    }),
+    
 
     // GET by ID
     getWhiteboard: builder.query<IWhiteboard, string>({
@@ -123,8 +164,41 @@ export const whiteboardApi = createApi({
       }),
       invalidatesTags: (result, error, id) => [{ type: 'Whiteboard', id }],
     }),
-  }),
-});
+        // DELETE a snapshot
+        deleteSnapshot: builder.mutation<
+        { message: string; whiteboard: IWhiteboard },
+        { id: string; snapshotId: string }
+      >({
+        query: ({ id, snapshotId }) => ({
+          url: `/whiteboards/${id}/snapshots/${snapshotId}`,
+          method: 'DELETE',
+        }),
+        invalidatesTags: (result, error, arg) => [
+          { type: 'Whiteboard', id: arg.id },
+        ],
+      }),
+  
+      // GET Snapshots (paginated)
+      getBoardSnapshots: builder.query<
+        PaginatedSnapshots,
+        { id: string; page: number; limit: number }
+      >({
+        query: ({ id, page, limit }) =>
+          `/whiteboards/${id}/snapshots?page=${page}&limit=${limit}`,
+        // optional providesTags if you want caching/invalidation
+      }),
+  
+      // GET Participants (paginated)
+      getBoardParticipants: builder.query<
+        PaginatedParticipants,
+        { id: string; page: number; limit: number }
+      >({
+        query: ({ id, page, limit }) =>
+          `/whiteboards/${id}/participants?page=${page}&limit=${limit}`,
+      }),
+    }),
+  });
+
 
 export const {
   useCreateWhiteboardMutation,
@@ -135,4 +209,12 @@ export const {
   useRemoveParticipantMutation,
   useRevertToSnapshotMutation,
   useDeleteWhiteboardMutation,
+  useEditWhiteboardMutation,
+
+  // DELETE a snapshot
+  useDeleteSnapshotMutation,
+  // GET Snapshots (paginated)
+  useGetBoardSnapshotsQuery,
+  // GET Participants (paginated)
+  useGetBoardParticipantsQuery,
 } = whiteboardApi;
