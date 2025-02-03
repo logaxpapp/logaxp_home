@@ -5,12 +5,13 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ApplicationList from './ApplicationList';
 import TestManager from './TestManager';
+import RequirementManager from './RequirementManager';
 
 // Step 1: Import the new Analysis page
 import TestAnalysisPage from './TestAnalysisPage';
 
 // We now have 3 tabs:
-const TABS = ['Applications', 'Test Manager', 'Test Analysis'];
+const TABS = ['Applications', 'Test Manager', 'Test Analysis', 'Requirement Manager'];
 
 const TestManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>(TABS[0]);
@@ -108,6 +109,19 @@ const TestManagement: React.FC = () => {
           >
             {/* The new TestAnalysisPage with Victory chart */}
             <TestAnalysisPage />
+          </motion.div>
+        )}
+        
+        {activeTab === 'Requirement Manager' && (
+          <motion.div
+            key="RequirementManagerTab"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* RequirementManager component */}
+            <RequirementManager />
           </motion.div>
         )}
       </AnimatePresence>

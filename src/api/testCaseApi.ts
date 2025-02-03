@@ -130,6 +130,28 @@ export const testCaseApi = createApi({
       ],
     }),
 
+    linkRequirement: builder.mutation<any, { testCaseId: string; requirementId: string }>({
+      query: ({ testCaseId, requirementId }) => ({
+        url: `/test-cases/${testCaseId}/link-requirement`,
+        method: 'POST',
+        body: { requirementId },
+      }),
+      invalidatesTags: (result, error, { testCaseId }) => [
+        { type: 'TestCase', id: testCaseId },
+        { type: 'TestCase', id: 'LIST' },
+      ],
+    }),
+    unlinkRequirement: builder.mutation<any, { testCaseId: string; requirementId: string }>({
+      query: ({ testCaseId, requirementId }) => ({
+        url: `/test-cases/${testCaseId}/unlink-requirement`,
+        method: 'POST',
+        body: { requirementId },
+      }),
+      invalidatesTags: (result, error, { testCaseId }) => [
+        { type: 'TestCase', id: testCaseId },
+      ],
+    }),
+
     // Analysis endpoint
     fetchTestAnalysis: builder.query<TestAnalysis, void>({
       query: () => '/test-cases/analysis',
@@ -150,4 +172,7 @@ export const {
   useUploadTestCaseAttachmentMutation,
   useDeleteTestCaseAttachmentMutation,
   useFetchTestAnalysisQuery,
+
+  useLinkRequirementMutation,
+  useUnlinkRequirementMutation,
 } = testCaseApi;

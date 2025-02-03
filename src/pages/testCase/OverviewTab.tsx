@@ -112,7 +112,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ testCase }) => {
           onChange={(e) => setComments(e.target.value)}
         />
       </div>
-
+    <div className="grid grid-cols-2 gap-4">
       <div>
         <label className="block text-sm font-medium">Status</label>
         <select
@@ -174,6 +174,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ testCase }) => {
             </option>
           ))}
         </select>
+      </div>
       </div>
 
       {/* isAutomated & Script Path */}
