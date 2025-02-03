@@ -141,6 +141,8 @@ const ReportManagement = lazy(() => import('./components/Report/ReportManagement
 const ReportPage = lazy(() => import('./components/Report/ReportPage'));
 const MyNotification = lazy(() => import('./components/Notifications/MyNotification'));
 const WhiteboardPage = lazy(() => import('./pages/Whiteboard/WhiteboardPage'));
+const TestManagement = lazy(() => import('./pages/testCase/TestManagement'));
+// const ApplicationList = lazy(() => import('./pages/testCase/ApplicationList'));
 
 
 
@@ -1164,6 +1166,15 @@ const App: React.FC = () => {
                       </Suspense>
                     }
                   />
+                  <Route
+                    path="test-management"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <TestManagement />
+                      </Suspense>
+                    }
+                    />
+                   
                   </Route>
                  
                   <Route

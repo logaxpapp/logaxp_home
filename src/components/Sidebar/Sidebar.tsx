@@ -11,6 +11,7 @@ import Logo from '../../assets/images/sec.png';
 import GreenLogo from '../../assets/images/green.svg';
 import { UserRole } from '../../types/enums';
 
+// Icons
 import {
   FaTachometerAlt,
   FaTicketAlt,
@@ -49,8 +50,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   const navigate = useNavigate();
   const currentUser = useAppSelector(selectCurrentUser);
 
-  console.log('User:', currentUser);
-
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
@@ -85,6 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     { name: 'Subscriptions', path: '/dashboard/admin-subscriptions', icon: <FaBell /> },
     { name: 'Contracts', path: '/dashboard/admin/contracts', icon: <FaFileAlt /> },
     { name: 'Documents', path: '/dashboard/documents', icon: <FaFileAlt /> },
+    { name: 'Test Manager', path: '/dashboard/test-management', icon: <FaBell /> },
   ];
 
   // Basic user links
@@ -97,9 +97,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     { name: 'Support', path: '/dashboard/support', icon: <FaBell /> },
     { name: 'Pay', path: '/dashboard/employeePayPeriods', icon: <FaHome /> },
     { name: 'Change Requests', path: '/dashboard/my-change-requests', icon: <FaBell /> },
+    { name: 'Test Manager', path: '/dashboard/test-manager', icon: <FaBell /> },
   ];
 
-  // Contractor or SubContractor links
+  // Contractor / SubContractor links
   const contractorLinks: NavLinkItem[] = [
     { name: 'Contracts', path: '/dashboard/contractor/contracts', icon: <FaFileAlt /> },
     { name: 'Documents', path: '/dashboard/documents', icon: <FaFileAlt /> },
@@ -109,6 +110,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     { name: 'BoardList', path: '/dashboard/board-list', icon: <FaBell /> },
     { name: 'SubContractors', path: '/dashboard/subcontractors', icon: <FaClock /> },
     { name: 'Team', path: '/dashboard/contractor/team/list', icon: <FaUsers /> },
+  ];
+
+  // Tester role links
+  const testerLinks: NavLinkItem[] = [
+    { name: 'Test Manager', path: '/dashboard/test-management', icon: <FaBell /> },
+    { name: 'Tickets', path: '/dashboard/tickets', icon: <FaTicketAlt /> },
+    { name: 'Documents', path: '/dashboard/documents', icon: <FaFileAlt /> },
+    { name: 'Support', path: '/dashboard/tester/support', icon: <FaBell /> },
+    { name: 'BoardList', path: '/dashboard/board-list', icon: <FaBell /> },
+    { name: 'Team', path: '/dashboard/team/list', icon: <FaUsers /> },
   ];
 
   // Hook to detect window width
@@ -167,13 +178,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                   : 'text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-600'
               }`
             }
-            onClick={toggleSidebar} // Close sidebar after clicking a link (mobile)
+            onClick={toggleSidebar} // close sidebar after link click (mobile)
           >
             <span className="mr-3">{link.icon}</span>
             <span>{link.name}</span>
           </NavLink>
         ))}
-
         {showToggle && (
           <button
             className="mt-2 text-xs text-teal-600 hover:underline focus:outline-none flex items-center"
@@ -215,7 +225,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             <NavLink to="/" className="flex items-center text-teal-500 hover:text-teal-400 sidebar">
               {/* Light Mode Logo */}
               <img src={Logo} alt="Logo" className="ml-2 h-6 block dark:hidden" />
-
               {/* Dark Mode Logo */}
               <img src={GreenLogo} alt="Logo Dark Mode" className="hidden ml-2 h-6 dark:block" />
 
@@ -236,9 +245,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
           {/* Scrollable Navigation Area */}
           <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-3">
-            {/* Normal user (non-contractor) main links */}
+            {/* If user is NOT contractor/subcontractor, show "Main" block */}
             {currentUser?.role !== UserRole.Contractor &&
-             currentUser?.role !== UserRole.SubContractor && (
+             currentUser?.role !== UserRole.SubContractor && 
+             currentUser?.role !== UserRole.Tester && (
               <>
                 <h3 className="text-gray-500 dark:text-gray-400 uppercase text-xs font-semibold tracking-wide mb-2">
                   Main
@@ -285,21 +295,51 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               </>
             )}
 
-            {/* Contractor or SubContractor => same block for now */}
+            {/* Tester role */}
+            {currentUser?.role === UserRole.Tester && (
+              <>
+                <h3 className="text-gray-500 dark:text-gray-400 uppercase text-xs font-semibold tracking-wide mt-6 mb-2">
+                  Tester Panel
+                </h3>
+                <div className="border-b "/>
+                <p className="text-gray-500 dark:text-gray-400 text-sm tracking-wide mb-4">
+                  Manage your testing tasks, tickets, and resources here.
+                </p>
+                <div className="border-b "/>
+                <div className="space-y-2 text-lg">
+                  {testerLinks.map((link) => (
+                    <NavLink
+                      key={link.name}
+                      to={link.path}
+                      className={({ isActive }) =>
+                        `flex items-center p-[6px] sidebar rounded-lg text-[13px] font-medium transition-colors duration-200 ${
+                          isActive
+                            ? 'bg-teal-100 text-teal-500 dark:bg-gray-700 dark:text-gray-300'
+                            : 'text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-600'
+                        }`
+                      }
+                      onClick={toggleSidebar}
+                    >
+                      <span className="mr-3">{link.icon}</span>
+                      <span>{link.name}</span>
+                    </NavLink>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Contractor or SubContractor */}
             {(currentUser?.role === UserRole.Contractor ||
               currentUser?.role === UserRole.SubContractor) && (
               <>
-
-            <h3 className="text-gray-500 dark:text-gray-400 uppercase text-xs font-semibold tracking-wide mt-6 mb-2">
-              Contractor Panel
-            </h3>
-            <div className="border-b "/>
-            <p className="text-gray-500 dark:text-gray-400 text-sm tracking-wide mb-4">
-              Manage your contracts, resources, and team oversight here.
-            </p>
-            <div className="border-b "/>
-
-                <div className="space-y-2 text-lg"/>
+                <h3 className="text-gray-500 dark:text-gray-400 uppercase text-xs font-semibold tracking-wide mt-6 mb-2">
+                  Contractor Panel
+                </h3>
+                <div className="border-b "/>
+                <p className="text-gray-500 dark:text-gray-400 text-sm tracking-wide mb-4">
+                  Manage your contracts, resources, and team oversight here.
+                </p>
+                <div className="border-b "/>
 
                 <div className="space-y-2 text-lg">
                   {contractorLinks.map((link) => (

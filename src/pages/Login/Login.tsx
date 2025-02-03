@@ -71,6 +71,8 @@ const Login: React.FC = () => {
         navigate('/dashboard');
       } else if (userData.user.role === UserRole.SubContractor) {
         navigate('/dashboard');
+      } else if (userData.user.role === UserRole.Tester) {
+        navigate('/dashboard');
       } else {
         navigate('/dashboard');
       }

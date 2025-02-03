@@ -120,6 +120,7 @@ const CreateEditUserForm: React.FC<CreateEditUserFormProps> = ({
           <option value="user">User</option>
           <option value="admin">Admin</option>
           <option value="support">Support</option>
+          <option value="tester">Tester</option>
         </select>
       </div>
 

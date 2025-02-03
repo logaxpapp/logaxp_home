@@ -17,6 +17,7 @@ export enum Application {
     Approver = 'approver',
     Contractor = 'contractor',
     SubContractor = 'subContractor',
+    Tester = 'tester',
     
   }
 
