@@ -152,6 +152,16 @@ export const testCaseApi = createApi({
       ],
     }),
 
+    fetchPublicSharedCases: builder.query<
+      { application: string; testCases: ITestCase[] },
+      string // the token
+    >({
+      query: (token) => ({
+        url: `/public/application-share/${token}`,
+        method: 'GET',
+      }),
+    }),
+
     // Analysis endpoint
     fetchTestAnalysis: builder.query<TestAnalysis, void>({
       query: () => '/test-cases/analysis',
@@ -172,7 +182,7 @@ export const {
   useUploadTestCaseAttachmentMutation,
   useDeleteTestCaseAttachmentMutation,
   useFetchTestAnalysisQuery,
-
+  useFetchPublicSharedCasesQuery,
   useLinkRequirementMutation,
   useUnlinkRequirementMutation,
 } = testCaseApi;

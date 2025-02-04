@@ -737,7 +737,18 @@ export const usersApi = createApi({
           : [{ type: 'Team', id: 'LIST' }],
     }),
 
-    
+          shareTestCases: builder.mutation<
+          { message: string },
+          { application: string; recipientEmail: string; daysValid: number }
+        >({
+          query: (body) => ({
+            url: '/admin/share-testcases',
+            method: 'POST',
+            body,
+          }),
+          invalidatesTags: [], // or something if needed
+        }),
+
 
     // Update Member Role
     updateMemberRole: builder.mutation<ITeam, { teamId: string; memberId: string; newRole: 'Leader' | 'Member' | 'Viewer' }>({
@@ -816,5 +827,5 @@ export const {
   useUpdateSubContractorMutation,
   useDeleteSubContractorMutation,
   useUpdateMemberRoleMutation,
-  
+  useShareTestCasesMutation,
 } = usersApi;

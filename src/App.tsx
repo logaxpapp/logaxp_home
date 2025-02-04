@@ -143,6 +143,8 @@ const MyNotification = lazy(() => import('./components/Notifications/MyNotificat
 const WhiteboardPage = lazy(() => import('./pages/Whiteboard/WhiteboardPage'));
 const TestManagement = lazy(() => import('./pages/testCase/TestManagement'));
 // const ApplicationList = lazy(() => import('./pages/testCase/ApplicationList'));
+const PublicShareView = lazy(() => import('./pages/testCase/PublicTestCaseShareView'));
+const AdminShareTestCasesForm = lazy(() => import('./pages/testCase/AdminShareTestCasesForm'));
 
 
 
@@ -237,6 +239,7 @@ const App: React.FC = () => {
                   </Suspense>
                 }
               />
+                <Route path="/public/testcases-share/:token" element={<PublicShareView />} />
                 <Route
                   path="/about"
                   element={
@@ -1174,7 +1177,14 @@ const App: React.FC = () => {
                       </Suspense>
                     }
                     />
-                   
+                   <Route
+                    path="admin/share"
+                    element={
+                      <Suspense fallback={<Loader />}>
+                        <AdminShareTestCasesForm />
+                      </Suspense>
+                    }
+                  />
                   </Route>
                  
                   <Route
