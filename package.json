@@ -67,6 +67,7 @@
     "react-virtualized-auto-sizer": "^1.0.24",
     "react-window": "^1.8.10",
     "redux-persist": "^6.0.0",
+    "slugify": "^1.6.6",
     "socket.io-client": "^4.8.1",
     "uid-safe": "^2.1.5",
     "uuid": "^10.0.0",

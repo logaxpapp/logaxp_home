@@ -1,3 +1,6 @@
+// "I want the vital message at all time."
+// src/features/testAnalysis/TestAnalysisPage.tsx
+
 import React, { useState } from 'react';
 import { useFetchTestAnalysisQuery } from '../../api/testCaseApi';
 import {
@@ -6,24 +9,23 @@ import {
   VictoryAxis,
   VictoryTheme,
   VictoryPie,
-  VictoryStack,
+  VictoryGroup,
   VictoryTooltip,
-  VictoryLabel,
   VictoryLegend,
   VictoryContainer,
-  VictoryLine,
+  VictoryStack,
 } from 'victory';
-import DatePicker from 'react-datepicker'; // For date range filtering
-import 'react-datepicker/dist/react-datepicker.css'; // Date picker styles
-import { saveAs } from 'file-saver'; // For exporting data
-import { FaDownload, FaFilter, FaChartLine, FaChartBar } from 'react-icons/fa'; // Icons
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { saveAs } from 'file-saver';
+import { FaDownload, FaFilter, FaChartBar, FaRegListAlt } from 'react-icons/fa';
 
 const TestAnalysisPage: React.FC = () => {
   const { data, isLoading, isError, refetch } = useFetchTestAnalysisQuery();
+  const [chartType, setChartType] = useState<'grouped' | 'pct'>('grouped');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [selectedApp, setSelectedApp] = useState<string>('All');
-  const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
 
   if (isLoading) return <div className="p-6">Loading analysis...</div>;
   if (isError) return <div className="p-6 text-red-500">Failed to load analysis</div>;
@@ -31,15 +33,12 @@ const TestAnalysisPage: React.FC = () => {
 
   const { totalTestCases, totalPass, totalFail, totalBlocked, totalRetest, byApplication } = data;
 
-  // Filter data based on selected application and date range
-  const filteredData = byApplication
-    .filter((app) => selectedApp === 'All' || app._id === selectedApp)
-    .map((app) => ({
-      ...app,
-      // Add date filtering logic here if needed
-    }));
+  // Filter
+  const filteredData = byApplication.filter(
+    (app) => selectedApp === 'All' || app._id === selectedApp
+  );
 
-  // For overall pie chart
+  // Overall pie
   const overallPieData = [
     { x: 'Pass', y: totalPass },
     { x: 'Fail', y: totalFail },
@@ -47,16 +46,58 @@ const TestAnalysisPage: React.FC = () => {
     { x: 'Retest', y: totalRetest },
   ].filter((d) => d.y > 0);
 
-  // For stacked bar or line chart
-  const passData = filteredData.map((app) => ({ x: app._id, y: app.totalPass || 0 }));
-  const failData = filteredData.map((app) => ({ x: app._id, y: app.totalFail || 0 }));
-  const blockedData = filteredData.map((app) => ({ x: app._id, y: app.totalBlocked || 0 }));
-  const retestData = filteredData.map((app) => ({ x: app._id, y: app.totalRetest || 0 }));
+  // "pct" means 100% stacked bars
+  // For each category, we either store raw or percentage
+  function toPercent(count: number, sum: number) {
+    return sum === 0 ? 0 : Math.round((count / sum) * 100);
+  }
 
-  // Export data as CSV
+  // Build pass/fail/blocked/retest arrays
+  const passData = filteredData.map((app) => {
+    const sum = (app.totalPass || 0) + (app.totalFail || 0) + (app.totalBlocked || 0) + (app.totalRetest || 0);
+    const raw = app.totalPass || 0;
+    return {
+      x: app._id,
+      y: chartType === 'pct' ? toPercent(raw, sum) : raw,
+    };
+  });
+
+  const failData = filteredData.map((app) => {
+    const sum = (app.totalPass || 0) + (app.totalFail || 0) + (app.totalBlocked || 0) + (app.totalRetest || 0);
+    const raw = app.totalFail || 0;
+    return {
+      x: app._id,
+      y: chartType === 'pct' ? toPercent(raw, sum) : raw,
+    };
+  });
+
+  const blockedData = filteredData.map((app) => {
+    const sum = (app.totalPass || 0) + (app.totalFail || 0) + (app.totalBlocked || 0) + (app.totalRetest || 0);
+    const raw = app.totalBlocked || 0;
+    return {
+      x: app._id,
+      y: chartType === 'pct' ? toPercent(raw, sum) : raw,
+    };
+  });
+
+  const retestData = filteredData.map((app) => {
+    const sum = (app.totalPass || 0) + (app.totalFail || 0) + (app.totalBlocked || 0) + (app.totalRetest || 0);
+    const raw = app.totalRetest || 0;
+    return {
+      x: app._id,
+      y: chartType === 'pct' ? toPercent(raw, sum) : raw,
+    };
+  });
+
+  // For domain
+  const allVals = [...passData, ...failData, ...blockedData, ...retestData].map((d) => d.y);
+  const maxVal = Math.max(0, ...allVals);
+  const domainMax = chartType === 'pct' ? 100 : maxVal;
+
+  // CSV
   const handleExportData = () => {
-    const csvData = [
-      ['Application', 'Total', 'Pass', 'Fail', 'Blocked', 'Retest'],
+    const csvRows = [
+      ['Application','Total','Pass','Fail','Blocked','Retest'],
       ...filteredData.map((app) => [
         app._id,
         app.total,
@@ -65,17 +106,25 @@ const TestAnalysisPage: React.FC = () => {
         app.totalBlocked,
         app.totalRetest,
       ]),
-    ].join('\n');
-
-    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
+    ];
+    const csvString = csvRows.map((row) => row.join(',')).join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8' });
     saveAs(blob, 'test_analysis.csv');
+  };
+
+  // A helper for the "labels" prop so we only show text if y>0
+  const labelFormatter = (datum: { y: number }) => {
+    if (datum.y <= 0) return '';
+    // If "pct" mode, show a "%", else raw number
+    if (chartType === 'pct') return `${datum.y}%`;
+    return String(datum.y);
   };
 
   return (
     <div className="p-6 space-y-8 min-h-screen bg-gray-50">
       <h2 className="text-3xl font-bold mb-4">Test Analysis Dashboard</h2>
 
-      {/* Filters and Actions */}
+      {/* Filters, date pickers, etc. */}
       <div className="flex flex-wrap gap-4 items-center">
         <div className="flex items-center gap-2">
           <FaFilter className="text-gray-600" />
@@ -92,6 +141,7 @@ const TestAnalysisPage: React.FC = () => {
             className="p-2 border rounded"
           />
         </div>
+
         <select
           value={selectedApp}
           onChange={(e) => setSelectedApp(e.target.value)}
@@ -104,12 +154,14 @@ const TestAnalysisPage: React.FC = () => {
             </option>
           ))}
         </select>
+
         <button
           onClick={() => refetch()}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Refresh Data
         </button>
+
         <button
           onClick={handleExportData}
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 flex items-center gap-2"
@@ -119,7 +171,7 @@ const TestAnalysisPage: React.FC = () => {
         </button>
       </div>
 
-      {/* TOP SUMMARY CARDS */}
+      {/* Summaries */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded shadow text-center">
           <p className="text-xs uppercase text-gray-500">Total Cases</p>
@@ -141,9 +193,8 @@ const TestAnalysisPage: React.FC = () => {
         </div>
       </div>
 
-      {/* MAIN CONTENT ROW */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column: Pie/Donut Chart */}
+        {/* Pie Chart */}
         <div className="bg-white p-4 rounded shadow">
           <h3 className="text-lg font-semibold mb-2">Overall Execution Status</h3>
           {overallPieData.length === 0 ? (
@@ -162,62 +213,106 @@ const TestAnalysisPage: React.FC = () => {
           )}
         </div>
 
-        {/* Right Column: Stacked Bar or Line Chart */}
+        {/* Right Chart => grouped or 100% stacked */}
         <div className="bg-white p-4 rounded shadow">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-semibold">Pass/Fail/Blocked/Retest by App</h3>
+            <h3 className="text-lg font-semibold">
+              {chartType === 'pct' ? 'Percent Stacked' : 'Grouped'}: Pass/Fail/Blocked/Retest
+            </h3>
             <div className="flex gap-2">
               <button
-                onClick={() => setChartType('bar')}
-                className={`p-2 rounded ${chartType === 'bar' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => setChartType('grouped')}
+                className={`p-2 rounded ${
+                  chartType === 'grouped' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                }`}
               >
                 <FaChartBar />
               </button>
               <button
-                onClick={() => setChartType('line')}
-                className={`p-2 rounded ${chartType === 'line' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => setChartType('pct')}
+                className={`p-2 rounded ${
+                  chartType === 'pct' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                }`}
               >
-                <FaChartLine />
+                <FaRegListAlt />
               </button>
             </div>
           </div>
+
           {filteredData.length === 0 ? (
             <p className="text-sm text-gray-500">No applications found.</p>
+          ) : domainMax === 0 ? (
+            <p className="text-sm text-gray-500">All counts are zero; nothing to plot.</p>
           ) : (
             <VictoryChart
               theme={VictoryTheme.material}
-              domainPadding={30}
+              domainPadding={{ x: 30, y: 10 }}
               containerComponent={<VictoryContainer responsive={true} />}
+              domain={{ y: [0, domainMax] }}
             >
               <VictoryAxis
                 style={{
-                  tickLabels: { fontSize: 9, angle: 45, textAnchor: 'start' },
+                  tickLabels: { fontSize: 10, angle: 45, textAnchor: 'start' },
                 }}
               />
               <VictoryAxis
                 dependentAxis
-                tickFormat={(t) => `${t}`}
-                style={{ tickLabels: { fontSize: 8 } }}
+                tickFormat={(val) =>
+                  chartType === 'pct' ? `${val}%` : val
+                }
+                style={{ tickLabels: { fontSize: 9 } }}
               />
-              {chartType === 'bar' ? (
+
+              {chartType === 'grouped' ? (
+                <VictoryGroup
+                  offset={12}
+                  colorScale={['#48BB78', '#F56565', '#B794F4', '#ECC94B']}
+                >
+                  <VictoryBar
+                    data={passData}
+                    labels={({ datum }) => labelFormatter(datum)}
+                    labelComponent={<VictoryTooltip />}
+                  />
+                  <VictoryBar
+                    data={failData}
+                    labels={({ datum }) => labelFormatter(datum)}
+                    labelComponent={<VictoryTooltip />}
+                  />
+                  <VictoryBar
+                    data={blockedData}
+                    labels={({ datum }) => labelFormatter(datum)}
+                    labelComponent={<VictoryTooltip />}
+                  />
+                  <VictoryBar
+                    data={retestData}
+                    labels={({ datum }) => labelFormatter(datum)}
+                    labelComponent={<VictoryTooltip />}
+                  />
+                </VictoryGroup>
+              ) : (
                 <VictoryStack
                   colorScale={['#48BB78', '#F56565', '#B794F4', '#ECC94B']}
-                  labels={({ datum }) => datum.y}
-                  labelComponent={<VictoryTooltip flyoutPadding={{ left: 10, right: 10, top: 5, bottom: 5 }} />}
+                  labelComponent={<VictoryTooltip />}
                 >
-                  <VictoryBar data={passData} />
-                  <VictoryBar data={failData} />
-                  <VictoryBar data={blockedData} />
-                  <VictoryBar data={retestData} />
+                  <VictoryBar
+                    data={passData}
+                    labels={({ datum }) => labelFormatter(datum)}
+                  />
+                  <VictoryBar
+                    data={failData}
+                    labels={({ datum }) => labelFormatter(datum)}
+                  />
+                  <VictoryBar
+                    data={blockedData}
+                    labels={({ datum }) => labelFormatter(datum)}
+                  />
+                  <VictoryBar
+                    data={retestData}
+                    labels={({ datum }) => labelFormatter(datum)}
+                  />
                 </VictoryStack>
-              ) : (
-                <>
-                  <VictoryLine data={passData} style={{ data: { stroke: '#48BB78' } }} />
-                  <VictoryLine data={failData} style={{ data: { stroke: '#F56565' } }} />
-                  <VictoryLine data={blockedData} style={{ data: { stroke: '#B794F4' } }} />
-                  <VictoryLine data={retestData} style={{ data: { stroke: '#ECC94B' } }} />
-                </>
               )}
+
               <VictoryLegend
                 x={50}
                 y={0}
@@ -236,7 +331,7 @@ const TestAnalysisPage: React.FC = () => {
         </div>
       </div>
 
-      {/* TABLE OR TEXT BREAKDOWN */}
+      {/* Table */}
       <div className="bg-white p-4 rounded shadow">
         <h3 className="text-lg font-semibold mb-4">Details by Application</h3>
         <div className="overflow-x-auto">
@@ -274,9 +369,9 @@ const TestAnalysisPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Always show vital message */}
+      {/* Vital message */}
       <div className="mt-6 p-4 bg-indigo-50 border-l-4 border-indigo-500 text-indigo-700">
-        <strong>Note:</strong> Every test case should be executed and results recorded.
+        <strong>Note:</strong> Non-zero segments now all show a tooltip and label.
       </div>
     </div>
   );

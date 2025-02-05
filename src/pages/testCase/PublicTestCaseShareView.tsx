@@ -450,7 +450,7 @@ function ExpandedTestCaseDetails({ testCase }: { testCase: ITestCase }) {
           <div className="overflow-auto">
             <table className="min-w-full text-sm mt-2">
               <thead className="bg-gray-200">
-                <tr>
+                <tr className='text-left'>
                   <th className="px-2 py-1">Version #</th>
                   <th className="px-2 py-1">Updated By</th>
                   <th className="px-2 py-1">Updated At</th>

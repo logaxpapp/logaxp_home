@@ -1,3 +1,4 @@
+// "I want the vital message at all time."
 // src/components/Footer.tsx
 
 import React, { useState } from 'react';
@@ -11,10 +12,10 @@ import {
 } from 'react-icons/fa';
 import { useSubscribeMutation } from '../../api/newsletterApi';
 import { useToast } from '../../features/Toast/ToastContext';
+
 const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
   const [subscribe, { isLoading }] = useSubscribeMutation();
-
   const { showToast } = useToast();
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -85,21 +86,23 @@ const Footer: React.FC = () => {
               1108 Berry Street, Old Hickory, Tennessee 37138
             </p>
             <div className="flex mt-6 gap-4">
-              <Link to="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
-                <FaFacebookF className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
-              </Link>
-              <Link to="https://www.twitter.com" target="_blank" rel="noopener noreferrer">
-                <FaTwitter className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
-              </Link>
-              <Link to="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
-                <FaInstagram className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
-              </Link>
-              <Link to="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
-                <FaLinkedin className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
-              </Link>
-              <Link to="https://www.github.com" target="_blank" rel="noopener noreferrer">
-                <FaGithub className="text-gray-400 hover:text-lemonGreen transition cursor-pointer" />
-              </Link>
+              {[
+                { href: 'https://www.facebook.com', icon: <FaFacebookF /> },
+                { href: 'https://www.twitter.com', icon: <FaTwitter /> },
+                { href: 'https://www.instagram.com', icon: <FaInstagram /> },
+                { href: 'https://www.linkedin.com', icon: <FaLinkedin /> },
+                { href: 'https://www.github.com', icon: <FaGithub /> },
+              ].map(({ href, icon }, index) => (
+                <a
+                  key={index}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-lemonGreen transition cursor-pointer"
+                >
+                  {icon}
+                </a>
+              ))}
             </div>
           </div>
 
@@ -107,18 +110,20 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-lg font-semibold text-white mb-4">Products</h4>
             <ul className="space-y-2">
-              {['DocSend', 'TimeSync', 'TaskBrick', 'Beautyhub', 'BookMiz', 'GatherPlx'].map(
-                (product, index) => (
-                  <li key={index}>
-                    <Link
-                      to="/products" // Update with actual product routes
-                      className="text-gray-400 hover:text-lemonGreen transition"
-                    >
-                      {product}
-                    </Link>
-                  </li>
-                )
-              )}
+              {[
+                { name: 'DocSend', path: '/products/docsend' },
+                { name: 'TimeSync', path: '/products/timesync' },
+                { name: 'TaskBrick', path: '/products/taskbrick' },
+                { name: 'Beautyhub', path: '/products/beautyhub' },
+                { name: 'BookMiz', path: '/products/bookmiz' },
+                { name: 'GatherPlx', path: '/products/gatherplx' },
+              ].map(({ name, path }, index) => (
+                <li key={index}>
+                  <Link to={path} className="text-gray-400 hover:text-lemonGreen transition">
+                    {name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -127,19 +132,16 @@ const Footer: React.FC = () => {
             <h4 className="text-lg font-semibold text-white mb-4">Business Types</h4>
             <ul className="space-y-2">
               {[
-                'Blog',
-                'Food & Beverages',
-                'App Development',
-                'DevOps Consultancy',
-                'Security And Monitoring',
-                'Health & Fitness',
-              ].map((type, index) => (
+                { name: 'BeautyHub', path: '/about-beautyhub' },
+                { name: 'Food & Beverages', path: '/beverages' },
+                { name: 'App Development', path: '/app-development' },
+                { name: 'DevOps Consultancy', path: '/devops' },
+                { name: 'Security & Monitoring', path: '/security' },
+                { name: 'Health & Fitness', path: '/health-fitness' },
+              ].map(({ name, path }, index) => (
                 <li key={index}>
-                  <Link
-                    to="/business-types" // Update with actual business type routes
-                    className="text-gray-400 hover:text-lemonGreen transition"
-                  >
-                    {type}
+                  <Link to={path} className="text-gray-400 hover:text-lemonGreen transition">
+                    {name}
                   </Link>
                 </li>
               ))}
@@ -156,26 +158,12 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <a
-                  href="tel:+16155543592"
-                  className="text-gray-400 hover:text-lemonGreen transition"
-                >
+                <a href="tel:+16155543592" className="text-gray-400 hover:text-lemonGreen transition">
                   +1 (615) 554-3592
                 </a>
               </li>
               <li>
-                <a
-                  href="tel:+18329465563"
-                  className="text-gray-400 hover:text-lemonGreen transition"
-                >
-                  +1 (832) 946-5563
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:enquiries@logaxp.com"
-                  className="text-gray-400 hover:text-lemonGreen transition"
-                >
+                <a href="mailto:enquiries@logaxp.com" className="text-gray-400 hover:text-lemonGreen transition">
                   enquiries@logaxp.com
                 </a>
               </li>

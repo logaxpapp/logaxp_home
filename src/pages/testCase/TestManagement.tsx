@@ -7,7 +7,7 @@ import AdminShareTestCasesForm from './AdminShareTestCasesForm';
 import TestAnalysisPage from './TestAnalysisPage';
 
 // Tabs configuration
-const TABS = ['Applications', 'Test Manager', 'Test Analysis', 'Requirements', 'ShareTestCases'];
+const TABS = ['Applications', 'Test Manager', 'Test Analysis', 'Requirement', 'ShareTestCases'];
 
 const TestManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>(TABS[0]);
@@ -112,7 +112,7 @@ const TestManagement: React.FC = () => {
           </motion.div>
         )}
 
-        {activeTab === 'Requirement Manager' && (
+        {activeTab === 'Requirement' && (
           <motion.div
             key="RequirementManagerTab"
             initial={{ opacity: 0, x: 10 }}

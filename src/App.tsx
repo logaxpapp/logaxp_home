@@ -16,10 +16,20 @@ import { useParams } from 'react-router-dom';
 
 
 import ThankYou from './pages/ThankYou';
+import slugify from 'slugify';
 import ContractCreate from './components/Contracts/Admin/ContractCreate';
 import ContractorEdit from './components/Contracts/Admin/ContractorEdit';
 import ContractEdit from './components/Contracts/Admin/ContractEdit';
 import ResetPassword from './pages/PasswordReset/ResetPassword';
+const  FoodBeveragesSegment  = lazy(() => import('./components/Footer/FoodBeveragesSegment'));
+const DevOpsConsultancySegment = lazy(() => import('./components/Footer/DevOpsConsultancySegment'));
+const SecurityMonitoringSegment = lazy(() => import('./components/Footer/SecurityMonitoringSegment'));
+const AppDevelopmentSegment = lazy(() => import('./components/Footer/AppDevelopmentSegment'));
+const HealthFitnessSegment = lazy(() => import('./components/Footer/HealthFitnessSegment'));
+const AboutBeautyHubTeaser = lazy(() => import('./components/Footer/AboutBeautyHubTeaser'));
+const BeautyHubFullStory = lazy(() => import('./components/Footer/BeautyHubFullStory'));
+
+
 
 const CreateReferenceForm = lazy(() => import('./components/Reference/CreateReferenceForm'));
 const ReferencesManagement = lazy(() => import('./components/Reference/ReferencesManagement'));
@@ -212,6 +222,62 @@ const App: React.FC = () => {
                   element={
                     <Suspense fallback={<Loader />}>
                       <Home />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/beverages"
+                  element={
+                    <Suspense fallback={<Loader />}>
+                      <FoodBeveragesSegment />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/devops"
+                  element={
+                    <Suspense fallback={<Loader />}>
+                      <DevOpsConsultancySegment />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/about-beautyhub"
+                  element={
+                    <Suspense fallback={<Loader />}>
+                      <AboutBeautyHubTeaser />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/beautyhub-full-story"
+                  element={
+                    <Suspense fallback={<Loader />}>
+                      <BeautyHubFullStory />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/security"
+                  element={
+                    <Suspense fallback={<Loader />}>
+                      <SecurityMonitoringSegment />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/app-development"
+                  element={
+                    <Suspense fallback={<Loader />}>
+                      <AppDevelopmentSegment />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/health-fitness"
+                  element={
+                    <Suspense fallback={<Loader />}>
+                      <HealthFitnessSegment />
                     </Suspense>
                   }
                 />
