@@ -7,7 +7,10 @@ import {
   AssignTestCasePayload,
   AddTestExecutionPayload,
   TestAnalysis,
+  FetchTestCasesParams
 } from '../types/testCase';
+
+
 
 export const testCaseApi = createApi({
   reducerPath: 'testCaseApi',
@@ -112,13 +115,49 @@ export const testCaseApi = createApi({
 
     uploadTestCaseAttachment: builder.mutation<ITestCase, { id: string; file: File }>({
       query: ({ id, file }) => {
+        // Create FormData inside
         const formData = new FormData();
         formData.append('attachment', file);
-        return { url: `/test-cases/${id}/attachments`, method: 'POST', body: formData };
-      },
-      invalidatesTags: (result, error, arg) => [{ type: 'TestCase', id: arg.id }, 'TestAnalysis'],
-    }),
 
+        return {
+          url: `/test-cases/${id}/attachments`,
+          method: 'POST',
+          body: formData,
+        };
+      },
+      invalidatesTags: (result, error, arg) => [
+        { type: 'TestCase', id: arg.id },
+        'TestAnalysis',
+      ],
+    }),
+    fetchPersonalTestCases: builder.query<
+            { testCases: ITestCase[]; total: number },
+            FetchTestCasesParams
+          >({
+            query: (params) => {
+              const queryParams = new URLSearchParams();
+
+              if (params.page) queryParams.set('page', String(params.page));
+              if (params.limit) queryParams.set('limit', String(params.limit));
+              if (params.sortField) queryParams.set('sortField', String(params.sortField));
+              if (params.sortOrder) queryParams.set('sortOrder', params.sortOrder);
+              if (params.search) queryParams.set('search', params.search);
+              if (params.createdBy) queryParams.set('createdBy', params.createdBy);
+              if (params.assignedTo) queryParams.set('assignedTo', params.assignedTo);
+
+              return {
+                url: `/test-cases/personal?${queryParams.toString()}`,
+                method: 'GET',
+              };
+            },
+            providesTags: (result) =>
+              result
+                ? [
+                    ...result.testCases.map((tc) => ({ type: 'TestCase' as const, id: tc._id })),
+                    { type: 'TestCase', id: 'LIST' },
+                  ]
+                : [{ type: 'TestCase', id: 'LIST' }],
+          }),
     deleteTestCaseAttachment: builder.mutation<ITestCase, { testCaseId: string; attachmentId: string }>({
       query: ({ testCaseId, attachmentId }) => ({
         url: `/test-cases/${testCaseId}/attachments/${attachmentId}`,
@@ -185,4 +224,5 @@ export const {
   useFetchPublicSharedCasesQuery,
   useLinkRequirementMutation,
   useUnlinkRequirementMutation,
+  useFetchPersonalTestCasesQuery,
 } = testCaseApi;

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useFetchAllUsersQuery } from '../../api/usersApi';
 import { useAssignTestCaseMutation } from '../../api/testCaseApi';
+import{ useToast }   from '../../features/Toast/ToastContext';
 
 interface AssignFormProps {
   testCaseId: string;
@@ -12,8 +13,10 @@ interface AssignFormProps {
 const AssignForm: React.FC<AssignFormProps> = ({ testCaseId, onAssigned, onCancel }) => {
   const { data: usersData, isLoading, isError } = useFetchAllUsersQuery({ page: 1, limit: 50 });
   const [assignTestCase] = useAssignTestCaseMutation();
-
   const [selectedUser, setSelectedUser] = useState('');
+
+  // Grab the showToast function
+  const { showToast } = useToast();
 
   if (isLoading) return <div className="p-2">Loading users...</div>;
   if (isError) return <div className="p-2 text-red-500">Error loading users.</div>;
@@ -25,10 +28,15 @@ const AssignForm: React.FC<AssignFormProps> = ({ testCaseId, onAssigned, onCance
     }
     try {
       await assignTestCase({ id: testCaseId, payload: { userId: selectedUser } }).unwrap();
+
+      // Show success toast
+      showToast('Test case assigned successfully!', 'success', 3000);
+
       if (onAssigned) onAssigned();
     } catch (err: any) {
       console.error('Failed to assign test case', err);
-      alert('Failed to assign test case');
+      // Show error toast
+      showToast('Failed to assign test case', 'error', 3000);
     }
   };
 
@@ -48,12 +56,14 @@ const AssignForm: React.FC<AssignFormProps> = ({ testCaseId, onAssigned, onCance
             </option>
           ))}
         </select>
+
         <button
           onClick={handleAssign}
           className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
         >
           Assign
         </button>
+
         {onCancel && (
           <button
             onClick={onCancel}

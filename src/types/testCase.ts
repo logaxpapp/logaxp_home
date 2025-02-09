@@ -181,3 +181,13 @@ export interface TestAnalysisApp {
     byApplication: TestAnalysisApp[];
   }
   
+
+  export interface FetchTestCasesParams {
+    page?: number;
+    limit?: number;
+    sortField?: string;
+    sortOrder?: 'asc' | 'desc';
+    search?: string;
+    createdBy?: string;
+    assignedTo?: string;
+  }
