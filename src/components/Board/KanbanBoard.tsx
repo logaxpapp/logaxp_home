@@ -315,7 +315,7 @@ const KanbanBoard: React.FC = () => {
     <div className="flex flex-col md:flex-row text-gray-800 dark:text-gray-200">
       <div className="flex-1 p-4 bg-gray-100 min-h-screen font-serif dark:bg-gray-800">
         {/* ========== Revamped Header ========== */}
-        <header className="p-6 rounded-md mb-4 shadow-md bg-gradient-to-b from-white via-white to-gray-50 text-black">
+        <header className="p-6 rounded-md mb-4 shadow-md bg-gradient-to-b from-white via-white to-gray-50 text-black container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             {/* Left side: Logo + Name + Description */}
             <div className="flex items-start space-x-4 mb-4 md:mb-0">
@@ -390,7 +390,6 @@ const KanbanBoard: React.FC = () => {
               className={`px-3 py-1 rounded-md transition-colors
                 ${viewMode === 'kanban' ? 'bg-white text-blue-700' : 'bg-white/20 text-white'}`}
             >
-              Kanban
             </button>
             <button
               onClick={() => setViewMode('list')}
@@ -411,7 +410,7 @@ const KanbanBoard: React.FC = () => {
 
         {/* ========== Additional Board Content ========== */}
         {viewMode === 'kanban' && (
-          <div className="my-4 flex flex-col sm:flex-row justify-between flex-wrap gap-3 font-secondary">
+          <div className="my-4 flex flex-col sm:flex-row justify-between flex-wrap gap-3 font-secondary container mx-auto">
             {isAdminOrOwner && (
               <button
                 onClick={handleAddHeader}
@@ -447,16 +446,16 @@ const KanbanBoard: React.FC = () => {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="flex space-x-2 overflow-x-auto"
+                    className="flex space-x-2 overflow-x-auto mx-auto mt-4 sm:mt-0 sm:space-x-4 sm:space-y-0 sm:flex-wrap sm:justify-center"
                   >
                     {headers.map((header, index) => {
                       const isCollapsed = collapsedColumns[header.id];
-                      const columnWidth = isCollapsed ? 'w-12' : 'w-80';
+                      const columnWidth = isCollapsed ? 'w-8' : 'w-72';
 
                       return (
                         <div
                           key={header.id}
-                          className={`flex flex-col bg-white dark:bg-gray-700 rounded shadow-md ${columnWidth}`}
+                          className={`flex flex-col bg-white dark:bg-gray-700 rounded shadow-md ${columnWidth} min-h-[300px]`}
                         >
                           {isCollapsed ? (
                             <div className="flex justify-center items-center h-full">
@@ -470,7 +469,7 @@ const KanbanBoard: React.FC = () => {
                           ) : (
                             <>
                               {/* Column header */}
-                              <div className="bg-gray-300 px-4 py-2 flex justify-between items-center shadow-sm dark:bg-gray-600">
+                              <div className="bg-gray-300 px-4 py-2 flex justify-between items-center shadow-sm dark:bg-gray-600 w-full">
                                 <input
                                   type="text"
                                   value={header.name}
